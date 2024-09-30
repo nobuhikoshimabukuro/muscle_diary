@@ -1,0 +1,144 @@
+・プロジェクト作成
+composer create-project laravel/laravel --prefer-dist TEST1
+
+・APP_KEY作成
+php artisan key:generate
+
+・認証機能作成
+php artisan make:auth
+
+★ビルトインサーバー起動
+php artisan serv
+
+・他のPCから確認する方法
+hostになるPCのServer起動コマンド
+php artisan serve --host 0.0.0.0
+
+hostになるPCのipを含むURL
+http://(hostPCのip):8000/
+http://192.168.1.19:8000/
+
+
+ALTER TABLE `factmaster` auto_increment = 1;
+
+
+//トランザクション
+DB::connection('mysql')->beginTransaction();
+DB::connection('sqlsrv')->beginTransaction();
+
+//ロールバック
+DB::connection('mysql')->rollBack();
+DB::connection('sqlsrv')->rollback();
+
+//コミット
+DB::connection('mysql')->commit();
+DB::connection('sqlsrv')->commit();
+
+
+php VIEWでのブレイクのやり方
+   
+   @php xdebug_break(); @endphp
+   
+   
+
+・アップデート 各環境Clone時またライブラリを更新時
+composer update
+
+★マイグレーション作成
+　・新規用
+php artisan make:migration create_m_torihikisaki --create=m_torihikisaki
+
+php artisan make:migration create_employer_password_t --create=employer_password_t
+
+employer_password_t
+
+　・追加用
+php artisan make:migration add_m_company --table=m_company
+
+
+・既存テーブル更新削除用
+php artisan make:migration mod_m_torihikisaki --table=m_torihikisaki
+
+
+・コントローラー作成
+php artisan make:controller TorihikisakiController
+
+・モデル作成
+php artisan make:model Torihiki_Item_T
+php artisan make:model employer_password_t_model
+
+
+新
+php artisan make:model MSettings
+
+・リクエスト作成
+php artisan make:request StoreBlogPost
+php artisan make:request employer_m_request
+
+
+・マイグレーション実行
+php artisan migrate
+
+・マイグレーション実行 既存Table削除し再作成する
+php artisan migrate:fresh --database=mysql
+
+・マイグレーション実行 既存Table削除し再作成後シードも実行
+php artisan migrate:fresh --database=mysql --seed
+
+★マイグレーション ロールバックして再作成 シードも実行
+php artisan migrate:refresh --seed
+
+
+・ロールバック 最後に一度に実行したマイグレーションをロールバック migrationテーブルのbatchの単位
+php artisan migrate:rollback
+
+・シーダー作成
+php artisan make:seeder MKamokuTableSeeder
+
+・シード実行
+php artisan db:seed
+・クラスを指定して実行
+php artisan db:seed --class=UsersTableSeeder
+
+・ミドルウェア作成
+php artisan make:middleware FormInputFilter
+
+・ストレージシンボリックリンク
+php artisan storage:link
+
+・laravelデバッグバー導入
+composer require barryvdh/laravel-debugbar
+.envの「APP_DEBUG=true」で有効　※本番環境ではfalse
+
+◆envの反映(キャッシュを削除)
+/usr/local/bin/php72cli artisan cache:clear
+/usr/local/bin/php72cli artisan config:cache
+
+ルールの作成
+php artisan make:rule KatakanaValidation
+
+シンボリックリンク
+php artisan storage:link
+
+
+テニス用
+php artisan migrate:refresh --seed --path=/database/migrations/
+
+
+git 
+ git clone https://github.com/nobuhikoshimabukuro/gakupro.git
+ 
+ 
+インストール
+composer require intervention
+
+バージョン指定
+composer require intervention/image:2.7.2
+
+アンインストール
+composer remove intervention/image
+
+キャッシュクリア
+php artisan cache:clear
+
+composer dump-autoload
