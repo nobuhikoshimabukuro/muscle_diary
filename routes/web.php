@@ -17,3 +17,5 @@ use App\Http\Controllers\web\dashboard_controller;
 */
 
 Route::get('/', [main_controller::class, 'index'])->name('web.index');
+
+Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('dashboard.graph_test');

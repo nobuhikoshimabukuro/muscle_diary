@@ -42,6 +42,8 @@
 <script src="{{ asset('js/swiper-bundle.min.js') . $system_version}}"></script>
 <script src="{{ asset('js/jquery-3.6.0.min.js') . $system_version}}"></script>
 <script src="{{ asset('js/fontawesome.js') . $system_version}}"></script>
+<script src="{{ asset('js/Chart.bundle.min.js') . $system_version}}"></script>
+<script src="{{ asset('js/chartjs-plugin-annotation.min.js') . $system_version}}"></script>
 
 
 <!--▽▽jQuery▽▽-->
