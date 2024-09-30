@@ -1,0 +1,45 @@
+body{    
+    
+  position: relative;
+  margin: 0; 
+  padding: 0; 
+  
+
+}
+
+  
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+
+
+
+
+.container{
+  margin-bottom: 15vh;
+  padding-bottom: 10vh;
+}
+  
+a{
+    color: #333;
+    text-decoration: none;    
+  }
+
+
+
+
+
+
+
+
+
+
+
