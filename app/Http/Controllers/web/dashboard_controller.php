@@ -19,16 +19,15 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\user_m_model;
 // Model ↑
 
-class main_controller extends Controller
+class dashboard_controller extends Controller
 {
     function index(Request $request)
     {       
       
-
         $demo = "";
 
-        return view('web/screen/top', compact('demo'));
-        
+        return view('web/screen/dashboard/index', compact('demo'));
+       
      
     }
 }

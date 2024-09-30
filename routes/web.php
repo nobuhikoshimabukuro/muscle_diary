@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 // web
 use App\Http\Controllers\web\main_controller;
+use App\Http\Controllers\web\dashboard_controller;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
