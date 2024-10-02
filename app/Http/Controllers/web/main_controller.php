@@ -16,7 +16,12 @@ use Illuminate\Support\Facades\Storage;
 
 
 // Model ↓
+use App\Models\exercise_m_model;
+use App\Models\gym_m_model;
+use App\Models\training_detail_t_model;
+use App\Models\training_history_t_model;
 use App\Models\user_m_model;
+use App\Models\weight_log_t_model;
 // Model ↑
 
 class main_controller extends Controller

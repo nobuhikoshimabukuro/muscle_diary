@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 // web
 use App\Http\Controllers\web\main_controller;
 use App\Http\Controllers\web\dashboard_controller;
+
+use App\Http\Controllers\table\weight_log_t_controller;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,3 +22,5 @@ use App\Http\Controllers\web\dashboard_controller;
 Route::get('/', [main_controller::class, 'index'])->name('web.index');
 
 Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('dashboard.graph_test');
+
+Route::get('/weight_log', [weight_log_t_controller::class, 'index'])->name('web.weight_log.index');

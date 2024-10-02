@@ -14,25 +14,35 @@ return new class extends Migration
      */
     public function up()
     {
-
-        if (Schema::hasTable('user_m')) {
+        
+        if (Schema::hasTable('weight_log_t')) {
             // テーブルが存在していればリターン
             return;
         }
 
-        Schema::create('user_m', function (Blueprint $table) {
+        Schema::create('weight_log_t', function (Blueprint $table) {
 
             $table
-                ->bigIncrements('user_id')
+                ->bigIncrements('weight_log_id')
                 ->comment('連番');
 
             $table
-                ->string('user_name', 100)                
-                ->comment('ユーザー名');               
+                ->unsignedBigInteger('user_id')                
+                ->comment('ユーザーID');
 
             $table
-                ->string('mailaddress', 1000)
-                ->comment('メールアドレス');
+                ->unsignedBigInteger('user_weight_log_id')                
+                ->comment('ユーザー毎体重管理ID');
+                
+            $table
+                ->decimal('weight', 12, 4)
+                ->default(0.0000)                
+                ->comment('重さ(g)');
+                
+            $table
+                ->dateTime('measure_at')                
+                ->comment('記録日時');
+            
 
             $table
                 ->dateTime('created_at')
@@ -68,7 +78,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE weight_log_t COMMENT '体重履歴T'");
     }
 
     /**
@@ -78,6 +88,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_m');
+        Schema::dropIfExists('weight_log_t');
     }
 };

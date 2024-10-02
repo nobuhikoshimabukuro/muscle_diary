@@ -7,32 +7,46 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
+     /**
      * Run the migrations.
      *
      * @return void
      */
     public function up()
     {
-
-        if (Schema::hasTable('user_m')) {
+       
+        if (Schema::hasTable('training_history_t')) {
             // テーブルが存在していればリターン
             return;
         }
 
-        Schema::create('user_m', function (Blueprint $table) {
+        Schema::create('training_history_t', function (Blueprint $table) {
 
             $table
-                ->bigIncrements('user_id')
+                ->bigIncrements('training_history_id')
                 ->comment('連番');
 
             $table
-                ->string('user_name', 100)                
-                ->comment('ユーザー名');               
+                ->unsignedBigInteger('user_id')                
+                ->comment('ユーザーID');               
 
             $table
-                ->string('mailaddress', 1000)
-                ->comment('メールアドレス');
+                ->unsignedBigInteger('training_count')                
+                ->comment('トレーニング回数:ユーザー毎');
+
+            $table
+                ->unsignedBigInteger('user_gym_id')                
+                ->comment('ジムID:ユーザー毎');
+
+            $table
+                ->dateTime('start_datetime')
+                ->nullable()
+                ->comment('開始日時');
+
+            $table
+                ->dateTime('end_datetime')
+                ->nullable()
+                ->comment('終了日時');
 
             $table
                 ->dateTime('created_at')
@@ -68,7 +82,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE training_history_t COMMENT 'トレーニング履歴T'");
     }
 
     /**
@@ -78,6 +92,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_m');
+        Schema::dropIfExists('training_history_t');
     }
 };

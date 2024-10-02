@@ -7,32 +7,40 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-
-        if (Schema::hasTable('user_m')) {
+        if (Schema::hasTable('exercise_m')) {
             // テーブルが存在していればリターン
             return;
         }
 
-        Schema::create('user_m', function (Blueprint $table) {
+        Schema::create('exercise_m', function (Blueprint $table) {
 
             $table
-                ->bigIncrements('user_id')
+                ->bigIncrements('exercise_id')
                 ->comment('連番');
 
             $table
-                ->string('user_name', 100)                
-                ->comment('ユーザー名');               
+                ->unsignedBigInteger('user_id')                
+                ->comment('ユーザーID');
 
             $table
-                ->string('mailaddress', 1000)
-                ->comment('メールアドレス');
+                ->unsignedBigInteger('user_exercise_id')                
+                ->comment('ユーザー毎種目ID');
+                
+            $table
+                ->string('exercise_name',1000)       
+                ->comment('種目名');
+                
+            $table
+                ->integer('display_flg')
+                ->default(1)
+                ->comment('表示フラグ:0 = 非表示 , 1 = 表示');
+
+            $table
+                ->integer('display_order')
+                ->default(1)
+                ->comment('表示順');
 
             $table
                 ->dateTime('created_at')
@@ -68,7 +76,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE exercise_m COMMENT '種目M'");
     }
 
     /**
@@ -78,6 +86,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_m');
+        Schema::dropIfExists('exercise_m');
     }
 };

@@ -15,24 +15,39 @@ return new class extends Migration
     public function up()
     {
 
-        if (Schema::hasTable('user_m')) {
+      
+        if (Schema::hasTable('gym_m')) {
             // テーブルが存在していればリターン
             return;
         }
 
-        Schema::create('user_m', function (Blueprint $table) {
+        Schema::create('gym_m', function (Blueprint $table) {
 
             $table
-                ->bigIncrements('user_id')
+                ->bigIncrements('gym_id')
                 ->comment('連番');
 
             $table
-                ->string('user_name', 100)                
-                ->comment('ユーザー名');               
+                ->unsignedBigInteger('user_id')                
+                ->comment('ユーザーID');
 
             $table
-                ->string('mailaddress', 1000)
-                ->comment('メールアドレス');
+                ->unsignedBigInteger('user_gym_id')                
+                ->comment('ユーザー毎ジムID');
+                
+            $table
+                ->string('gym_name',1000)       
+                ->comment('ジム名');
+                
+            $table
+                ->integer('display_flg')
+                ->default(1)
+                ->comment('表示フラグ:0 = 非表示 , 1 = 表示');
+
+            $table
+                ->integer('display_order')
+                ->default(1)
+                ->comment('表示順');
 
             $table
                 ->dateTime('created_at')
@@ -68,7 +83,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE gym_m COMMENT 'ジムM'");
     }
 
     /**
@@ -78,6 +93,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_m');
+        Schema::dropIfExists('gym_m');
     }
 };

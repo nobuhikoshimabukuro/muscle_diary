@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
+
 return new class extends Migration
 {
     /**
@@ -14,26 +15,38 @@ return new class extends Migration
      */
     public function up()
     {
-
-        if (Schema::hasTable('user_m')) {
+        if (Schema::hasTable('training_detail_t')) {
             // テーブルが存在していればリターン
             return;
         }
 
-        Schema::create('user_m', function (Blueprint $table) {
+        Schema::create('training_detail_t', function (Blueprint $table) {
 
             $table
-                ->bigIncrements('user_id')
+                ->bigIncrements('training_detail_id')
                 ->comment('連番');
 
             $table
-                ->string('user_name', 100)                
-                ->comment('ユーザー名');               
+                ->unsignedBigInteger('user_id')                
+                ->comment('ユーザーID');
 
             $table
-                ->string('mailaddress', 1000)
-                ->comment('メールアドレス');
+                ->unsignedBigInteger('training_count')                
+                ->comment('トレーニング回数:ユーザー毎');
+                
+            $table
+                ->integer('user_exercise_id')                
+                ->comment('種目ID:ユーザー毎');
 
+            $table
+                ->integer('reps')                
+                ->comment('回数');
+
+            $table
+                ->decimal('weight', 12, 4)                
+                ->comment('重さ(g)');
+
+        
             $table
                 ->dateTime('created_at')
                 ->nullable()
@@ -68,7 +81,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE training_detail_t COMMENT 'トレーニング詳細T'");
     }
 
     /**
@@ -78,6 +91,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_m');
+        Schema::dropIfExists('training_detail_t');
     }
 };
