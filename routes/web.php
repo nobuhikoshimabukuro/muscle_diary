@@ -24,3 +24,4 @@ Route::get('/', [main_controller::class, 'index'])->name('web.index');
 Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('dashboard.graph_test');
 
 Route::get('/weight_log', [weight_log_t_controller::class, 'index'])->name('web.weight_log.index');
+Route::post('/weight_log/save', [weight_log_t_controller::class, 'save'])->name('web.weight_log.save');

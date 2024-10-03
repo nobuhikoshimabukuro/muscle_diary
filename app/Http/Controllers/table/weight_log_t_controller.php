@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Original\common;
+use App\Original\db_common;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 // controller作成時ここまでコピー↑
@@ -39,24 +40,40 @@ class weight_log_t_controller extends Controller
     function save(Request $request)
     {       
       
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+
+        // セッション有無
+        if (!$user_info->login_status) {
+
+            $result_array = array(
+                "result" => "login_again",
+                "message" => "",
+            );
+            return response()->json(['result_array' => $result_array]);
+        }       
+
         try{
-            
-            $operator = 0;
+
+            $user_id = $user_info->user_id;
+
             // $table = weight_log_t_model::find($request->user_id);
             $table = weight_log_t_model::find(0);
 
             if (empty($table)) {
 
                 $table = new weight_log_t_model;
-                $table->created_by = $operator;
+                $table->user_id = $user_id;
+                $table->user_weight_log_id = db_common::get_user_max_value(1,2);
+                $table->created_by = $user_id;
                 $table->created_at = now();
-            }
 
+            }
 
             $table->weight = $request->weight;
             $table->measure_at = $request->measure_at;
 
-            $table->updated_by = $operator;
+            $table->updated_by = $user_id;
             $table->updated_at = now();
 
             // テーブル更新
@@ -73,13 +90,13 @@ class weight_log_t_controller extends Controller
             
             $result_array = [
                 "result" => "error",
-                "message" => "登録処理でエラーが発生しました。: " . $error_message,
+                "message" => "登録処理でエラーが発生しました[{$error_message}]"
             ];
-
            
         }
-        
-        return response()->json(['result_array' => $result_array]);     
+
+        return response()->json(['result_array' => $result_array]);
+
     }
 
 }
