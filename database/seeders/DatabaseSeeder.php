@@ -31,5 +31,26 @@ class DatabaseSeeder extends Seeder
             ]
 
         ]);
+
+        DB::table('training_history_t')->insert([            
+            
+            [                
+                'user_id' => 1,
+                'training_count' => 1,                
+                'user_gym_id' => 1,
+                'start_datetime' => "2024/10/04 16:58:32",
+                'end_datetime' => "2024/10/04 17:58:32"
+            ]
+            ,
+            [                
+                'user_id' => 1,
+                'training_count' => 2,                
+                'user_gym_id' => 1,
+                'start_datetime' => "2024/10/05 16:58:32",
+                'end_datetime' => null
+            ]
+
+        ]);
+
     }
 }
