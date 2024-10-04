@@ -27,14 +27,25 @@ use App\Http\Controllers\user\master\user_m_controller;
 
 Route::get('/', [main_controller::class, 'index'])->name('user.index');
 
-Route::get('/login', [login_controller::class, 'login'])->name('user.login');
-Route::post('/login_check', [login_controller::class, 'login_check'])->name('user.login_check');
+Route::get('/user/login', [login_controller::class, 'login'])->name('user.login');
+Route::post('/user/login_check', [login_controller::class, 'login_check'])->name('user.login_check');
+
+Route::get('/user/logout', [login_controller::class, 'logout'])->name('user.logout');
+
 
 
 Route::get('/training', [training_controller::class, 'index'])->name('user.training.index');
 
 
 Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('user.dashboard.graph_test');
+
+
+Route::get('/exercise_m', [exercise_m_controller::class, 'index'])->name('user.exercise_m.index');
+Route::post('/exercise_m/save', [exercise_m_controller::class, 'save'])->name('user.exercise_m.save');
+
+Route::get('/gym_m', [gym_m_controller::class, 'index'])->name('user.gym_m.index');
+Route::post('/gym_m/save', [gym_m_controller::class, 'save'])->name('user.gym_m.save');
+
 
 Route::get('/weight_log', [weight_log_t_controller::class, 'index'])->name('user.weight_log.index');
 Route::post('/weight_log/save', [weight_log_t_controller::class, 'save'])->name('user.weight_log.save');

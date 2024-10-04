@@ -65,4 +65,11 @@ class login_controller extends Controller
             return redirect(route('web.login'));            
         }
     }
+
+    // ログアウト
+    function logout(Request $request)
+    {
+        session()->flush();
+        return redirect(route('user.index'));        
+    }
 }
