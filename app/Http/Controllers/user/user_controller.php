@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\web;
+namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 // controller作成時ここまでコピー↑
 
-
 // Model ↓
 use App\Models\exercise_m_model;
 use App\Models\gym_m_model;
@@ -24,18 +23,7 @@ use App\Models\user_m_model;
 use App\Models\weight_log_t_model;
 // Model ↑
 
-class main_controller extends Controller
+class user_controller extends Controller
 {
-    function index(Request $request)
-    {       
-      
-
-        $demo = "";
-
-        return view('web/screen/top', compact('demo'));
-        
-     
-    }
-
-    
+    //
 }

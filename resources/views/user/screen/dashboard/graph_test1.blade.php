@@ -1,4 +1,4 @@
-@extends('web.common.layouts_app')
+@extends('user.common.layouts_app')
 
 
 @section('pagehead')

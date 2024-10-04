@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
+use App\Original\common;
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -16,6 +16,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        DB::table('user_m')->insert([            
+            
+            [                
+                'user_name' => '1111さん',
+                'mailaddress' => '1111@mail.com',                
+                'password' => common::encryption('1111')
+            ]
+            ,
+            [                
+                'user_name' => '2222さん',
+                'mailaddress' => '2222@mail.com',                
+                'password' => common::encryption('2222')
+            ]
+
+        ]);
     }
 }

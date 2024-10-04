@@ -1,4 +1,4 @@
-@extends('web.common.layouts_app')
+@extends('user.common.layouts_app')
 
 @section('pagehead')
 @section('title', 'weight_management')  
@@ -123,7 +123,7 @@
               <div class="col-12">
                   <div class="ajax-msg1"></div>                
               </div>
-              <form id='save-form' action="{{ route('web.weight_log.save') }}" method="post" enctype="multipart/form-data">
+              <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
 
                   <input type="hidden" name="time" value="">
                   <input type="hidden" name="weight" value="">
@@ -153,7 +153,7 @@
 </div>
 
 {{-- 再ログインモーダルの読み込み --}}
-@include('web/common/login_again_modal')
+@include('user/common/login_again_modal')
 
 @endsection
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\web;
+namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -30,7 +30,7 @@ class login_controller extends Controller
     function login(Request $request){
 
         $demo = "";
-        return view('web/screen/login', compact('demo'));       
+        return view('user/screen/login', compact('demo'));       
      
     }
 

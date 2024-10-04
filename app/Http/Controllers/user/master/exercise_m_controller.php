@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\table;
+namespace App\Http\Controllers\user\master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -25,14 +25,14 @@ use App\Models\user_m_model;
 use App\Models\weight_log_t_model;
 // Model ↑
 
-class weight_log_t_controller extends Controller
+class exercise_m_controller extends Controller
 {
     function index(Request $request)
     {       
       
         $demo = "";
 
-        return view('web/screen/weight_log/index', compact('demo'));
+        return view('user/screen/exercise_m/index', compact('demo'));
         
      
     }
@@ -57,31 +57,23 @@ class weight_log_t_controller extends Controller
         try{
 
             $user_id = $user_info->user_id;
-
-            // $table = weight_log_t_model::find($request->user_id);
-            $table = weight_log_t_model::find(0);
+            
+            $table = exercise_m_model::find($request->exercise_id);
 
             if (empty($table)) {
 
-                $table = new weight_log_t_model;
+                $table = new exercise_m_model;
                 $table->user_id = $user_id;
-                $table->user_weight_log_id = db_common::get_user_max_value($user_id,2);
+                $table->user_exercise_id = db_common::get_user_max_value($user_id,4);
                 $table->created_by = $user_id;
                 $table->created_at = now();
 
             }
 
-            $weight = $request->weight;
-            $weight_type = $request->weight_type;
-
-            if($weight_type == 2){
-                $weight = common::weight_conversion($weight,2);
-            }
-
-            $measure_at = $request->measure_at;            
-
-            $table->weight = $weight;
-            $table->measure_at = $measure_at;
+     
+            $table->exercise_name = $request->exercise_name;
+            $table->display_flg = $request->display_flg;
+            $table->display_order = $request->display_order;
 
             $table->updated_by = $user_id;
             $table->updated_at = now();
@@ -108,5 +100,4 @@ class weight_log_t_controller extends Controller
         return response()->json(['result_array' => $result_array]);
 
     }
-
 }

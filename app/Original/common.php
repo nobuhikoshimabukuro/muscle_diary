@@ -66,7 +66,8 @@ class common
 
         $login_status = false;
         $user_id = "";
-        $user_name = "";        
+        $user_name = "";
+        $mailaddress = "";
 
         if (session()->has('user_id')) {
             // セッションに'user_id'が存在する場合の処理
@@ -79,9 +80,11 @@ class common
 
                 $login_status = true;
                 $user_id = $user_m->user_id;
-                $user_name = $user_m->user_name;              
+                $user_name = $user_m->user_name;
+                $mailaddress = $user_m->mailaddress;
                 session()->put(['user_id' => $user_id]);
                 session()->put(['user_name' => $user_name]);
+                session()->put(['mailaddress' => $mailaddress]);
                 
             }
         }
@@ -130,6 +133,42 @@ class common
 
         return $return_value;
     
+    }
+
+     //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+    //※本番稼働後は暗号化キーは絶対に変更してはダメ
+    //※$encryption_key = 'muscle';
+    //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+    // 平文から暗号文
+    public static function encryption($plain_text)
+    {
+        $encryption_key = self::get_encryption_key();
+
+        $encrypted_text = openssl_encrypt($plain_text, 'AES-128-ECB', $encryption_key);
+
+        return $encrypted_text;
+    }
+    
+    // 暗号文から平文
+    public static function decryption($encrypted_text)
+    {
+        $encryption_key = self::get_encryption_key();
+      
+        $plain_text = openssl_decrypt($encrypted_text, 'AES-128-ECB', $encryption_key);
+       
+        return $plain_text;
+    }
+
+    //暗号キー取得処理
+    public static function get_encryption_key()
+    {
+        //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+        //※本番稼働後は暗号化キーは絶対に変更してはダメ
+        //※$encryption_key = 'muscle';
+        //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+        $encryption_key = 'muscle';       
+       
+        return $encryption_key;
     }
 
 }

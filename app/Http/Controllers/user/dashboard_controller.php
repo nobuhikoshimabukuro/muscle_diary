@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\web;
+namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class dashboard_controller extends Controller
       
         $demo = "";
 
-        return view('web/screen/dashboard/index', compact('demo'));
+        return view('user/screen/dashboard/index', compact('demo'));
        
      
     }
@@ -190,7 +190,7 @@ class dashboard_controller extends Controller
 
 
         
-            return view('web/screen/dashboard/graph_test1',
+            return view('user/screen/dashboard/graph_test1',
             compact('month_array'
                 , 'income_array'
                 , 'spending_array'
@@ -410,7 +410,7 @@ class dashboard_controller extends Controller
 
             
 
-            return view('web/screen/dashboard/graph_test2',
+            return view('user/screen/dashboard/graph_test2',
             compact('months'
                 , 'staff_info'
                 , 'department_info'

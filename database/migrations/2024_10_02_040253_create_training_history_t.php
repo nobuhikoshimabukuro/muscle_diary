@@ -32,11 +32,11 @@ return new class extends Migration
 
             $table
                 ->unsignedBigInteger('training_count')                
-                ->comment('トレーニング回数:ユーザー毎');
+                ->comment('トレーニング回数:ユーザーIDで絞込');
 
             $table
-                ->unsignedBigInteger('user_gym_id')                
-                ->comment('ジムID:ユーザー毎');
+                ->unsignedBigInteger('user_gym_id')
+                ->comment('ジムID:ユーザーIDで絞込');
 
             $table
                 ->dateTime('start_datetime')
