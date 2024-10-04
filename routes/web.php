@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // web
 use App\Http\Controllers\web\main_controller;
+use App\Http\Controllers\web\login_controller;
 use App\Http\Controllers\web\dashboard_controller;
 
 use App\Http\Controllers\table\weight_log_t_controller;
@@ -20,6 +21,9 @@ use App\Http\Controllers\table\weight_log_t_controller;
 */
 
 Route::get('/', [main_controller::class, 'index'])->name('web.index');
+
+Route::get('/login', [login_controller::class, 'login'])->name('web.login');
+Route::post('/login_check', [login_controller::class, 'login_check'])->name('web.login_check');
 
 Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('dashboard.graph_test');
 

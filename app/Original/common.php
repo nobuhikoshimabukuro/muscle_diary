@@ -22,6 +22,45 @@ use App\Models\user_m_model;
 
 class common
 {
+    public static function login_check($mailaddress, $password)
+    {
+        $return_array = [];
+
+        //処理1
+        //メールアドレスでユーザーマスタを参照
+        $user_m = user_m_model::where('mailaddress', $mailaddress)->first();
+        if (is_null($user_m)) {
+
+            $return_array = (object)[
+                "result" => false
+                ,"login_error_message" => "メアドがないよ"
+            ];
+
+            return $return_array;
+        }
+
+        //処理2
+        //メールアドレスとパスワードでユーザーマスタを参照                     
+        if (common::encryption($password) != $user_m->password) {
+
+            $return_array = (object)[
+                "result" => false
+                ,"login_error_message" => "パスワードが一致しないよ"
+            ];
+
+            return $return_array;
+        }
+
+        //処理3
+        //パスワード一致と判断しユーザー情報を返却用配列に格納する        
+        $return_array = (object)[
+            "result" => true
+            , "user_m" => $user_m
+        ];
+
+        return $return_array;
+    }
+
     public static function get_login_user_info()
     {
 
@@ -54,11 +93,40 @@ class common
         return $user_info;
     }
 
-    public static function test()
+    /**
+    * 重さ変換処理
+    * 1:kgからpound
+    * 2:poundからkg    
+    * ※小数点第4位まで
+    */
+    public static function weight_conversion($weight , $process_branch)
     {
-        // 初期値
-        $return_value = 0;      
         
+        // 1ポンド = 453.592グラム
+        $pound = 453.592;
+
+        // 初期値
+        $return_value = 0;
+
+        switch ($process_branch) {
+
+            // kgからpoundへの変換
+            case 1:        
+                // 1kg = 1000グラムなので、weightをグラムに変換してポンドにする
+                $return_value = round(($weight * 1000) / $pound, 4);
+                break;
+            
+            // poundからkgへの変換
+            case 2:
+                // 1ポンドをグラムに換算し、それをkgに変換
+                $return_value = round(($weight * $pound) / 1000, 4);
+                break;        
+
+            // どのケースにも一致しなかった場合
+            default:
+                // エラーハンドリング等が必要ならここで行う
+                break;
+        }
 
         return $return_value;
     

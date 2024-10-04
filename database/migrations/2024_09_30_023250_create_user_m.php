@@ -35,6 +35,10 @@ return new class extends Migration
                 ->comment('メールアドレス');
 
             $table
+                ->string('password', 10000)
+                ->comment('パスワード');
+
+            $table
                 ->dateTime('created_at')
                 ->nullable()
                 ->default(DB::raw('CURRENT_TIMESTAMP'))

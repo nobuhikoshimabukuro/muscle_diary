@@ -17,29 +17,30 @@
   background-color: rgb(208, 208, 241);        
 }
 
-.weight_type-select{
-        background-color: rgb(49, 49, 105);
-        color: white;
-        border: solid 1px rgb(208, 208, 241);
-        font-weight: bold;
-        animation: arrowrotate .1s;
-    }
+.weight_type-select
+{
+  background-color: rgb(49, 49, 105);
+  color: white;
+  border: solid 1px rgb(208, 208, 241);
+  font-weight: bold;
+  animation: arrowrotate .1s;
+}
 
-    @keyframes arrowrotate {
-        100% {
-            transform: rotate(6deg);
-        }
+@keyframes arrowrotate {
+    100% {
+        transform: rotate(6deg);
     }
+}
 
-.item-center{
-        display: flex;
-        justify-content: center; /*左右中央揃え*/
-        align-items: center;     /*上下中央揃え*/
-    }
+.item-center
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>
 
 <div class="mt-3 text-center container">
-
   
   <div class="contents row justify-content-center p-0">
 
@@ -62,10 +63,10 @@
 
             <input type="radio" 
               id="weight_type1"
-              name="weight_type"  
+              name="weight_type_radio"  
               value="1"
               data-value="1"
-              class="weight_type-checkbox d-none"
+              class="d-none"
             >
 
             <label id="weight_type-label2" 
@@ -74,10 +75,10 @@
             </label>
             <input type="radio" 
               id="weight_type2"
-              name="weight_type" 
+              name="weight_type_radio" 
               value="2"       
               data-value="2"                         
-              class="weight_type-checkbox d-none"
+              class="d-none"
             >
           </td>                
 
@@ -103,22 +104,10 @@
       </table>
 
     </div>
-    
-
-
-   
-
 
   </div> 
 
-
 </div>
-
-
-
-
-
-
 
 {{-- 登録更新モーダル --}}
 <div class="modal fade" id="save-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="save-modal-label" aria-hidden="true">
@@ -138,10 +127,11 @@
 
                   <input type="hidden" name="time" value="">
                   <input type="hidden" name="weight" value="">
+                  <input type="hidden" name="weight_type" value="">
       
                   <div class="form-group row">
                       <span id="display_time"></span>
-                      <span id="display_weight"></span>
+                      <span id="display_weight"></span>                      
                   </div>                  
               </form>
           </div>
@@ -152,16 +142,18 @@
               </div>
 
               <div class="col-6 m-0 p-0 text-end">
-                  <button type="button" id="save-button" class="btn btn-success">登録</button>
+                  <button type="button" id="save-button" class="btn btn-success">はい</button>
                   <button type="button" id="" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
               </div>
           </div>
       </div>
 
   </div>
+  
 </div>
 
-
+{{-- 再ログインモーダルの読み込み --}}
+@include('web/common/login_again_modal')
 
 @endsection
 
@@ -195,35 +187,101 @@
   updateTimer();
 
 
-  $(document).on("change", ".weight_type-checkbox", function (e) {
+  $(document).on("change", 'input[name="weight_type_radio"]', function (e) {
 
     var value = $(this).data('value');
-
-    // 反対の値を取得
-    var opposite = (value == 1) ? 2 : 1;
-
+    
     // クラスをリセット
     $(".weight_type-label").removeClass('weight_type-select');
 
     // 選択されたラジオボタンのラベルにクラスを追加
     $("#weight_type-label" + value).addClass('weight_type-select');
 
-      
+    var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
+    var weight_type = selectedRadio.value;
+
+    if(weight_type == 1){
+      $('.display_weight_type').text("kg");
+    }else{
+      $('.display_weight_type').text("lb");
+    }
 
   });
-
-
 
   $('#save-modal').on('show.bs.modal', function(e) {
 
     var time = document.getElementById('timer').textContent;
     var weight = 89.214;
 
+    var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
+    var weight_type = selectedRadio.value;
+
     $('input[name="time"]').val(time);
     $('input[name="weight"]').val(weight);
+    $('input[name="weight_type"]').val(weight_type);
+
+    var display_weight = weight;
+    if(weight_type == 1){
+      display_weight += "kg";
+    }else{
+      display_weight += "lb";
+    }
 
     $('#display_time').text(time);
-    $('#display_weight').text(weight);
+    $('#display_weight').text(display_weight); 
+
+  });
+
+  $(document).on("click", ".comment-button", function (e) {
+
+    e.preventDefault();
+
+    var $button = $(this);
+
+    button.prop("disabled", true);
+    document.body.style.cursor = 'wait';
+
+    let f = $('#save-form');
+
+    standby_processing(1,button,"#save-modal");
+
+    $.ajax({
+      url: f.prop('action'), // 送信先
+      type: f.prop('method'),
+      dataType: 'json',
+      data: f.serialize(),
+    })
+    .done(function (data, textStatus, jqXHR) {
+
+        standby_processing(2,button);
+
+        var result_array = data.result_array;
+
+        if(result_array["result"] == 'success'){
+
+            location.reload();
+
+        }else if(result_array["result"] == 'login_again'){
+            
+            // モーダルを表示する
+            $("#login_again-modal").modal('show');
+
+        } else{
+          
+          button.prop("disabled", false);          
+          document.body.style.cursor = 'auto';                               
+
+          var message = result_array["message"];
+
+        }    
+
+    })
+    .fail(function (data, textStatus, errorThrown) {
+
+      standby_processing(2,button);
+
+
+    });
 
   });
 

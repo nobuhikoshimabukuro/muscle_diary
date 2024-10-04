@@ -1,47 +1,16 @@
 
+// 引数は操作制御したいセレクタ
+function start_loader(target){
 
-function set_main_minheight() {
+  // 処理中のローディングcss
+  let Html = '<div class="loader-area">';
+  Html += '<div class="loader"></div>';
+  Html += '</div>'; 
 
-  const header1 = document.querySelector('.header1');
-  const header2 = document.querySelector('.header2');
-  const footer = document.querySelector('footer');
-  const main = document.getElementById('main');
-
-  // ヘッダーとフッターの高さを取得
-  const header1Height = header1.offsetHeight;
-  const header2Height = header2.offsetHeight;        
-  const footerHeight = footer.offsetHeight;
-
-  // 画面の高さを取得
-  const windowHeight = window.innerHeight;
-
-
-
-  // メインコンテンツのmin-heightを計算して設定
-  const mainMinHeight = windowHeight - header1Height - header2Height - footerHeight - getHeightWithMargin(main);
-  main.style.minHeight = mainMinHeight + 'px';
+  // 対象要素に作成したhtmlを追加
+  $(Html).appendTo(target); 
 
 }
-
-function getHeightWithMargin(element) {
-      const styles = window.getComputedStyle(element);
-      const margin = parseFloat(styles['marginTop']) + parseFloat(styles['marginBottom']);
-      return Math.ceil(margin);
-}
-
-
-  // 引数は操作制御したいセレクタ
-  function start_loader(target){
-
-    // 処理中のローディングcss
-    let Html = '<div class="loader-area">';
-    Html += '<div class="loader"></div>';
-    Html += '</div>'; 
-
-    // 対象要素に作成したhtmlを追加
-    $(Html).appendTo(target); 
-  
-  }
 
 
 
@@ -63,40 +32,46 @@ function end_loader() {
   });
 }
   
-  // 引数は操作制御したいセレクタ
-function start_processing(target){
 
-  // 処理中のローディングcss
-  let Html = '<div class="processing-area">';
-  Html += '<div class="processing"></div>';
-  Html += '</div>';
+function standby_processing(process_branch ,button ,target = 'body'){
 
-  // 対象要素に作成したhtmlを追加
-  $(Html).appendTo(target);
+  if(process_branch == 1){
+
+    button.prop("disabled", true);
+    document.body.style.cursor = 'wait';
+
+    // 処理中のローディングcss
+    let Html = '<div class="processing-area">';
+    Html += '<div class="processing"></div>';
+    Html += '</div>';
+
+    // 対象要素に作成したhtmlを追加
+    $(Html).appendTo(target);
 
 
+  }else{
+
+    button.prop("disabled", false);
+    document.body.style.cursor = 'auto';
+
+    var elements = document.querySelectorAll('.processing-area');
+
+    // 取得した要素を削除
+    elements.forEach(function(element) {
+      element.remove();
+    });
+  
+  
+    var elements = document.querySelectorAll('.processing');
+  
+    // 取得した要素を削除
+    elements.forEach(function(element) {
+      element.remove();
+    });
+
+  }
+  
 }
-
-function end_processing(){   
-
-
-  var elements = document.querySelectorAll('.processing-area');
-
-  // 取得した要素を削除
-  elements.forEach(function(element) {
-    element.remove();
-  });
-
-
-  var elements = document.querySelectorAll('.processing');
-
-  // 取得した要素を削除
-  elements.forEach(function(element) {
-    element.remove();
-  });
-
-}
-
 
 //画面遷移ボタン別タブ
 $(document).on("click", ".page-transition-button", function (e) {
@@ -116,3 +91,5 @@ $('.modal').on('show.bs.modal',function(e){
 $('.modal').on('hidden.bs.modal', function() {
   $('body').css('overflow-y', 'auto');
 });
+
+

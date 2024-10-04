@@ -50,6 +50,7 @@ class weight_log_t_controller extends Controller
                 "result" => "login_again",
                 "message" => "",
             );
+
             return response()->json(['result_array' => $result_array]);
         }       
 
@@ -64,14 +65,23 @@ class weight_log_t_controller extends Controller
 
                 $table = new weight_log_t_model;
                 $table->user_id = $user_id;
-                $table->user_weight_log_id = db_common::get_user_max_value(1,2);
+                $table->user_weight_log_id = db_common::get_user_max_value($user_id,2);
                 $table->created_by = $user_id;
                 $table->created_at = now();
 
             }
 
-            $table->weight = $request->weight;
-            $table->measure_at = $request->measure_at;
+            $weight = $request->weight;
+            $weight_type = $request->weight_type;
+
+            if($weight_type == 2){
+                $weight = common::weight_conversion($weight,2);
+            }
+
+            $measure_at = $request->measure_at;            
+
+            $table->weight = $weight;
+            $table->measure_at = $measure_at;
 
             $table->updated_by = $user_id;
             $table->updated_at = now();

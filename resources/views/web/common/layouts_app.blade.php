@@ -28,6 +28,11 @@
 </style>
 
 
+<div class="loader-area">
+    <div class="loader">
+    </div>
+</div>
+
 <body>
 
         
@@ -49,7 +54,11 @@
 <!--▽▽jQuery▽▽-->
 <script>
 
- 
+    $(function(){
+        setTimeout(function(){
+            end_loader();
+        }, 1000);
+    });
     
 
 </script>
