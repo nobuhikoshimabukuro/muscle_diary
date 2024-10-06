@@ -14,7 +14,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type='button' class='btn btn-success page-transition-button' data-url='{{ route('management.login') }}'>ログイン画面</button>
+                <button type='button' class='btn btn-success page-transition-button' data-url='{{ route('user.login') }}'>ログイン画面</button>
             </div>
 
         </div>

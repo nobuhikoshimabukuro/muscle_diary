@@ -67,6 +67,7 @@
               value="1"
               data-value="1"
               class="d-none"
+              checked
             >
 
             <label id="weight_type-label2" 
@@ -124,13 +125,13 @@
                   <div class="ajax-msg1"></div>                
               </div>
               <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
-
-                  <input type="hidden" name="time" value="">
+                @csrf
+                  <input type="hidden" name="measure_at" value="">
                   <input type="hidden" name="weight" value="">
                   <input type="hidden" name="weight_type" value="">
       
                   <div class="form-group row">
-                      <span id="display_time"></span>
+                      <span id="display_measure_at"></span>
                       <span id="display_weight"></span>                      
                   </div>                  
               </form>
@@ -210,13 +211,13 @@
 
   $('#save-modal').on('show.bs.modal', function(e) {
 
-    var time = document.getElementById('timer').textContent;
+    var measure_at = document.getElementById('timer').textContent;
     var weight = 89.214;
 
     var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
     var weight_type = selectedRadio.value;
 
-    $('input[name="time"]').val(time);
+    $('input[name="measure_at"]').val(measure_at);
     $('input[name="weight"]').val(weight);
     $('input[name="weight_type"]').val(weight_type);
 
@@ -227,16 +228,16 @@
       display_weight += "lb";
     }
 
-    $('#display_time').text(time);
+    $('#display_measure_at').text(measure_at);
     $('#display_weight').text(display_weight); 
 
   });
 
-  $(document).on("click", ".comment-button", function (e) {
+  $(document).on("click", "#save-button", function (e) {
 
     e.preventDefault();
 
-    var $button = $(this);
+    var button = $(this);
 
     button.prop("disabled", true);
     document.body.style.cursor = 'wait';
@@ -263,6 +264,7 @@
 
         }else if(result_array["result"] == 'login_again'){
             
+            $("#save-modal").modal('hide');
             // モーダルを表示する
             $("#login_again-modal").modal('show');
 
