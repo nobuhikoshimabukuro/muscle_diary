@@ -72,7 +72,7 @@ return new class extends Migration
 
         });
 
-        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーマスタ'");
+        DB::statement("ALTER TABLE user_m COMMENT 'ユーザーM'");
     }
 
     /**

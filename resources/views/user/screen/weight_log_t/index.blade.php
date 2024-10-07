@@ -1,7 +1,7 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'weight_management')  
+@section('title', 'weight management')  
 
 @endsection
 @section('content')
@@ -88,9 +88,9 @@
 
         <tr>
           <td class="text-center">
-            <input type="text" maxlength="3">
+            <input type="text" id="integer"class="text-end" maxlength="3">
             <span class="comma">.</span>
-            <input type="text" maxlength="3">
+            <input type="text" id="decimal" class="text-end" maxlength="3">
             <span class="display_weight_type">kg</span>
             
           </td>    
@@ -212,7 +212,7 @@
   $('#save-modal').on('show.bs.modal', function(e) {
 
     var measure_at = document.getElementById('timer').textContent;
-    var weight = 89.214;
+    var weight = $('#integer').val() + "." + $('#decimal').val();
 
     var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
     var weight_type = selectedRadio.value;

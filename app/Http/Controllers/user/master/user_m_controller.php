@@ -7,5 +7,5 @@ use Illuminate\Http\Request;
 
 class user_m_controller extends Controller
 {
-    //
+
 }

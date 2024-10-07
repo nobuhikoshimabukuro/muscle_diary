@@ -45,7 +45,7 @@ class login_controller extends Controller
 
         if ($result_array->result) {
             // ログイン成功時
-            $user_m = $result_array["user_m"];                
+            $user_m = $result_array->user_m;                
             session()->put(['user_id' => $user_m->user_id]);
 
             if (session()->has('after_login_url')) {
@@ -70,6 +70,6 @@ class login_controller extends Controller
     function logout(Request $request)
     {
         session()->flush();
-        return redirect(route('user.index'));        
+        return redirect(route('user.login'));        
     }
 }

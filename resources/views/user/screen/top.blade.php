@@ -1,7 +1,7 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'test')  
+@section('title', 'top')  
 
 @endsection
 @section('content')
@@ -17,7 +17,16 @@
 
   
   <div class="contents row p-0">
-    
+
+    <button class="btn btn-outline-success page-transition-button1"
+    data-url="{{route('user.logout')}}"
+    >ログアウト
+    </button>         
+
+    <button class="btn btn-outline-success page-transition-button1"
+    data-url="{{route('user.weight_log.index')}}"
+    >体重管理
+    </button>
 
   </div> 
 

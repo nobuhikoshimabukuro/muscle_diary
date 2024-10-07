@@ -73,8 +73,15 @@ function standby_processing(process_branch ,button ,target = 'body'){
   
 }
 
+$(document).on("click", ".page-transition-button1", function (e) {
+
+  var url = $(this).data('url');
+  window.location.href = url;
+
+});
+
 //画面遷移ボタン別タブ
-$(document).on("click", ".page-transition-button", function (e) {
+$(document).on("click", ".page-transition-button2", function (e) {
 
   var url = $(this).data('url');
   window.open(url, '_blank');

@@ -30,6 +30,14 @@ class weight_log_t_controller extends Controller
     function index(Request $request)
     {       
       
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+
+
         $demo = "";
 
         return view('user/screen/weight_log_t/index', compact('demo'));
@@ -39,9 +47,7 @@ class weight_log_t_controller extends Controller
 
     function save(Request $request)
     {       
-        // TESTのため
-
-        session()->put(['user_id' => 1]);
+        
         // セッション情報取得
         $user_info = common::get_login_user_info();
 
@@ -80,9 +86,7 @@ class weight_log_t_controller extends Controller
                 $weight = common::weight_conversion($weight,2);
             }
 
-            $measure_at = $request->measure_at;            
-
-            
+            $table->weight = $weight;            
             $table->measure_at = $request->measure_at;
 
             $table->updated_by = $user_id;

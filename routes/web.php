@@ -8,6 +8,7 @@ use App\Http\Controllers\user\login_controller;
 use App\Http\Controllers\user\dashboard_controller;
 use App\Http\Controllers\user\weight_log_t_controller;
 use App\Http\Controllers\user\training_controller;
+use App\Http\Controllers\user\user_controller;
 
 use App\Http\Controllers\user\master\exercise_m_controller;
 use App\Http\Controllers\user\master\gym_m_controller;
@@ -31,7 +32,7 @@ Route::get('/user/login', [login_controller::class, 'login'])->name('user.login'
 Route::post('/user/login_check', [login_controller::class, 'login_check'])->name('user.login_check');
 
 Route::get('/user/logout', [login_controller::class, 'logout'])->name('user.logout');
-
+Route::get('/user/top', [user_controller::class, 'top'])->name('user.top');
 
 
 Route::get('/training', [training_controller::class, 'index'])->name('user.training.index');
