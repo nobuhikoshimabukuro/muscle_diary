@@ -55,6 +55,12 @@ class training_controller extends Controller
             
         }
 
+
+        $training_info = (object)[
+            "new_data_flg" => $new_data_flg
+            ,"start_datetime" => $start_datetime
+            ,"end_datetime" => $end_datetime
+        ];
         
 
 
