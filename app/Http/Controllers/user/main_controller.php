@@ -30,7 +30,12 @@ class main_controller extends Controller
     {       
       
 
-        $demo = "";
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
 
         return view('user/screen/top', compact('demo'));
         

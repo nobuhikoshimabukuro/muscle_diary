@@ -16,7 +16,12 @@ use Illuminate\Support\Facades\Storage;
 
 
 // Model ↓
+use App\Models\exercise_m_model;
+use App\Models\gym_m_model;
+use App\Models\training_detail_t_model;
+use App\Models\training_history_t_model;
 use App\Models\user_m_model;
+use App\Models\weight_log_t_model;
 // Model ↑
 
 
@@ -82,9 +87,16 @@ class common
                 $user_id = $user_m->user_id;
                 $user_name = $user_m->user_name;
                 $mailaddress = $user_m->mailaddress;
+
+                //前回のトレーニング記録取得                
+                $training_history_t = training_history_t_model::where('user_id', $user_id)
+                ->orderBy('training_count', 'desc') // training_countの降順に並べる
+                ->first();
+
                 session()->put(['user_id' => $user_id]);
                 session()->put(['user_name' => $user_name]);
                 session()->put(['mailaddress' => $mailaddress]);
+                session()->put(['training_history_t' => $training_history_t]);
                 
             }
         }

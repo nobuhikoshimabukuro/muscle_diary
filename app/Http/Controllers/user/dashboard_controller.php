@@ -24,6 +24,13 @@ class dashboard_controller extends Controller
     function index(Request $request)
     {       
       
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+        
         $demo = "";
 
         return view('user/screen/dashboard/index', compact('demo'));

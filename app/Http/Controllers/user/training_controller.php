@@ -31,10 +31,10 @@ class training_controller extends Controller
         
         $user_id = 1;
 
-        // ユーザー毎の最大値training_countかつend_datetimeがnullのデータを取得
+        // ユーザー毎の最大値user_training_countかつend_datetimeがnullのデータを取得
         $training_history_t = training_history_t_model::where('user_id', $user_id)
         ->whereNull('end_datetime')  // end_datetime が null のものを取得
-        ->orderBy('training_count', 'desc')  // training_count の降順でソート
+        ->orderBy('user_training_count', 'desc')  // user_training_count の降順でソート
         ->withTrashed()
         ->first();
         

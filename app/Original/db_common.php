@@ -32,7 +32,7 @@ class db_common
     * ユーザー毎の最大値取得処理
     * 1:user_gym_id
     * 2:user_weight_log_id
-    * 3:training_count
+    * 3:user_training_count
     * 4:user_exercise_id    
     */
     public static function get_user_max_value($user_id , $process_branch)
@@ -56,8 +56,8 @@ class db_common
                 break;        
 
             case 3:                
-                // データが存在する場合は最大の training_count を取得
-                $max_value = training_history_t_model::where('user_id', $user_id)->withTrashed()->max('training_count');
+                // データが存在する場合は最大の user_training_count を取得
+                $max_value = training_history_t_model::where('user_id', $user_id)->withTrashed()->max('user_training_count');
                 break;
 
             case 4:                
