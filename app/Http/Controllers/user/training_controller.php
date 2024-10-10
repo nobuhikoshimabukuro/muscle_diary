@@ -29,16 +29,33 @@ class training_controller extends Controller
     function index(Request $request)
     {            
         
-        $user_id = 1;
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
 
-        // ユーザー毎の最大値user_training_countかつend_datetimeがnullのデータを取得
-        $training_history_t = training_history_t_model::where('user_id', $user_id)
-        ->whereNull('end_datetime')  // end_datetime が null のものを取得
-        ->orderBy('user_training_count', 'desc')  // user_training_count の降順でソート
-        ->withTrashed()
-        ->first();
+        $user_id = $user_info->user_id;
+        $training_history_t = session()->get('training_history_t');
+                
+        //新しいデータか確認する為
+        $new_data_flg = true;
+        $start_datetime = "";
+        $end_datetime = "";
+
+        if(!is_null($training_history_t)){
+
+            $start_datetime = $training_history_t->start_datetime ? $training_history_t->start_datetime : "";
+            $end_datetime = $training_history_t->end_datetime ? $training_history_t->end_datetime : "";
+
+            if($end_datetime == ""){
+                $new_data_flg = false;
+            }
+            
+        }
+
         
-        $start_datetime = $training_history_t ? $training_history_t->start_datetime : null;
 
 
         return view('user/screen/training/index', compact('start_datetime'));
