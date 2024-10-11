@@ -99,7 +99,7 @@ class common
                         ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
                 })
                 ->where('training_history_t.user_id', $user_id) // training_history_tのuser_idを使用
-                ->orderBy('training_history_t.training_count', 'desc') // training_countの降順に並べる
+                ->orderBy('training_history_t.user_training_count', 'desc') // training_countの降順に並べる
                 ->first();
 
 
