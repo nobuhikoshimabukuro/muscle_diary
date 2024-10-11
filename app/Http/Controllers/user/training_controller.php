@@ -29,6 +29,9 @@ class training_controller extends Controller
     function index(Request $request)
     {            
         
+
+      
+
         // セッション情報取得
         $user_info = common::get_login_user_info();
         // セッション有無
@@ -66,6 +69,22 @@ class training_controller extends Controller
 
         return view('user/screen/training/index', compact('training_info'));       
      
+    }
+
+    function test($user_id , $hanni)
+    {
+
+        $training_history_t = training_history_t_model::select(
+            'training_history_id',
+            'start_datetime',
+            'end_datetime',
+            DB::raw('TIMEDIFF(end_datetime, start_datetime) as duration')
+        )
+        ->where('training_history_id', 4)
+        ->first();
+
+        $duration = $training_history_t->duration;
+
     }
 
     function save(Request $request)
