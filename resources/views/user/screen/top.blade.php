@@ -29,6 +29,11 @@
     </button>
 
     <button class="btn btn-outline-success page-transition-button1"
+    data-url="{{route('user.gym_m.index')}}"
+    >ジム管理
+    </button>
+
+    <button class="btn btn-outline-success page-transition-button1"
     data-url="{{route('user.training.index')}}"
     >トレーニング管理
     </button>

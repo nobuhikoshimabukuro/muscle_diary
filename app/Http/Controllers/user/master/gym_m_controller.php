@@ -30,9 +30,21 @@ class gym_m_controller extends Controller
     function index(Request $request)
     {       
       
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+
+        $user_id = $user_info->user_id;
+
+        $gym_m = gym_m_model::where('user_id', $user_id)
+        ->get();
+
         $demo = "";
 
-        return view('user/screen/gym_m/index', compact('demo'));
+        return view('user/screen/gym_m/index', compact('gym_m'));
         
      
     }
@@ -58,8 +70,10 @@ class gym_m_controller extends Controller
 
             $user_id = $user_info->user_id;
 
-            // $table = weight_log_t_model::find($request->user_id);
-            $table = gym_m_model::find($request->gym_id);
+            
+            $table = gym_m_model::where('gym_id', $request->gym_id)
+                   ->where('user_id', $user_id)
+                   ->first();
 
             if (empty($table)) {
 
@@ -73,7 +87,8 @@ class gym_m_controller extends Controller
 
      
             $table->gym_name = $request->gym_name;
-            $table->display_flg = $request->display_flg;
+            // $table->display_flg = $request->display_flg;
+            $table->display_flg = 1;
             $table->display_order = $request->display_order;
 
             $table->updated_by = $user_id;

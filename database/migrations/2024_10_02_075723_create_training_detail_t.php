@@ -39,11 +39,22 @@ return new class extends Migration
                 ->comment('種目ID:ユーザー毎');
 
             $table
+                ->integer('type')                
+                ->comment('時間or回数:1 = 時間 , 2 = 回数');
+
+            $table
+                ->time('time')                
+                ->nullable()
+                ->comment('時間:hh:mm:ss');
+
+            $table
                 ->integer('reps')                
+                ->nullable()
                 ->comment('回数');
 
             $table
                 ->decimal('weight', 12, 4)                
+                ->nullable()
                 ->comment('重さ(g)');
 
         

@@ -122,7 +122,7 @@ class training_controller extends Controller
                     $user_training_count = $training_history_t->user_training_count + 1;
                 }                             
             }
-           
+            
             $table = training_history_t_model::find($training_history_id);
 
             if (empty($table)) {

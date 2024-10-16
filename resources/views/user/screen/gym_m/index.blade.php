@@ -14,7 +14,87 @@
   
   <div class="contents row justify-content-center p-0">
 
+    <button type="button" class="btn btn-success" data-user_gym_id="0" data-bs-toggle='modal' data-bs-target='#save-modal'>新規登録</button>
+
+
     
+
+      <div class="col-12">
+
+          <div id="" class="data-display-area m-0">
+
+              <table id='' class='data-display-table'>
+
+                  @php
+                      $text_class_kinds = ["text-start" , "text-center" , "text-end"];
+
+                      $text_class = [];
+                      $text_class []= $text_class_kinds[1];
+                      $text_class []= $text_class_kinds[0];
+                      $text_class []= $text_class_kinds[1];
+                      $text_class []= $text_class_kinds[0];
+                      $text_class []= $text_class_kinds[2];
+
+                      $text_class_index = 0;
+                  @endphp
+                  <tr>
+                      <th class="{{$text_class[$text_class_index++]}}">ID</th>
+                      <th class="{{$text_class[$text_class_index++]}}">ジム名</th>
+                      <th class="{{$text_class[$text_class_index++]}}">表示</th>
+                      <th class="{{$text_class[$text_class_index++]}}">表示順</th>
+                      <th class="{{$text_class[$text_class_index++]}}"></th>
+                  </tr>
+
+                  @foreach ($gym_m as $item)
+
+                  @php
+                      $text_class_index = 0;
+                  @endphp
+
+                  <tr>
+                      {{-- ユーザー毎ジムID --}}
+                      <td class="{{$text_class[$text_class_index++]}}">
+                          {{$item->user_gym_id}}
+                      </td>
+
+                      {{-- ジム名 --}}
+                      <td class="{{$text_class[$text_class_index++]}}">
+                          {{$item->gym_name}}
+                      </td>
+
+                      {{-- 表示フラグ --}}
+                      <td class="{{$text_class[$text_class_index++]}}">
+                          {{$item->display_flg}}
+                      </td>
+
+                      {{-- 表示順 --}}
+                      <td class="{{$text_class[$text_class_index++]}}">
+                          {{$item->display_order}}
+                      </td>
+
+                      <td class="{{$text_class[$text_class_index++]}}">
+                          <button type="button" class="btn btn-outline-secondary"                               
+                              data-user_gym_id="{{$item->user_gym_id}}" 
+                              data-gym_name="{{$item->gym_name}}" 
+                              data-display_flg="{{$item->display_flg}}"                                  
+                              data-display_order="{{$item->display_order}}"
+                              data-bs-toggle='modal' data-bs-target='#save-modal'
+                          >編集</button>
+                      </td>
+
+                  </tr>
+
+                  @endforeach
+
+              </table>
+
+          </div>
+
+
+      </div>
+
+  
+
 
   </div> 
 
@@ -34,16 +114,12 @@
               <div class="col-12">
                   <div class="ajax-msg1"></div>                
               </div>
-              <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
-
-                  <input type="hidden" name="time" value="">
-                  <input type="hidden" name="weight" value="">
-                  <input type="hidden" name="weight_type" value="">
-      
-                  <div class="form-group row">
-                      <span id="display_time"></span>
-                      <span id="display_weight"></span>                      
-                  </div>                  
+              <form id='save-form' action="{{ route('user.gym_m.save') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                  <input type="hidden" name="user_gym_id" value="">
+                  <input type="text" name="gym_name" value="">
+                  <input type="text" name="display_order" value="">     
+                        
               </form>
           </div>
 
@@ -53,7 +129,7 @@
               </div>
 
               <div class="col-6 m-0 p-0 text-end">
-                  <button type="button" id="save-button" class="btn btn-success">はい</button>
+                  <button type="button" id="save-button" class="btn btn-success">登録</button>
                   <button type="button" id="" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
               </div>
           </div>
@@ -75,36 +151,20 @@
 
   $('#save-modal').on('show.bs.modal', function(e) {
 
-    var time = document.getElementById('timer').textContent;
-    var weight = 89.214;
+    // イベント発生元
+    let evCon = $(e.relatedTarget);
 
-    var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
-    var weight_type = selectedRadio.value;
-
-    $('input[name="time"]').val(time);
-    $('input[name="weight"]').val(weight);
-    $('input[name="weight_type"]').val(weight_type);
-
-    var display_weight = weight;
-    if(weight_type == 1){
-      display_weight += "kg";
-    }else{
-      display_weight += "lb";
-    }
-
-    $('#display_time').text(time);
-    $('#display_weight').text(display_weight); 
+    let user_gym_id = evCon.data('user_gym_id');
+   
+    $('input[name="user_gym_id"]').val(user_gym_id);
 
   });
 
-  $(document).on("click", ".comment-button", function (e) {
+  $(document).on("click", "#save-button", function (e) {
 
     e.preventDefault();
 
-    var $button = $(this);
-
-    button.prop("disabled", true);
-    document.body.style.cursor = 'wait';
+    var button = $(this);
 
     let f = $('#save-form');
 
