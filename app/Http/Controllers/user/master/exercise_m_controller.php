@@ -30,9 +30,21 @@ class exercise_m_controller extends Controller
     function index(Request $request)
     {       
       
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+
+        $user_id = $user_info->user_id;
+
+        $exercise_m = exercise_m_model::where('user_id', $user_id)
+        ->get();
+
         $demo = "";
 
-        return view('user/screen/exercise_m/index', compact('demo'));
+        return view('user/screen/exercise_m/index', compact('exercise_m'));
         
      
     }
@@ -58,7 +70,10 @@ class exercise_m_controller extends Controller
 
             $user_id = $user_info->user_id;
             
-            $table = exercise_m_model::find($request->exercise_id);
+            $table = exercise_m_model::where('user_exercise_id', $request->user_exercise_id)
+            ->where('user_id', $user_id)
+            ->first();
+
 
             if (empty($table)) {
 

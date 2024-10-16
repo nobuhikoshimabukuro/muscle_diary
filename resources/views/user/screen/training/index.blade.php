@@ -18,6 +18,7 @@
 @php
 
   $new_data_flg = $training_info->new_data_flg;
+  $gym_name = $training_info->gym_name;
   $start_datetime = $training_info->start_datetime;
   $end_datetime = $training_info->end_datetime;
 
@@ -64,21 +65,49 @@
 
         <tr>
           <td>
-            <button class="save-button btn btn-outline-success @if(!$new_data_flg) impossible @endif">開始</button>
-            <button class="save-button btn btn-outline-danger @if($new_data_flg) impossible @endif">終了</button>
+            @if($new_data_flg) 
+              <select id="user_gym_id" name="user_gym_id" class="form-control">
+
+                <option value="0">未選択</option>                  
+                @foreach ($gym_m as $info1)
+              
+                  <option value="{{$info1->user_gym_id}}"                                        
+                  >{{$info1->gym_name}}</option>                  
+                @endforeach
+              </select>
+
+              <button class="save-button btn btn-outline-success">開始</button>
+            
+            @else
+              {{$gym_name}}
+              <button class="save-button btn btn-outline-danger">終了</button>
+            @endif
+            
+            
           </td>
         </tr>       
       </table>
 
     </div>
 
+
+    @if(!$new_data_flg) 
+      <div class="card col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">
+
+        <select id="user_exercise_id" name="user_exercise_id" class="form-control">
+          @foreach ($exercise_m as $info2)
+                
+            <option value="{{$info2->user_exercise_id}}"                                        
+            >{{$info2->exercise_name}}</option>                  
+          @endforeach
+        </select>
+
+      </div> 
+    @endif
+
   </div> 
 
-  <form id='save-form' action="{{ route('user.training.save') }}" method="post" enctype="multipart/form-data">
-    @csrf
-      <input type="hidden" name="user_gym_id" value="">
-      <input type="hidden" name="set_datetime" value="">       
-  </form>
+
 
 </div>
 
@@ -93,7 +122,7 @@
 <script type="text/javascript">
 
   // 開始時刻をISO 8601形式に変換
-  const start_datetime = '{{ $start_datetime }}'.replace(' ', 'T');
+  const start_datetime = '{{ $start_datetime }}'.replace(/\//g, '-').replace(' ', 'T');
 
   // datetime_flg の初期値を true に設定
   var datetime_flg = true;
@@ -165,9 +194,8 @@
   $(document).on("click", ".save-button", function (e) {
 
     var set_datetime = document.getElementById('timer').textContent;
-    $('input[name="set_datetime"]').val(set_datetime);
-    $('input[name="user_gym_id"]').val(1);
-
+    var user_gym_id = $('#user_gym_id').val();
+    
     e.preventDefault();
 
     var button = $(this);
@@ -175,16 +203,17 @@
     button.prop("disabled", true);
     document.body.style.cursor = 'wait';
 
-    let f = $('#save-form');
+    var url = "{{ route('user.training_history.save') }}";    
 
-    standby_processing(1,button,"#save-modal");
+    standby_processing(1,button,"body");
 
     $.ajax({
-      url: f.prop('action'), // 送信先
-      type: f.prop('method'),
-      dataType: 'json',
-      data: f.serialize(),
-    })
+            url: url, // 送信先
+            type: 'post',
+            dataType: 'json',
+            data: { 'set_datetime' : set_datetime, 'user_gym_id' : user_gym_id},
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+	    })
     .done(function (data, textStatus, jqXHR) {
 
         standby_processing(2,button);
@@ -216,6 +245,64 @@
 
 
     });
+
+  });
+
+
+  $(document).on("click", ".save-button", function (e) {
+
+  
+  var user_exercise_id = $('#user_exercise_id').val();
+
+  e.preventDefault();
+
+  var button = $(this);
+
+  button.prop("disabled", true);
+  document.body.style.cursor = 'wait';
+
+  var url = "{{ route('user.training_detail.save') }}";   
+
+  standby_processing(1,button,"body");
+
+  $.ajax({
+          url: url, // 送信先
+          type: 'post',
+          dataType: 'json',
+          data: { 'user_exercise_id' : user_exercise_id},
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+    })
+  .done(function (data, textStatus, jqXHR) {
+
+      standby_processing(2,button);
+
+      var result_array = data.result_array;
+
+      if(result_array["result"] == 'success'){
+
+          location.reload();
+
+      }else if(result_array["result"] == 'login_again'){
+                    
+        // モーダルを表示する
+        $("#login_again-modal").modal('show');
+
+      } else{
+        
+        button.prop("disabled", false);          
+        document.body.style.cursor = 'auto';                               
+
+        var message = result_array["message"];
+
+      }    
+
+  })
+  .fail(function (data, textStatus, errorThrown) {
+
+    standby_processing(2,button);
+
+
+  });
 
   });
 

@@ -138,19 +138,29 @@ a{
 
 
 
-  .data-display-table {
-    width: 100%;
-    text-align: center;
-    border-collapse: collapse;
-    border-spacing: 0;
-   }
-   .data-display-table th {
-    padding: 10px;
-    border-bottom: solid 4px #778ca3;
-    color: #778ca3;
-    white-space: nowrap;  /* 文字の折り返しを禁止 */
-   }
-   .data-display-table td {
-    padding: 10px;
-    border-bottom: solid 1px #778ca3;
-   }
+.data-display-table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  border-spacing: 0;
+  }
+  .data-display-table th {
+  padding: 10px;
+  border-bottom: solid 4px #778ca3;
+  color: #778ca3;
+  white-space: nowrap;  /* 文字の折り返しを禁止 */
+  }
+  .data-display-table td {
+  padding: 10px;
+  border-bottom: solid 1px #778ca3;
+  }
+
+
+   
+.input-table{
+  width: 100%;
+}
+
+.input-table td{
+  padding: 3px;
+}

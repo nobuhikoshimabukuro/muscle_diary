@@ -34,6 +34,11 @@
     </button>
 
     <button class="btn btn-outline-success page-transition-button1"
+    data-url="{{route('user.exercise_m.index')}}"
+    >種目管理
+    </button>
+
+    <button class="btn btn-outline-success page-transition-button1"
     data-url="{{route('user.training.index')}}"
     >トレーニング管理
     </button>

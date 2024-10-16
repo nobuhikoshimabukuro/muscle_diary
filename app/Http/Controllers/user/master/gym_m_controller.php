@@ -71,7 +71,7 @@ class gym_m_controller extends Controller
             $user_id = $user_info->user_id;
 
             
-            $table = gym_m_model::where('gym_id', $request->gym_id)
+            $table = gym_m_model::where('user_gym_id', $request->user_gym_id)
                    ->where('user_id', $user_id)
                    ->first();
 
@@ -87,8 +87,7 @@ class gym_m_controller extends Controller
 
      
             $table->gym_name = $request->gym_name;
-            // $table->display_flg = $request->display_flg;
-            $table->display_flg = 1;
+            $table->display_flg = $request->display_flg;            
             $table->display_order = $request->display_order;
 
             $table->updated_by = $user_id;

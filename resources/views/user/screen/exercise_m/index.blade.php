@@ -1,12 +1,13 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'gym_setting')  
+@section('title', 'exercise_setting')  
 
 @endsection
 @section('content')
 
 <style>
+
 
 
 </style>
@@ -15,7 +16,7 @@
   
   <div class="contents row justify-content-center p-0">
 
-    <button type="button" class="btn btn-success" data-user_gym_id="0" data-bs-toggle='modal' data-bs-target='#save-modal'>新規登録</button>
+    <button type="button" class="btn btn-success" data-user_exercise_id="0" data-bs-toggle='modal' data-bs-target='#save-modal'>新規登録</button>
 
 
     
@@ -40,27 +41,27 @@
                   @endphp
                   <tr>
                       <th class="{{$text_class[$text_class_index++]}}">ID</th>
-                      <th class="{{$text_class[$text_class_index++]}}">ジム名</th>
+                      <th class="{{$text_class[$text_class_index++]}}">種目名</th>
                       <th class="{{$text_class[$text_class_index++]}}">利用</th>
                       <th class="{{$text_class[$text_class_index++]}}">表示順</th>
                       <th class="{{$text_class[$text_class_index++]}}"></th>
                   </tr>
 
-                  @foreach ($gym_m as $item)
+                  @foreach ($exercise_m as $item)
 
                     @php
                         $text_class_index = 0;
                     @endphp
 
                     <tr>
-                        {{-- ユーザー毎ジムID --}}
+                        {{-- ユーザー毎種目ID --}}
                         <td class="{{$text_class[$text_class_index++]}}">
-                            {{$item->user_gym_id}}
+                            {{$item->user_exercise_id}}
                         </td>
 
-                        {{-- ジム名 --}}
+                        {{-- 種目名 --}}
                         <td class="{{$text_class[$text_class_index++]}}">
-                            {{$item->gym_name}}
+                            {{$item->exercise_name}}
                         </td>
 
                         {{-- 表示フラグ --}}
@@ -79,8 +80,8 @@
 
                         <td class="{{$text_class[$text_class_index++]}}">
                             <button type="button" class="btn btn-outline-secondary"                               
-                                data-user_gym_id="{{$item->user_gym_id}}" 
-                                data-gym_name="{{$item->gym_name}}" 
+                                data-user_exercise_id="{{$item->user_exercise_id}}" 
+                                data-exercise_name="{{$item->exercise_name}}" 
                                 data-display_flg="{{$item->display_flg}}"                                  
                                 data-display_order="{{$item->display_order}}"
                                 data-bs-toggle='modal' data-bs-target='#save-modal'
@@ -119,21 +120,21 @@
               <div class="col-12">
                   <div class="ajax-msg1"></div>                
               </div>
-              <form id='save-form' action="{{ route('user.gym_m.save') }}" method="post" enctype="multipart/form-data">
+              <form id='save-form' action="{{ route('user.exercise_m.save') }}" method="post" enctype="multipart/form-data">
                 @csrf
-                  <input type="hidden" name="user_gym_id" value="">                 
+                  <input type="hidden" name="user_exercise_id" value="">                 
                   
                   <table class="input-table">
 
                     <tr>
                       <th colspan="2">
-                        <label for="gym_name">ジム名</label>
+                        <label for="exercise_name">種目名</label>
                       </th>                    
                     </tr>
 
                     <tr>               
                       <td colspan="2">
-                        <input type="text" id="gym_name" name="gym_name" class="form-control" value="">
+                        <input type="text" id="exercise_name" name="exercise_name" class="form-control" value="">
                       </td>
                     </tr>
 
@@ -200,28 +201,28 @@
     // イベント発生元
     let evCon = $(e.relatedTarget);
 
-    $('input[name="user_gym_id"]').val("");
-    $('input[name="gym_name"]').val("");
+    $('input[name="user_exercise_id"]').val("");
+    $('input[name="exercise_name"]').val("");
     $('input[name="display_order"]').val("");
     $('input[name="display_flg"][value="1"]').prop('checked', true);
 
-    var user_gym_id = evCon.data('user_gym_id');      
+    var user_exercise_id = evCon.data('user_exercise_id');      
 
-    if(user_gym_id != 0){
+    if(user_exercise_id != 0){
       
-      var gym_name = evCon.data('gym_name');
+      var exercise_name = evCon.data('exercise_name');
       var display_order = evCon.data('display_order');
       var display_flg = evCon.data('display_flg');
 
       
-      $('input[name="gym_name"]').val(gym_name);
+      $('input[name="exercise_name"]').val(exercise_name);
       $('input[name="display_order"]').val(display_order);
 
       $('input[name="display_flg"][value="' + display_flg + '"]').prop('checked', true);
 
     }
 
-    $('input[name="user_gym_id"]').val(user_gym_id);
+    $('input[name="user_exercise_id"]').val(user_exercise_id);
 
 
   });

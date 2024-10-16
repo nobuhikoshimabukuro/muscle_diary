@@ -28,9 +28,6 @@ class training_controller extends Controller
 {
     function index(Request $request)
     {            
-        
-
-      
 
         // セッション情報取得
         $user_info = common::get_login_user_info();
@@ -44,13 +41,25 @@ class training_controller extends Controller
                 
         //新しいデータか確認する為
         $new_data_flg = true;
+        $gym_name = "";
         $start_datetime = "";
         $end_datetime = "";
 
         if(!is_null($training_history_t)){
 
-            $start_datetime = $training_history_t->start_datetime ? $training_history_t->start_datetime : "";
-            $end_datetime = $training_history_t->end_datetime ? $training_history_t->end_datetime : "";
+            $gym_name = $training_history_t->gym_name ? $training_history_t->gym_name : "";
+
+            // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
+            $start_datetime = $training_history_t->start_datetime
+            ? Carbon::parse($training_history_t->start_datetime)->format('Y/m/d H:i:s')
+            : "";
+
+            $end_datetime = $training_history_t->end_datetime
+            ? Carbon::parse($training_history_t->end_datetime)->format('Y/m/d H:i:s')
+            : "";
+
+            // $start_datetime = $training_history_t->start_datetime ? $training_history_t->start_datetime : "";
+            // $end_datetime = $training_history_t->end_datetime ? $training_history_t->end_datetime : "";
 
             if($end_datetime == ""){
                 $new_data_flg = false;
@@ -61,13 +70,19 @@ class training_controller extends Controller
 
         $training_info = (object)[
             "new_data_flg" => $new_data_flg
+            ,"gym_name" => $gym_name
             ,"start_datetime" => $start_datetime
             ,"end_datetime" => $end_datetime
         ];
         
 
+        $gym_m = gym_m_model::where('user_id', $user_id)
+        ->get();
 
-        return view('user/screen/training/index', compact('training_info'));       
+        $exercise_m = exercise_m_model::where('user_id', $user_id)
+        ->get();
+
+        return view('user/screen/training/index', compact('training_info','gym_m','exercise_m'));       
      
     }
 
@@ -87,7 +102,7 @@ class training_controller extends Controller
 
     }
 
-    function save(Request $request)
+    function training_history_save(Request $request)
     {       
         
         // セッション情報取得
@@ -111,25 +126,30 @@ class training_controller extends Controller
             
 
             $training_history_t = session()->get('training_history_t');                            
-            $training_history_id = 0;
+            
             $user_training_count = 1;
 
             if(!is_null($training_history_t)){    
 
                 if(is_null($training_history_t->end_datetime)){
-                    $training_history_id = $training_history_t->training_history_id;
+                    $user_training_count = $training_history_t->user_training_count;
                 }else{
                     $user_training_count = $training_history_t->user_training_count + 1;
                 }                             
             }
             
-            $table = training_history_t_model::find($training_history_id);
+            $table = training_history_t_model::where('user_training_count', $user_training_count)
+            ->where('user_id', $user_id)
+            ->first();
+
+            
 
             if (empty($table)) {
 
                 $table = new training_history_t_model;
                 $table->user_id = $user_id;
                 $table->user_training_count = $user_training_count;
+                $table->user_gym_id = $request->user_gym_id;
                 
                 $table->start_datetime = $request->set_datetime;
                 $table->created_by = $user_id;
@@ -139,7 +159,90 @@ class training_controller extends Controller
                 $table->end_datetime = $request->set_datetime;                
             }
 
-            $table->user_gym_id = $request->user_gym_id;
+            
+
+            $table->updated_by = $user_id;
+            $table->updated_at = now();
+
+            // テーブル更新
+            $table->save();
+
+            $result_array = array(
+                "result" => "success",
+                "message" => "",
+            );
+
+        }catch(Exception $e){
+            
+            $error_message = $e->getMessage();
+            
+            $result_array = [
+                "result" => "error",
+                "message" => "登録処理でエラーが発生しました[{$error_message}]"
+            ];
+           
+        }
+
+        return response()->json(['result_array' => $result_array]);
+
+    }
+
+
+    function training_details_save(Request $request)
+    {       
+        
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+
+        // セッション有無
+        if (!$user_info->login_status) {
+
+            $result_array = array(
+                "result" => "login_again",
+                "message" => "",
+            );
+
+            return response()->json(['result_array' => $result_array]);
+        }       
+
+        try{
+
+            $user_id = $user_info->user_id;
+
+            
+
+            $training_history_t = session()->get('training_history_t');                            
+            
+            $user_training_count = 1;
+
+            if(!is_null($training_history_t)){    
+
+                $user_training_count = $training_history_t->user_training_count;         
+            }
+            
+            $table = training_detail_t_model::where('user_training_count', $user_training_count)
+            ->where('user_training_detail_id', $training_history_t->user_training_detail_id)
+            ->where('user_id', $user_id)
+            ->first();
+
+            
+
+            if (empty($table)) {
+
+                $table = new training_detail_t_model;
+                $table->user_id = $user_id;
+                $table->user_training_count = $user_training_count;
+                $table->type = $request->type;
+                
+                $table->start_datetime = $request->set_datetime;
+                $table->created_by = $user_id;
+                $table->created_at = now();
+
+            }else{
+                $table->end_datetime = $request->set_datetime;                
+            }
+
+            
 
             $table->updated_by = $user_id;
             $table->updated_at = now();

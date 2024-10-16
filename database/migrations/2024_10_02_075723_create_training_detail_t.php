@@ -33,6 +33,10 @@ return new class extends Migration
             $table
                 ->unsignedBigInteger('user_training_count')                
                 ->comment('トレーニング回数:ユーザー毎');
+
+            $table
+                ->unsignedBigInteger('user_training_detail_id')                
+                ->comment('詳細ID:トレーニング回数毎');
                 
             $table
                 ->integer('user_exercise_id')                

@@ -13,6 +13,7 @@
     <link href="{{ asset('css/swiper-bundle.min.css') . $system_version }}" rel="stylesheet">
     <link href="{{ asset('css/header.css') . $system_version }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') . $system_version }}" rel="stylesheet">
+    <link href="{{ asset('css/width.css') . $system_version }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">  {{-- CSRFトークン --}}
 
     

@@ -37,6 +37,8 @@ class main_controller extends Controller
             return redirect(route('user.login'));
         }
 
+        $demo = "";
+
         return view('user/screen/top', compact('demo'));
         
      
