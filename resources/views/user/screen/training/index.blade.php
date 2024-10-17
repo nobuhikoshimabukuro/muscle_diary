@@ -76,11 +76,11 @@
                 @endforeach
               </select>
 
-              <button class="save-button btn btn-outline-success">開始</button>
+              <button class="training_history_t-save-button btn btn-outline-success">開始</button>
             
             @else
               {{$gym_name}}
-              <button class="save-button btn btn-outline-danger">終了</button>
+              <button class="training_history_t-save-button btn btn-outline-danger">終了</button>
             @endif
             
             
@@ -102,6 +102,7 @@
           @endforeach
         </select>
 
+        <button class="training_detail_t-save-button btn btn-outline-danger">記録</button>
       </div> 
     @endif
 
@@ -190,8 +191,8 @@
   // 初期表示
   updateTimer();
 
-
-  $(document).on("click", ".save-button", function (e) {
+  //トレーニング履歴ボタン
+  $(document).on("click", ".training_history_t-save-button", function (e) {
 
     var set_datetime = document.getElementById('timer').textContent;
     var user_gym_id = $('#user_gym_id').val();
@@ -249,10 +250,15 @@
   });
 
 
-  $(document).on("click", ".save-button", function (e) {
+  //トレーニング詳細ボタン
+  $(document).on("click", ".training_detail_t-save-button", function (e) {
 
-  
+  var user_training_detail_id = 0;
   var user_exercise_id = $('#user_exercise_id').val();
+  var type = 2;
+  var time = "00:01:15";
+  var reps = 10;
+  var weight = 10;
 
   e.preventDefault();
 
@@ -269,7 +275,14 @@
           url: url, // 送信先
           type: 'post',
           dataType: 'json',
-          data: { 'user_exercise_id' : user_exercise_id},
+          data: { 
+              'user_training_detail_id' : user_training_detail_id,
+              'user_exercise_id' : user_exercise_id,
+              'type' : type,
+              'time' : time,
+              'reps' : reps,
+              'weight' : weight
+          },
           headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
     })
   .done(function (data, textStatus, jqXHR) {
