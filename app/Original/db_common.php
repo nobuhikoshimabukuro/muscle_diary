@@ -80,6 +80,43 @@ class db_common
         return $return_value;
     }
 
+    /**
+    * ユーザー毎の情報取得処理
+    * 1:ジム情報
+    * 2:種目情報
+    * 3:user_training_count
+    * 4:user_exercise_id    
+    */
+    public static function get_user_item($user_id , $process_branch)
+    {
+        // 初期値
+        $return_object = array();
+
+        switch ($process_branch) {
+
+            case 1:        
+              
+                $return_object = gym_m_model::where('user_id', $user_id)
+                ->where('display_flg', 1)
+                ->orderBy('display_order', 'asc') 
+                ->get();
+                break;
+            
+            case 2:
+
+                $return_object = exercise_m_model::where('user_id', $user_id)
+                ->where('display_flg', 1)
+                ->orderBy('display_order', 'asc') 
+                ->get();
+                break;        
+
+            default:
+                // どのケースにも一致しなかった場合
+                break;
+        }
+
+        return $return_object;
+    }
 
     
 }

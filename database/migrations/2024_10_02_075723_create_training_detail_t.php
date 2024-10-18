@@ -44,7 +44,7 @@ return new class extends Migration
 
             $table
                 ->integer('type')                
-                ->comment('時間or回数:1 = 時間 , 2 = 回数');
+                ->comment('時間or回数:1 = 回数 , 2 = 時間');
 
             $table
                 ->time('time')                

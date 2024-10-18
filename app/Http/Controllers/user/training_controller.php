@@ -10,10 +10,10 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Original\common;
+use App\Original\db_common;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 // controller作成時ここまでコピー↑
-
 
 // Model ↓
 use App\Models\exercise_m_model;
@@ -23,6 +23,11 @@ use App\Models\training_history_t_model;
 use App\Models\user_m_model;
 use App\Models\weight_log_t_model;
 // Model ↑
+
+// Request ↓
+use App\Http\Requests\training_detail_t_request;
+
+// Request ↑
 
 class training_controller extends Controller
 {
@@ -73,33 +78,54 @@ class training_controller extends Controller
         ];
         
 
-        $gym_m = gym_m_model::where('user_id', $user_id)
-        ->where('display_flg', 1)
-        ->orderBy('display_order', 'asc') 
-        ->get();
+        $training_history_t = self::get_training_history_t($user_id);
 
-        $exercise_m = exercise_m_model::where('user_id', $user_id)
-        ->where('display_flg', 1)
-        ->orderBy('display_order', 'asc') 
-        ->get();
 
-        return view('user/screen/training/index', compact('training_info','gym_m','exercise_m'));       
+        $gym_m = db_common::get_user_item($user_id,1);
+        $exercise_m = db_common::get_user_item($user_id,2);       
+
+        return view('user/screen/training/index', compact('training_history_t','training_info','gym_m','exercise_m'));       
      
     }
 
-    function test($user_id , $hanni)
+    function get_training_history_t($user_id)
     {
-
-        $training_history_t = training_history_t_model::select(
-            'training_history_id',
-            'start_datetime',
-            'end_datetime',
-            DB::raw('TIMEDIFF(end_datetime, start_datetime) as duration')
+        //トレーニング記録取得                                           
+        $training_history_t = training_history_t_model::
+        select(
+            'training_history_t.*',
+            DB::raw('TIMEDIFF(training_history_t.end_datetime, training_history_t.start_datetime) as duration'),
+            'gym_m.gym_name'
         )
-        ->where('training_history_id', 4)
-        ->first();
+        ->leftJoin('gym_m', function ($join) {
+            $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
+                ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
+        })
+        ->where('training_history_t.user_id', $user_id) // training_history_tのuser_idを使用
+        ->orderBy('training_history_t.user_training_count', 'desc')
+        ->get();
+      
 
-        $duration = $training_history_t->duration;
+        foreach ($training_history_t as $info) {
+            
+            $training_detail_t = training_detail_t_model::select(
+                'training_detail_t.*',
+                'exercise_m.exercise_name'
+            )
+            ->leftJoin('exercise_m', function ($join) {
+                $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
+                    ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
+            })
+            ->where('training_detail_t.user_id', $info->user_id)
+            ->where('training_detail_t.user_training_count', $info->user_training_count)
+            ->get();
+
+
+            $info->training_detail_t = $training_detail_t;
+
+        }
+
+        return $training_history_t;
 
     }
 
@@ -189,7 +215,7 @@ class training_controller extends Controller
     }
 
 
-    function training_detail_save(Request $request)
+    function training_detail_save(training_detail_t_request $request)
     {       
         
         // セッション情報取得
@@ -222,6 +248,7 @@ class training_controller extends Controller
             
             $user_training_detail_id = $request->user_training_detail_id;
 
+            //0の場合は新規登録なので、詳細IDのMAX値を再取得
             if($user_training_detail_id == 0){
 
                 // MAX(user_training_detail_id)を取得
@@ -254,10 +281,11 @@ class training_controller extends Controller
             $table->type = $request->type;
 
             if($request->type == 1){
-                $table->time = $request->time;
-            }else{
                 $table->reps = $request->reps;
                 $table->weight = $request->weight;
+            }else{
+                $table->time = $request->time;
+                
             }                      
 
             $table->updated_by = $user_id;

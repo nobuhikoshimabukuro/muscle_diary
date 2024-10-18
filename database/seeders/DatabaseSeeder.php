@@ -52,22 +52,31 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
+        $index = 1;
         DB::table('exercise_m')->insert([            
             
             [                
                 'user_id' => 1,
-                'user_exercise_id' => 1,                                
+                'user_exercise_id' => $index,
                 'exercise_name' => "ベンチプレス",                
                 'display_flg' => 1,        
-                'display_order' => 1,        
+                'display_order' => $index++,        
             ]
             ,
             [                
                 'user_id' => 1,
-                'user_exercise_id' => 2,                                
+                'user_exercise_id' => $index,                          
                 'exercise_name' => "スクワット",                
                 'display_flg' => 1,        
-                'display_order' => 22,        
+                'display_order' => $index++,        
+            ]
+            ,
+            [                
+                'user_id' => 1,
+                'user_exercise_id' => $index,
+                'exercise_name' => "ジョギング",                
+                'display_flg' => 1,        
+                'display_order' => $index++,         
             ]
 
         ]);
