@@ -39,6 +39,8 @@ Route::get('/training', [training_controller::class, 'index'])->name('user.train
 Route::post('/training/training_history_save', [training_controller::class, 'training_history_save'])->name('user.training_history.save');
 Route::post('/training/training_detail_save', [training_controller::class, 'training_detail_save'])->name('user.training_detail.save');
 
+Route::get('/training/record_sheet', [training_controller::class, 'record_sheet'])->name('user.training.record_sheet');
+
 
 Route::get('/graph_test', [dashboard_controller::class, 'graph_test'])->name('user.dashboard.graph_test');
 

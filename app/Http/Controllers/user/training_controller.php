@@ -314,4 +314,24 @@ class training_controller extends Controller
 
     }
 
+
+
+    function record_sheet(Request $request)
+    {            
+
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+
+        $user_id = $user_info->user_id;
+        $training_history_t = session()->get('training_history_t');
+      
+
+        return view('user/screen/training/record_sheet', compact('training_history_t'));       
+     
+    }
+
 }

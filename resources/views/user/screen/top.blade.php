@@ -43,6 +43,11 @@
     >トレーニング管理
     </button>
 
+    <button class="btn btn-outline-success page-transition-button1"
+    data-url="{{route('user.training.record_sheet')}}"
+    >帳票テスト
+    </button>
+
   </div> 
 
 
