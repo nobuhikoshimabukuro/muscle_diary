@@ -86,7 +86,7 @@ box-shadow: none;
                    
                        <div class="login-form">
                            <div class="control-group">                
-                           <input type="text" class="login-field" name="mailaddress" value="" placeholder="login id" id="mailaddress" >
+                           <input type="text" class="login-field" name="mailaddress" value="1111@mail.com" placeholder="login id" id="mailaddress" >
                            <label class="login-field-icon fui-user" for="mailaddress"></label>
                            </div>
                    

@@ -62,7 +62,7 @@ class login_controller extends Controller
         } else {
             
             session()->flash('login_error_message', $result_array->login_error_message);
-            return redirect(route('web.login'));            
+            return redirect(route('user.login'));            
         }
     }
 

@@ -1,7 +1,7 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', '求人情報')  
+@section('title', 'record_sheet')  
 @endsection
 @section('content')
 
@@ -84,6 +84,14 @@
 }
 
 
+table {
+         border-collapse: collapse;
+         border: solid 2px #595959;
+}td, th {
+          border: dashed 1px #595959; /* 点線 */
+}
+
+
 
 </style>
 
@@ -112,7 +120,63 @@
 
         <div id="" class="row p-0 m-0">
 
-            <table class="table">
+            
+            <table class="table pt-1">
+
+                
+                @php
+                    $column = 5;
+                @endphp
+
+                @for ($i = 1; $i <= 7; $i++)
+                    
+                    <tr>
+                        <th class="w-150px">
+                            種目名
+                        </th>
+
+                        <th class="w-100px">
+                        </th>
+
+                        @for ($x = 1; $x <= $column; $x++)
+                            <th class="text-center">
+                                {{ $x }}セット
+                            </th>                        
+                        @endfor                    
+                    </tr>
+
+                    <tr>
+                        <td rowspan="2">
+                            
+                        </td>
+
+                        <td>
+                            重量×レップ
+                            <br>
+                            またはタイム
+                        </td>
+
+                        @for ($y = 1; $y <= $column; $y++)
+                            <td>                            
+                            </td>                        
+                        @endfor                    
+                    </tr>
+
+                    <tr>
+                        <td>
+                        インターバル
+                        </td>
+
+                        @for ($z = 1; $z <= $column; $z++)
+                            <td>                            
+                            </td>                        
+                        @endfor                    
+                    </tr>
+                    
+
+                @endfor         
+
+                
 
             </table>
             
