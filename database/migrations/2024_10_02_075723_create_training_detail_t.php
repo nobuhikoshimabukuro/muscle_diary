@@ -61,6 +61,10 @@ return new class extends Migration
                 ->nullable()
                 ->comment('重さ(g)');
 
+            $table
+                ->text('remark')                
+                ->nullable()
+                ->comment('備考');
         
             $table
                 ->dateTime('created_at')

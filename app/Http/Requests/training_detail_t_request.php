@@ -46,7 +46,8 @@ class training_detail_t_request extends FormRequest
             $time = $this->input('time');
             $reps = $this->input('reps');
             $weight = $this->input('weight');
-
+            
+            
             if ($type == 1) {
 
                 // $repsと$weightが設定されているか確認し、かつ数字か判断する

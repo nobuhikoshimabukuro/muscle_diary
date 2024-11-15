@@ -1,10 +1,5 @@
 @php 
     $system_version = "?system_version=" . env('system_version');
-
-    $staff_info = [];
-    $staff_info []= (object)['url' => 1 ,'' => "display_text" , "rgba" => "rgba(219,39,91,0.5)", "department_id" => 2];
-
-
 @endphp
 
 <!doctype html>
@@ -41,25 +36,25 @@
   width: 100%;
 }
 
-.c-header_logo {
+.c-header__logo {
   color: #000; /* カスタマイズしてください */
   min-width: 80px; /* カスタマイズしてください */
   text-decoration: none;
 }
 
-.c-header_list {
+.c-header__list {
   box-sizing: border-box;
   display: flex;
   margin: 0;
   padding: 0;
 }
 
-.c-header_list-item {
+.c-header__list-item {
   list-style: none;
   text-decoration: none;
 }
 
-.c-header_list-link {
+.c-header__list-link {
   color: #000; /* カスタマイズしてください */
   display: block;
   margin-right: 20px; /* カスタマイズしてください */
@@ -67,7 +62,7 @@
   padding: 10px 0px; /* カスタマイズしてください */
 }
 
-.c-header_list-link:hover {
+.c-header__list-link:hover {
   filter: opacity(0.6); /* カスタマイズしてください */
 }
 
@@ -76,7 +71,7 @@
 }
 
 @media screen and (max-width: 750px) {
-  .c-hamburger-menu_list {
+  .c-hamburger-menu__list {
     background-color: #eeeeee; /* カスタマイズしてください */
     align-items: flex-start;
     display: flex;
@@ -90,17 +85,17 @@
     width: 100%;
   }
 
-  #hamburger:checked ~ .c-hamburger-menu_list {
+  #hamburger:checked ~ .c-hamburger-menu__list {
     transform: translateX(0%);
     transition: 0.3s;
   }
 }
 
-.c-hamburger-menu_input {
+.c-hamburger-menu__input {
   display: none;
 }
 
-.c-hamburger-menu_bg {
+.c-hamburger-menu__bg {
   background-color: #000; /* カスタマイズしてください */
   cursor: pointer;
   display: none;
@@ -113,16 +108,16 @@
   z-index: -1;
 }
 
-#hamburger:checked ~ .c-hamburger-menu_bg {
+#hamburger:checked ~ .c-hamburger-menu__bg {
   display: block;
 }
 
-.c-hamburger-menu_button {
+.c-hamburger-menu__button {
   display: none;
 }
 
 @media screen and (max-width: 750px) {
-  .c-hamburger-menu_button {
+  .c-hamburger-menu__button {
     align-items: center;
     appearance: none;
     background-color: transparent;
@@ -137,7 +132,7 @@
   }
 }
 
-.c-hamburger-menu_button-mark {
+.c-hamburger-menu__button-mark {
   background-color: #000; /* カスタマイズしてください */
   display: block;
   height: 1px; /* カスタマイズしてください */
@@ -147,19 +142,19 @@
 
 @media screen and (max-width: 750px) {
   #hamburger:checked
-    ~ .c-hamburger-menu_button
-    .c-hamburger-menu_button-mark:nth-of-type(1) {
+    ~ .c-hamburger-menu__button
+    .c-hamburger-menu__button-mark:nth-of-type(1) {
     transform: translate(2px, 1px) rotate(45deg); /* カスタマイズしてください */
     transform-origin: 0%; /* カスタマイズしてください */
   }
   #hamburger:checked
-    ~ .c-hamburger-menu_button
-    .c-hamburger-menu_button-mark:nth-of-type(2) {
+    ~ .c-hamburger-menu__button
+    .c-hamburger-menu__button-mark:nth-of-type(2) {
     opacity: 0;
   }
   #hamburger:checked
-    ~ .c-hamburger-menu_button
-    .c-hamburger-menu_button-mark:nth-of-type(3) {
+    ~ .c-hamburger-menu__button
+    .c-hamburger-menu__button-mark:nth-of-type(3) {
     transform: translate(2px, 3px) rotate(-45deg); /* カスタマイズしてください */
     transform-origin: 0%; /* カスタマイズしてください */
   }
@@ -170,30 +165,30 @@
 
 
 <header class="c-header c-hamburger-menu"><!-- 追記 クラスを追記 -->
-    <a href="#" class="c-header_logo">ロゴ</a>
-    <input type="checkbox" name="hamburger" id="hamburger" class="c-hamburger-menu_input"/><!-- 追記 idはlabelのforと同じにする -->
-    <label for="hamburger" class="c-hamburger-menu_bg"></label><!-- 追記 ハンバーガーメニュを開いた時の背景 -->
-    <ul class="c-header_list c-hamburger-menu_list"><!-- 追記 クラスを追記 -->
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link w-100">About</a>
+    <a href="#" class="c-header__logo">ロゴ</a>
+    <input type="checkbox" name="hamburger" id="hamburger" class="c-hamburger-menu__input"/><!-- 追記 idはlabelのforと同じにする -->
+    <label for="hamburger" class="c-hamburger-menu__bg"></label><!-- 追記 ハンバーガーメニュを開いた時の背景 -->
+    <ul class="c-header__list c-hamburger-menu__list"><!-- 追記 クラスを追記 -->
+      <li class="c-header__list-item">
+        <a href="#" class="c-header__list-link">About</a>
       </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Service</a>
+      <li class="c-header__list-item">
+        <a href="#" class="c-header__list-link">Service</a>
       </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Company</a>
+      <li class="c-header__list-item">
+        <a href="#" class="c-header__list-link">Company</a>
       </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Recruit</a>
+      <li class="c-header__list-item">
+        <a href="#" class="c-header__list-link">Recruit</a>
       </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Contact</a>
+      <li class="c-header__list-item">
+        <a href="#" class="c-header__list-link">Contact</a>
       </li>
     </ul>
-    <label for="hamburger" class="c-hamburger-menu_button"><!-- 追記 ハンバーガーメニューのボタン -->
-      <span class="c-hamburger-menu_button-mark"></span>
-      <span class="c-hamburger-menu_button-mark"></span>
-      <span class="c-hamburger-menu_button-mark"></span>
+    <label for="hamburger" class="c-hamburger-menu__button"><!-- 追記 ハンバーガーメニューのボタン -->
+      <span class="c-hamburger-menu__button-mark"></span>
+      <span class="c-hamburger-menu__button-mark"></span>
+      <span class="c-hamburger-menu__button-mark"></span>
     </label>
   </header>
 

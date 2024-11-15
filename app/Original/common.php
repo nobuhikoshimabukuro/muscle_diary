@@ -88,26 +88,10 @@ class common
                 $user_name = $user_m->user_name;
                 $mailaddress = $user_m->mailaddress;
 
-                //前回のトレーニング記録取得                                           
-                $training_history_t = training_history_t_model::
-                select(
-                    'training_history_t.*',
-                    'gym_m.gym_name'
-                )
-                ->leftJoin('gym_m', function ($join) {
-                    $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
-                        ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
-                })
-                ->where('training_history_t.user_id', $user_id) // training_history_tのuser_idを使用
-                ->orderBy('training_history_t.user_training_count', 'desc') // training_countの降順に並べる
-                ->first();
-
-
+              
                 session()->put(['user_id' => $user_id]);
                 session()->put(['user_name' => $user_name]);
-                session()->put(['mailaddress' => $mailaddress]);
-                session()->put(['training_history_t' => $training_history_t]);
-                
+                session()->put(['mailaddress' => $mailaddress]);                
             }
         }
 
@@ -116,6 +100,27 @@ class common
         ];
 
         return $user_info;
+    }
+
+    public static function get_latest_training_history_t($user_id)
+    {
+
+        //前回のトレーニング記録取得                                           
+        $training_history_t = training_history_t_model::
+        select(
+            'training_history_t.*',
+            'gym_m.gym_name'
+        )
+        ->leftJoin('gym_m', function ($join) {
+            $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
+                ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
+        })
+        ->where('training_history_t.user_id', $user_id) // training_history_tのuser_idを使用
+        ->orderBy('training_history_t.user_training_count', 'desc') // training_countの降順に並べる        
+        ->first();
+
+        return $training_history_t;
+
     }
 
     /**

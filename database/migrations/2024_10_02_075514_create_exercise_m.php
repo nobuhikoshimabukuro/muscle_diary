@@ -33,6 +33,16 @@ return new class extends Migration
                 ->comment('種目名');
                 
             $table
+                ->integer('measurement_type')
+                ->default(2)
+                ->comment('計測タイプ:1 = 時間 , 2 = 重さ');
+
+            $table
+                ->integer('bodyweight_flg')
+                ->default(0)
+                ->comment('自重フラグ:0 = 否 , 1 = 肯');
+
+            $table
                 ->integer('display_flg')
                 ->default(1)
                 ->comment('表示フラグ:0 = 非表示 , 1 = 表示');

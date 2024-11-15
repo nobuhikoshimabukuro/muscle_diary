@@ -145,14 +145,15 @@ a{
   border-spacing: 0;
   }
   .data-display-table th {
-  padding: 10px;
+  padding: 5px;
   border-bottom: solid 4px #778ca3;
-  color: #778ca3;
+  color: #1d3956;
   white-space: nowrap;  /* 文字の折り返しを禁止 */
   }
   .data-display-table td {
-  padding: 10px;
+  padding: 3px;
   border-bottom: solid 1px #778ca3;
+  white-space: nowrap;  /* 文字の折り返しを禁止 */
   }
 
 

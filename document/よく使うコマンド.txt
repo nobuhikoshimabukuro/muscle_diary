@@ -87,6 +87,9 @@ php artisan make:middleware FormInputFilter
 ・ストレージシンボリックリンク
 php artisan storage:link
 
+・ストレージシンボリックリンク解除
+rm public/storage
+
 ・laravelデバッグバー導入
 composer require barryvdh/laravel-debugbar
 .envの「APP_DEBUG=true」で有効　※本番環境ではfalse

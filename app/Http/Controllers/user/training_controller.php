@@ -41,55 +41,8 @@ class training_controller extends Controller
             return redirect(route('user.login'));
         }
 
-        $user_id = $user_info->user_id;
-        $training_history_t = session()->get('training_history_t');
-                
-        //新しいデータか確認する為
-        $new_data_flg = true;
-        $gym_name = "";
-        $start_datetime = "";
-        $end_datetime = "";
-
-        if(!is_null($training_history_t)){
-
-            $gym_name = $training_history_t->gym_name ? $training_history_t->gym_name : "";
-
-            // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
-            $start_datetime = $training_history_t->start_datetime
-            ? Carbon::parse($training_history_t->start_datetime)->format('Y/m/d H:i:s')
-            : "";
-
-            $end_datetime = $training_history_t->end_datetime
-            ? Carbon::parse($training_history_t->end_datetime)->format('Y/m/d H:i:s')
-            : "";            
-
-            if($end_datetime == ""){
-                $new_data_flg = false;
-            }
-            
-        }
-
-
-        $training_info = (object)[
-            "new_data_flg" => $new_data_flg
-            ,"gym_name" => $gym_name
-            ,"start_datetime" => $start_datetime
-            ,"end_datetime" => $end_datetime
-        ];
+        $user_id = $user_info->user_id;     
         
-
-        $training_history_t = self::get_training_history_t($user_id);
-
-
-        $gym_m = db_common::get_user_item($user_id,1);
-        $exercise_m = db_common::get_user_item($user_id,2);       
-
-        return view('user/screen/training/index', compact('training_history_t','training_info','gym_m','exercise_m'));       
-     
-    }
-
-    function get_training_history_t($user_id)
-    {
         //トレーニング記録取得                                           
         $training_history_t = training_history_t_model::
         select(
@@ -101,33 +54,110 @@ class training_controller extends Controller
             $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
                 ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
         })
-        ->where('training_history_t.user_id', $user_id) // training_history_tのuser_idを使用
-        ->orderBy('training_history_t.user_training_count', 'desc')
-        ->get();
-      
-
+        ->where('training_history_t.user_id', $user_id)
+        ->orderBy('training_history_t.user_training_count', 'desc')->get();
+    
         foreach ($training_history_t as $info) {
+
+            $info->gym_name  = $info->gym_name ? $info->gym_name : "";
+            // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
+            $info->start_datetime = $info->start_datetime ? Carbon::parse($info->start_datetime)->format('Y/m/d H:i:s') : "";
+            $info->end_datetime = $info->end_datetime ? Carbon::parse($info->end_datetime)->format('Y/m/d H:i:s') : "";
+        }
+        return view('user/screen/training/index', compact('training_history_t'));     
+    }
+
+
+    function detail(Request $request)
+    {            
+
+        // セッション情報取得
+        $user_info = common::get_login_user_info();
+        // セッション有無
+        if (!$user_info->login_status) {
+            return redirect(route('user.login'));
+        }
+
+        $user_id = $user_info->user_id;          
+        $user_training_count = $request->user_training_count;
+
+
+        // 新しいモデルオブジェクトを作成
+        $training_history_t = (object)array();
+        $training_detail_t = (object)array();
+        
+ 
+        $data_type = 0;
+
+        if($user_training_count == 0){           
+            $training_history_t = (object)['start_datetime' => "" ,'user_training_count' => $user_training_count];
+            $data_type = 1;
+
+        }else{
+
             
-            $training_detail_t = training_detail_t_model::select(
-                'training_detail_t.*',
-                'exercise_m.exercise_name'
+            //トレーニング記録取得                                           
+            $training_history_t = training_history_t_model::
+            select(
+                'training_history_t.*',
+                DB::raw('TIMEDIFF(training_history_t.end_datetime, training_history_t.start_datetime) as duration'),
+                'gym_m.gym_name'
             )
-            ->leftJoin('exercise_m', function ($join) {
-                $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
-                    ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
+            ->leftJoin('gym_m', function ($join) {
+                $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
+                    ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
             })
-            ->where('training_detail_t.user_id', $info->user_id)
-            ->where('training_detail_t.user_training_count', $info->user_training_count)
-            ->get();
+            ->where('training_history_t.user_id', $user_id)
+            ->where('training_history_t.user_training_count', $user_training_count)
+            ->orderBy('training_history_t.user_training_count', 'desc')->first();
+
+            if(!is_null($training_history_t)){                                  
+
+                // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
+                $training_history_t->start_datetime = $training_history_t->start_datetime ? Carbon::parse($training_history_t->start_datetime)->format('Y/m/d H:i:s') : "";
+                $training_history_t->end_datetime = $training_history_t->end_datetime ? Carbon::parse($training_history_t->end_datetime)->format('Y/m/d H:i:s') : "";
+
+                if( $training_history_t->end_datetime == ""){
+                    $data_type = 2;
+                }else{
+                    $data_type = 3;
+                }
+
+                $training_detail_t = training_detail_t_model::select(
+                    'training_detail_t.*',
+                    'exercise_m.exercise_name'
+                )
+                ->leftJoin('exercise_m', function ($join) {
+                    $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
+                        ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
+                })
+                ->where('training_detail_t.user_id', $user_id)
+                ->where('training_detail_t.user_training_count', $user_training_count)
+                ->get();
+
+            }
+        } 
 
 
-            $info->training_detail_t = $training_detail_t;
+        if($data_type == 0){            
+
+            return redirect(route('user.training.index'));
 
         }
 
-        return $training_history_t;
+        
+        
+        $training_history_t->data_type = $data_type;
 
+
+        $gym_m = db_common::get_user_item($user_id,1);
+        $exercise_m = db_common::get_user_item($user_id,2);       
+
+        return view('user/screen/training/detail', compact('training_history_t','training_detail_t','gym_m','exercise_m'));       
+     
     }
+
+    
 
     function training_history_save(Request $request)
     {       
@@ -148,22 +178,10 @@ class training_controller extends Controller
 
         try{
 
-            $user_id = $user_info->user_id;
-
+            $user_id = $user_info->user_id;                       
             
-
-            $training_history_t = session()->get('training_history_t');                            
-            
-            $user_training_count = 1;
-
-            if(!is_null($training_history_t)){    
-
-                if(is_null($training_history_t->end_datetime)){
-                    $user_training_count = $training_history_t->user_training_count;
-                }else{
-                    $user_training_count = $training_history_t->user_training_count + 1;
-                }                             
-            }
+            $user_training_count = $request->user_training_count;
+            $process = $request->process;
             
             $table = training_history_t_model::where('user_training_count', $user_training_count)
             ->where('user_id', $user_id)
@@ -172,6 +190,8 @@ class training_controller extends Controller
             
 
             if (empty($table)) {
+                
+                $user_training_count = db_common::get_user_max_value($user_id,3);
 
                 $table = new training_history_t_model;
                 $table->user_id = $user_id;
@@ -183,7 +203,10 @@ class training_controller extends Controller
                 $table->created_at = now();
 
             }else{
-                $table->end_datetime = $request->set_datetime;                
+
+                if($process == 2){
+                    $table->end_datetime = $request->set_datetime;
+                }
             }
 
             
@@ -197,6 +220,7 @@ class training_controller extends Controller
             $result_array = array(
                 "result" => "success",
                 "message" => "",
+                "user_training_count" => $user_training_count,
             );
 
         }catch(Exception $e){
@@ -235,16 +259,8 @@ class training_controller extends Controller
         try{
 
             $user_id = $user_info->user_id;
-            
-            $training_history_t = session()->get('training_history_t');                            
-            
-            $user_training_count = 1;
-            
-
-            if(!is_null($training_history_t)){    
-
-                $user_training_count = $training_history_t->user_training_count;         
-            }
+                        
+            $user_training_count = $request->user_training_count;            
             
             $user_training_detail_id = $request->user_training_detail_id;
 
@@ -327,11 +343,58 @@ class training_controller extends Controller
         }
 
         $user_id = $user_info->user_id;
-        $training_history_t = session()->get('training_history_t');
+        $training_history_t = common::get_latest_training_history_t($user_id);
       
 
         return view('user/screen/training/record_sheet', compact('training_history_t'));       
      
+    }
+
+    function get_training_history_t($user_id)
+    {
+        //トレーニング記録取得                                           
+        $training_history_t = training_history_t_model::
+        select(
+            'training_history_t.*',
+            DB::raw('TIMEDIFF(training_history_t.end_datetime, training_history_t.start_datetime) as duration'),
+            'gym_m.gym_name'
+        )
+        ->leftJoin('gym_m', function ($join) {
+            $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
+                ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
+        })
+        ->where('training_history_t.user_id', $user_id)
+        ->orderBy('training_history_t.user_training_count', 'desc')->get();
+      
+
+        foreach ($training_history_t as $info) {
+
+
+            $info->gym_name  = $info->gym_name ? $info->gym_name : "";
+
+            // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
+            $info->start_datetime = $info->start_datetime ? Carbon::parse($info->start_datetime)->format('Y/m/d H:i:s') : "";
+
+            $info->end_datetime = $info->end_datetime ? Carbon::parse($info->end_datetime)->format('Y/m/d H:i:s') : "";
+            
+            $training_detail_t = training_detail_t_model::select(
+                'training_detail_t.*',
+                'exercise_m.exercise_name'
+            )
+            ->leftJoin('exercise_m', function ($join) {
+                $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
+                    ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
+            })
+            ->where('training_detail_t.user_id', $info->user_id)
+            ->where('training_detail_t.user_training_count', $info->user_training_count)
+            ->get();
+
+            $info->training_detail_t = $training_detail_t;
+
+        }
+
+        return $training_history_t;
+
     }
 
 }
