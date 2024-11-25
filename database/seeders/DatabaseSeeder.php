@@ -58,9 +58,7 @@ class DatabaseSeeder extends Seeder
             [                
                 'user_id' => 1,
                 'user_exercise_id' => $index,
-                'exercise_name' => "ベンチプレス",                
-                'measurement_type' => 2,
-                'bodyweight_flg' => 0,
+                'exercise_name' => "ベンチプレス",                                
                 'display_flg' => 1,
                 'display_order' => $index++,        
             ]
@@ -68,9 +66,7 @@ class DatabaseSeeder extends Seeder
             [                
                 'user_id' => 1,
                 'user_exercise_id' => $index,                          
-                'exercise_name' => "スクワット",
-                'measurement_type' => 2,
-                'bodyweight_flg' => 0,
+                'exercise_name' => "スクワット",                
                 'display_flg' => 1,        
                 'display_order' => $index++,        
             ]
@@ -78,9 +74,7 @@ class DatabaseSeeder extends Seeder
             [                
                 'user_id' => 1,
                 'user_exercise_id' => $index,
-                'exercise_name' => "ジョギング",    
-                'measurement_type' => 1,     
-                'bodyweight_flg' => 0,       
+                'exercise_name' => "ジョギング",                    
                 'display_flg' => 1,        
                 'display_order' => $index++,         
             ]
@@ -88,9 +82,7 @@ class DatabaseSeeder extends Seeder
             [                
                 'user_id' => 1,
                 'user_exercise_id' => $index,
-                'exercise_name' => "ディップス",    
-                'measurement_type' => 2,     
-                'bodyweight_flg' => 1,       
+                'exercise_name' => "ディップス",                    
                 'display_flg' => 1,        
                 'display_order' => $index++,         
             ]

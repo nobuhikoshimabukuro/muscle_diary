@@ -150,8 +150,9 @@
 
     </div>
 
-    <div class="col-12">
+    <div class="col-12 col-sm-11 col-md-10 col-lg-9 col-xl-9">
 
+      
       @if(!empty((array)$training_detail_t))
       
           <table class="table">
@@ -174,9 +175,7 @@
                         @if($info->type == 1)
                             
                               <tr>
-                                <th class="text-end">
-                                  重さ
-                                </th>          
+                                <th class="text-end">重さ</th>
                                 
                                 <td class="text-start">
                                   {{$info->weight}}
@@ -184,9 +183,7 @@
                               </tr>
 
                               <tr>
-                                <th class="text-end">
-                                  回数
-                                </th>                                 
+                                <th class="text-end">回数</th>
                                 <td class="text-start">
                                   {{$info->reps}}
                                 </td>
@@ -268,14 +265,63 @@
 
                 <tr>                  
                   <td colspan="2">
-                    <label>
-                      <input type="radio" name="type" value="1" checked>Wait
+                    <label>                      
+                      <input type="radio" name="measurement_type" value="1" checked>Weight
                     </label>
                     <label>
-                      <input type="radio" name="type" value="2">Time
+                      <input type="radio" name="measurement_type" value="2" >Count
+                    </label>
+
+                    <label>
+                      <input type="radio" name="measurement_type" value="3">Time
                     </label>
                   </td>                 
                 </tr>
+
+                <tr class="weight_row">
+                  <th>
+                    <label for="integer">重さ</label>
+                  </th>               
+
+                  <th>
+                    <label for="reps">回数</label>
+                  </th>               
+                </tr>
+
+                <tr class="weight_row">
+                  <th colspan="" class="d-flex">
+                    <input type="text" id="integer" name="integer" class="form-control text-end w-100px" maxlength="3">
+                    <span class="comma">.</span>
+                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">
+                    {{-- <span class="display_weight_type">kg</span>    --}}
+                    
+                    <label>
+                      <input type="radio" name="weight_type" value="1" checked>kg
+                    </label>
+                    <label>
+                      <input type="radio" name="weight_type" value="2">lb
+                    </label>
+                  </th>
+
+                  <th colspan="">
+                    <input type="text" id="reps" name="reps" class="form-control text-end w-100px" value="">                    
+                  </th>               
+                </tr>       
+
+
+                <tr class="count_row d-none">
+                  <th colspan="2">
+                    <label for="count">回数</label>
+                  </th>                                     
+                </tr>
+                
+                <tr class="count_row d-none">                           
+                  <th colspan="2">
+                    <input type="text" id="count" name="count" class="form-control text-end w-100px" value="">
+                  </th>               
+                </tr>
+               
+
 
                 <tr class="time_row d-none">
                   <th colspan="2">
@@ -289,43 +335,9 @@
                   </th>               
                 </tr>
 
-
-                <tr class="weight_row">
-                  <th>
-                    <label for="weight">重さ</label>
-
-                    <label>
-                      <input type="radio" name="weight_type" value="1" checked>kg
-                    </label>
-                    <label>
-                      <input type="radio" name="weight_type" value="2">lb
-                    </label>
-                  </th>               
-
-                  <th>
-                    <label for="time">回数</label>
-                  </th>               
-                </tr>
-
-                <tr class="weight_row">
-                  <th colspan="" class="d-flex">
-                    <input type="text" id="integer" name="integer" class="form-control text-end w-100px" maxlength="3">
-                    <span class="comma">.</span>
-                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">
-                    <span class="display_weight_type">kg</span>                  
-                  </th>               
-                  <th colspan="">
-                    <input type="text" id="reps" name="reps" class="form-control w-100px" value="">                    
-                  </th>               
-                </tr>              
-
               </table>
 
-
-              
-                
-        
-              
+             
               
           </div>
 
@@ -427,31 +439,30 @@
   updateTimer();
 
 
-  $(document).on("click", "input[name='type']", function (e) {
+  $(document).on("click", "input[name='measurement_type']", function (e) {
       
-      var selectedValue = $("input[name='type']:checked").val();
+      var selectedValue = $("input[name='measurement_type']:checked").val();
 
-      $(".time_row").removeClass("d-none");
       $(".weight_row").removeClass("d-none");
+      $(".count_row").removeClass("d-none");
+      $(".time_row").removeClass("d-none");
+      
       
       if (selectedValue == 1) {
         $(".time_row").addClass("d-none");
-      } else {
+        $(".count_row").addClass("d-none");
+      } else if(selectedValue == 2) {
         $(".weight_row").addClass("d-none");
+        $(".time_row").addClass("d-none");
+      } else if(selectedValue == 3) {
+        $(".weight_row").addClass("d-none");
+        $(".count_row").addClass("d-none");
       }
   });
 
-  
-    $(document).on("click", ".training_detail-button", function (e) {
-        // this の target を取得
-        var target = $(this).data('target');
-        
-        // 同一の target を持つ .training_detail-area 要素を取得
-        var $targetArea = $('.training_detail-area[data-target="' + target + '"]');
-        
-        // d-none クラスがあればリムーブ、なければ add
-        $targetArea.toggleClass('d-none');
-    });
+
+
+
 
 
   //トレーニング履歴ボタン

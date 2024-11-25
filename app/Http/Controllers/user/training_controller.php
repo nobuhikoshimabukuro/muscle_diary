@@ -41,7 +41,8 @@ class training_controller extends Controller
             return redirect(route('user.login'));
         }
 
-        $user_id = $user_info->user_id;     
+        $user_id = $user_info->user_id;
+        $keep_user_training_count = 0;
         
         //トレーニング記録取得                                           
         $training_history_t = training_history_t_model::
@@ -55,16 +56,24 @@ class training_controller extends Controller
                 ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
         })
         ->where('training_history_t.user_id', $user_id)
-        ->orderBy('training_history_t.user_training_count', 'desc')->get();
+        ->orderBy('training_history_t.user_training_count', 'asc')->get();
     
-        foreach ($training_history_t as $info) {
-
+        foreach ($training_history_t as $index => $info) {
+        
             $info->gym_name  = $info->gym_name ? $info->gym_name : "";
             // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
             $info->start_datetime = $info->start_datetime ? Carbon::parse($info->start_datetime)->format('Y/m/d H:i:s') : "";
             $info->end_datetime = $info->end_datetime ? Carbon::parse($info->end_datetime)->format('Y/m/d H:i:s') : "";
+
+            if(count($training_history_t) == ($index + 1) &&  $info->end_datetime == ""){
+                $keep_user_training_count = $info->user_training_count;
+            }
         }
-        return view('user/screen/training/index', compact('training_history_t'));     
+
+
+
+
+        return view('user/screen/training/index', compact('training_history_t','keep_user_training_count'));     
     }
 
 

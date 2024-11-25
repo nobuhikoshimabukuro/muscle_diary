@@ -1,8 +1,13 @@
 @php 
     $system_version = "?system_version=" . env('system_version');
 
-    $staff_info = [];
-    $staff_info []= (object)['url' => 1 ,'' => "display_text" , "rgba" => "rgba(219,39,91,0.5)", "department_id" => 2];
+    $route_info = [];
+    $route_info []= (object)['url' => route('user.index') ,'display_text' => "top"];
+    $route_info []= (object)['url' => route('user.weight_log.index') ,'display_text' => "体重管理"];
+    $route_info []= (object)['url' => route('user.gym_m.index') ,'display_text' => "ジム管理"];
+    $route_info []= (object)['url' => route('user.exercise_m.index') ,'display_text' => "種目管理"];
+    $route_info []= (object)['url' => route('user.training.index') ,'display_text' => "トレーニング管理"];    
+    $route_info []= (object)['url' => route('user.logout') ,'display_text' => "ログアウト"];
 
 
 @endphp
@@ -174,10 +179,14 @@
     <input type="checkbox" name="hamburger" id="hamburger" class="c-hamburger-menu_input"/><!-- 追記 idはlabelのforと同じにする -->
     <label for="hamburger" class="c-hamburger-menu_bg"></label><!-- 追記 ハンバーガーメニュを開いた時の背景 -->
     <ul class="c-header_list c-hamburger-menu_list"><!-- 追記 クラスを追記 -->
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link w-100">About</a>
-      </li>
-      <li class="c-header_list-item">
+
+      @foreach ($route_info as $info)
+        <li class="c-header_list-item">
+          <a href="{{$info->url}}" class="c-header_list-link">{{$info->display_text}}</a>
+        </li>
+      @endforeach
+   
+      {{-- <li class="c-header_list-item">
         <a href="#" class="c-header_list-link">Service</a>
       </li>
       <li class="c-header_list-item">
@@ -188,7 +197,7 @@
       </li>
       <li class="c-header_list-item">
         <a href="#" class="c-header_list-link">Contact</a>
-      </li>
+      </li> --}}
     </ul>
     <label for="hamburger" class="c-hamburger-menu_button"><!-- 追記 ハンバーガーメニューのボタン -->
       <span class="c-hamburger-menu_button-mark"></span>

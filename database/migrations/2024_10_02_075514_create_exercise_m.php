@@ -30,17 +30,8 @@ return new class extends Migration
                 
             $table
                 ->string('exercise_name',1000)       
-                ->comment('種目名');
-                
-            $table
-                ->integer('measurement_type')
-                ->default(2)
-                ->comment('計測タイプ:1 = 時間 , 2 = 重さ');
-
-            $table
-                ->integer('bodyweight_flg')
-                ->default(0)
-                ->comment('自重フラグ:0 = 否 , 1 = 肯');
+                ->comment('種目名');               
+        
 
             $table
                 ->integer('display_flg')

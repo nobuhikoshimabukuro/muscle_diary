@@ -1,7 +1,7 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'training_save')  
+@section('title', 'training_detail')  
 
 @endsection
 @section('content')
@@ -17,15 +17,6 @@
 
 @php
 
-  $new_data_flg = $training_info->new_data_flg;
-  $gym_name = $training_info->gym_name;
-  $start_datetime = $training_info->start_datetime;
-  $end_datetime = $training_info->end_datetime;
-
-  if($new_data_flg){
-    $start_datetime = "";
-  }
-
 @endphp
 
 <div class="mt-3 text-center container">
@@ -34,165 +25,185 @@
 
     <div class="card col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">     
 
+      <input type="hidden" id="user_training_count" name="user_training_count" class="" value="{{$training_history_t->user_training_count}}">
+
       <table class="table">
 
-        <tr>
-          <td>
-            <div id="timer"></div>
-          </td>          
-        </tr>  
+     
 
-        @if($new_data_flg)
+          @if($training_history_t->data_type == 1)
 
-          <tr>          
-            <td>
-              前回トレーニング終了日時{{$end_datetime}}              
-            </td>
-          </tr>  
+            <tr>
+              <td colspan="3">
+                <div id="timer"></div>
+              </td>          
+            </tr>  
 
-        @else
 
-          <tr>          
-            <td>
-              トレーニング開始日時{{$start_datetime}}
-              <br>
-              経過時間<div id="elapsed_timer"></div>
-            </td>
-          </tr>  
+            <tr>          
+              <td>
+                ジム選択
+              </td>
 
-        @endif
-        
+              <td>
+                <select id="user_gym_id" name="user_gym_id" class="form-control">
 
-        <tr>
-          <td>
-            @if($new_data_flg) 
-              <select id="user_gym_id" name="user_gym_id" class="form-control">
-
-                <option value="0">未選択</option>                  
-                @foreach ($gym_m as $info1)
+                  <option value="0">未選択</option>                  
+                  @foreach ($gym_m as $info1)
+                
+                    <option value="{{$info1->user_gym_id}}"                                        
+                    >{{$info1->gym_name}}</option>                  
+                  @endforeach
+                </select>      
+              </td>   
               
-                  <option value="{{$info1->user_gym_id}}"                                        
-                  >{{$info1->gym_name}}</option>                  
-                @endforeach
-              </select>
+              <td>
+                <button class="training_history_t-save-button btn btn-outline-success" data-process="1">開始</button>
+              </td>
+            </tr>  
 
-              <button class="training_history_t-save-button btn btn-outline-success">開始</button>
             
-            @else
-              {{$gym_name}}
-              <button class="training_history_t-save-button btn btn-outline-danger">終了</button>
 
-              <button type="button" class="btn btn-outline-secondary" data-bs-toggle='modal' data-bs-target='#training_detail-save-modal'
-              >種目記録</button>
-            @endif
+          @elseif($training_history_t->data_type == 2)
+
+          
+            <tr>
+              <td colspan="3">
+                <div id="timer"></div>
+              </td>          
+            </tr>  
+
+            <tr>          
+              <td>
+                ジム
+              </td>
+
+              <td colspan="2">
+                {{$training_history_t->gym_name}}                
+              </td>   
+            </tr>  
+
+            <tr>          
+              <td>
+                開始日時
+              </td>
+
+              <td colspan="2">
+                {{$training_history_t->start_datetime}}              
+              </td>   
+            </tr>  
             
             
-          </td>
-        </tr>       
+            <tr>          
+              <td>
+                経過時間
+              </td>
+
+              <td colspan="2">
+                <div id="elapsed_timer"></div>    
+              </td>   
+            </tr>  
+
+
+            <tr>          
+              <td>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle='modal' data-bs-target='#training_detail-save-modal'
+                >種目記録</button>
+               
+              </td>
+              <td>
+               
+              </td>
+              <td>
+                <button class="training_history_t-save-button btn btn-outline-danger" data-process="2">終了</button>
+              </td>
+            </tr>  
+
+          @elseif($training_history_t->data_type == 3)
+
+          <tr>          
+            <td>
+              ジム
+            </td>
+
+            <td colspan="2">
+              {{$training_history_t->gym_name}}                
+            </td>   
+          </tr>  
+
+          <tr>          
+            <td>
+              トレーニング時間
+            </td>
+
+            <td colspan="2">
+              {{$training_history_t->start_datetime}}～{{$training_history_t->end_datetime}}
+            </td>   
+          </tr>  
+          
+          
+          
+
+          @endif
+          
       </table>
 
     </div>
 
+    <div class="col-12 col-sm-11 col-md-10 col-lg-9 col-xl-9">
 
-    @if(!$new_data_flg) 
       
-    @endif
-
-
-    <div class="col-12">
-
-      @if(count($training_history_t) > 0)
+      @if(!empty((array)$training_detail_t))
       
           <table class="table">
 
             <tr>
-              <th>ジム名</th>
-              <th>時間</th>
-              <th></th>
+              <th class="text-start">種目</th>
+              <th class="text-start">詳細</th>
+              
             </tr>
 
-            @foreach ($training_history_t as $training_history_info)
+            @foreach ($training_detail_t as $info)        
+              <tr>                 
+                  <th class="text-start">
+                    {{$info->exercise_name}}
+                  </th>
 
-              @php
-                $training_detail_t = $training_history_info->training_detail_t;
-              @endphp
+                    <th class="text-start">
 
+                      <table>
+                        @if($info->type == 1)
+                            
+                              <tr>
+                                <th class="text-end">重さ</th>
+                                
+                                <td class="text-start">
+                                  {{$info->weight}}
+                                </td>                                    
+                              </tr>
 
-                <tr>
-                  <td>{{$training_history_info->gym_name}}</td> 
+                              <tr>
+                                <th class="text-end">回数</th>
+                                <td class="text-start">
+                                  {{$info->reps}}
+                                </td>
+                              </tr>
 
-                  <td>
-                    @if(is_null($training_history_info->end_datetime))
-                      {{$training_history_info->start_datetime}}
-                    @else
-                      {{$training_history_info->start_datetime}}～{{$training_history_info->end_datetime}}
-                    @endif
-                  </td>
-
-                  <td>
-                    <button type="button" class="btn btn-outline-primary training_detail-button" data-target="{{$training_history_info->user_training_count}}" >詳細</button>
-                  </td> 
-                </tr>
-
-                <tr>
-
-                  <td colspan="3">
-
-                    <div class="training_detail-area d-none" data-target="{{$training_history_info->user_training_count}}">
-
-                      <table class="table">
-        
-                        <tr>
-                          <th class="text-start">種目</th>
-                          <th class="text-center">詳細</th>                  
-                        </tr>
-        
-                        @foreach ($training_detail_t as $training_detail_info)  
-                        
+                            
+                        @else           
                           <tr>
-                            <th class="text-start">
-                              {{$training_detail_info->exercise_name}}
-                            </th>
-        
-                            <th class="text-center">
-                              @if($training_detail_info->type == 1)
-                                  <table>
-                                    <tr>
-                                      <th class="text-end">
-                                        重さ
-                                      </th>          
-                                      
-                                      <td class="text-start">
-                                        {{$training_detail_info->weight}}
-                                      </td>                                    
-                                    </tr>
-
-                                    <tr>
-                                      <th class="text-end">
-                                        回数
-                                      </th>                                 
-                                      <td class="text-start">
-                                        {{$training_detail_info->reps}}
-                                      </td>
-                                    </tr>
-
-                                  </table>
-                              @else
-                              
-                                  時間:{{$training_detail_info->time}}
-                              
-                              @endif
-                            </th>                  
-                          </tr>
-        
-                        @endforeach
-        
-                      </table>
-        
-                    </div>
-
-                  </td>
-                </tr>
+                            <th class="text-end">
+                              時間
+                            </th>                                 
+                            <td class="text-start">
+                              {{$info->time}}
+                            </td>
+                          </tr>                                                            
+                        @endif
+                        </table>
+                    </th>                  
+                </tr>                  
+                
 
             @endforeach
 
@@ -254,14 +265,62 @@
 
                 <tr>                  
                   <td colspan="2">
-                    <label>
-                      <input type="radio" name="type" value="1" checked>Wait
+                    <label>                      
+                      <input type="radio" name="measurement_type" value="1" checked>Weight
                     </label>
                     <label>
-                      <input type="radio" name="type" value="2">Time
+                      <input type="radio" name="measurement_type" value="2" >Count
+                    </label>
+
+                    <label>
+                      <input type="radio" name="measurement_type" value="3">Time
                     </label>
                   </td>                 
                 </tr>
+
+                <tr class="weight_row">
+                  <th>
+                    <label for="integer">重さ</label>
+
+                    <label>
+                      <input type="radio" name="weight_type" value="1" checked>kg
+                    </label>
+                    <label>
+                      <input type="radio" name="weight_type" value="2">lb
+                    </label>
+                  </th>               
+
+                  <th>
+                    <label for="reps">回数</label>
+                  </th>               
+                </tr>
+
+                <tr class="weight_row">
+                  <th colspan="" class="d-flex">
+                    <input type="text" id="integer" name="integer" class="form-control text-end w-100px" maxlength="3">
+                    <span class="comma">.</span>
+                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">
+                    <span class="display_weight_type">kg</span>                  
+                  </th>               
+                  <th colspan="">
+                    <input type="text" id="reps" name="reps" class="form-control text-end w-100px" value="">                    
+                  </th>               
+                </tr>       
+
+
+                <tr class="count_row d-none">
+                  <th colspan="2">
+                    <label for="count">回数</label>
+                  </th>                                     
+                </tr>
+                
+                <tr class="count_row d-none">                           
+                  <th colspan="2">
+                    <input type="text" id="count" name="count" class="form-control text-end w-100px" value="">
+                  </th>               
+                </tr>
+               
+
 
                 <tr class="time_row d-none">
                   <th colspan="2">
@@ -275,43 +334,9 @@
                   </th>               
                 </tr>
 
-
-                <tr class="weight_row">
-                  <th>
-                    <label for="weight">重さ</label>
-
-                    <label>
-                      <input type="radio" name="weight_type" value="1" checked>kg
-                    </label>
-                    <label>
-                      <input type="radio" name="weight_type" value="2">lb
-                    </label>
-                  </th>               
-
-                  <th>
-                    <label for="time">回数</label>
-                  </th>               
-                </tr>
-
-                <tr class="weight_row">
-                  <th colspan="" class="d-flex">
-                    <input type="text" id="integer" name="integer" class="form-control text-end w-100px" maxlength="3">
-                    <span class="comma">.</span>
-                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">
-                    <span class="display_weight_type">kg</span>                  
-                  </th>               
-                  <th colspan="">
-                    <input type="text" id="reps" name="reps" class="form-control w-100px" value="">                    
-                  </th>               
-                </tr>              
-
               </table>
 
-
-              
-                
-        
-              
+             
               
           </div>
 
@@ -344,7 +369,7 @@
 <script type="text/javascript">
 
   // 開始時刻をISO 8601形式に変換
-  const start_datetime = '{{ $start_datetime }}'.replace(/\//g, '-').replace(' ', 'T');
+  const start_datetime = '{{ $training_history_t->start_datetime }}'.replace(/\//g, '-').replace(' ', 'T');
 
   // datetime_flg の初期値を true に設定
   var datetime_flg = true;
@@ -413,38 +438,40 @@
   updateTimer();
 
 
-  $(document).on("click", "input[name='type']", function (e) {
+  $(document).on("click", "input[name='measurement_type']", function (e) {
       
-      var selectedValue = $("input[name='type']:checked").val();
+      var selectedValue = $("input[name='measurement_type']:checked").val();
 
-      $(".time_row").removeClass("d-none");
       $(".weight_row").removeClass("d-none");
+      $(".count_row").removeClass("d-none");
+      $(".time_row").removeClass("d-none");
+      
       
       if (selectedValue == 1) {
         $(".time_row").addClass("d-none");
-      } else {
+        $(".count_row").addClass("d-none");
+      } else if(selectedValue == 2) {
         $(".weight_row").addClass("d-none");
+        $(".time_row").addClass("d-none");
+      } else if(selectedValue == 3) {
+        $(".weight_row").addClass("d-none");
+        $(".count_row").addClass("d-none");
       }
   });
 
-  
-    $(document).on("click", ".training_detail-button", function (e) {
-        // this の target を取得
-        var target = $(this).data('target');
-        
-        // 同一の target を持つ .training_detail-area 要素を取得
-        var $targetArea = $('.training_detail-area[data-target="' + target + '"]');
-        
-        // d-none クラスがあればリムーブ、なければ add
-        $targetArea.toggleClass('d-none');
-    });
+
+
+
 
 
   //トレーニング履歴ボタン
   $(document).on("click", ".training_history_t-save-button", function (e) {
 
+
+    var process = $(this).data('process'); 
     var set_datetime = document.getElementById('timer').textContent;
     var user_gym_id = $('#user_gym_id').val();
+    var user_training_count = $('#user_training_count').val();
     
     e.preventDefault();
 
@@ -461,7 +488,11 @@
             url: url, // 送信先
             type: 'post',
             dataType: 'json',
-            data: { 'set_datetime' : set_datetime, 'user_gym_id' : user_gym_id},
+            data: { 'user_training_count' : user_training_count
+                  , 'set_datetime' : set_datetime
+                  , 'user_gym_id' : user_gym_id
+                  , 'process' : process
+                },
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 	    })
     .done(function (data, textStatus, jqXHR) {
@@ -472,7 +503,11 @@
 
         if(result_array["result"] == 'success'){
 
-            location.reload();
+          var user_training_count = result_array["user_training_count"];
+          var currentUrl = window.location.href.split('?')[0]; // ベースURLを取得
+
+          // パラメータを付けて遷移
+          window.location.href = currentUrl + "?user_training_count=" + user_training_count;
 
         }else if(result_array["result"] == 'login_again'){
                        
@@ -505,6 +540,7 @@
 
     var error_message_area = ".training_detail-save-modal-error-message-area";
     error_reset(error_message_area);
+    var user_training_count = $('#user_training_count').val();
     var user_training_detail_id = 0;
     var user_exercise_id = $('#user_exercise_id').val();  
     var type = $('input[name="type"]:checked').val();
@@ -529,6 +565,7 @@
           type: 'post',
           dataType: 'json',
           data: { 
+              'user_training_count' : user_training_count,
               'user_training_detail_id' : user_training_detail_id,
               'user_exercise_id' : user_exercise_id,
               'type' : type,

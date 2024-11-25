@@ -42,9 +42,17 @@ return new class extends Migration
                 ->integer('user_exercise_id')                
                 ->comment('種目ID:ユーザー毎');
 
+
             $table
-                ->integer('type')                
-                ->comment('回数or時間:1 = 回数 , 2 = 時間');
+                ->integer('measurement_type')
+                ->default(2)
+                ->comment('計測タイプ:1 = 重さ , 2 = 回数 , 3 = 時間');
+
+            $table
+                ->integer('bodyweight_flg')
+                ->default(0)
+                ->comment('自重フラグ:0 = 否 , 1 = 肯');
+            
 
             $table
                 ->time('time')                

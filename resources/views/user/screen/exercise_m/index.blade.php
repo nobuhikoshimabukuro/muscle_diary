@@ -33,8 +33,7 @@
                       $text_class = [];
                       $text_class []= $text_class_kinds[1];
                       $text_class []= $text_class_kinds[0];
-                      $text_class []= $text_class_kinds[1];
-                      $text_class []= $text_class_kinds[0];
+                      $text_class []= $text_class_kinds[1];                      
                       $text_class []= $text_class_kinds[2];
                       $text_class []= $text_class_kinds[2];
 
@@ -43,8 +42,7 @@
                   <tr>
                       <th class="{{$text_class[$text_class_index++]}}">ID</th>
                       <th class="{{$text_class[$text_class_index++]}}">種目名</th>
-                      <th class="{{$text_class[$text_class_index++]}}">利用</th>
-                      <th class="{{$text_class[$text_class_index++]}}">記録タイプ</th>
+                      <th class="{{$text_class[$text_class_index++]}}">利用</th>                      
                       <th class="{{$text_class[$text_class_index++]}}">表示順</th>
                       <th class="{{$text_class[$text_class_index++]}}"></th>
                   </tr>
@@ -75,16 +73,7 @@
                             @endif                            
                         </td>
 
-                        {{-- 計測タイプ --}}
-                        <td class="{{$text_class[$text_class_index++]}}">
-                          @if($item->measurement_type == 1)
-                            Time
-                          @elseif($item->measurement_type == 2)
-                            weight @if($item->bodyweight_flg == 1) 【自重】 @endif
-                          @endif                            
-                        </td>
-
-                        {{-- 表示順 --}}
+                              {{-- 表示順 --}}
                         <td class="{{$text_class[$text_class_index++]}}">
                             {{$item->display_order}}
                         </td>
@@ -92,9 +81,7 @@
                         <td class="{{$text_class[$text_class_index++]}}">
                             <button type="button" class="btn btn-outline-secondary"                               
                                 data-user_exercise_id="{{$item->user_exercise_id}}" 
-                                data-exercise_name="{{$item->exercise_name}}" 
-                                data-measurement_type="{{$item->measurement_type}}"
-                                data-bodyweight_flg="{{$item->bodyweight_flg}}"
+                                data-exercise_name="{{$item->exercise_name}}"                                 
                                 data-display_flg="{{$item->display_flg}}"
                                 data-display_order="{{$item->display_order}}"
                                 data-bs-toggle='modal' data-bs-target='#save-modal'
@@ -151,34 +138,7 @@
                       </td>
                     </tr>
 
-                    <tr>
-                      <th colspan="2">
-                        <label>計測タイプ</label>
-                      </th>                                     
-                    </tr>
-
-                    <tr>  
-                      
-                      <td>                        
-                          <label>
-                              <input type="radio" name="measurement_type" value="1"> Time
-                          </label>
-                          <label>
-                              <input type="radio" name="measurement_type" value="2"> weight                              
-                          </label>                          
-                      </td>
-
-                      <td>
-
-                        <div class="bodyweight_flg-area">
-                          
-                          <label for="bodyweight_flg">
-                            <input type="checkbox" id="bodyweight_flg" name="bodyweight_flg" value="1"> 自重                            
-                          </label>  
-                        </div>
-                      </td>
-
-                    </tr>
+                   
 
 
                     <tr>
@@ -246,9 +206,7 @@
     let evCon = $(e.relatedTarget);
 
     $('input[name="user_exercise_id"]').val("");
-    $('input[name="exercise_name"]').val("");
-    $('input[name="measurement_type"][value="2"]').prop('checked', true);
-    $('input[name="bodyweight_flg"]').prop('checked', false);
+    $('input[name="exercise_name"]').val("");    
     $('input[name="display_order"]').val("");
     $('input[name="display_flg"][value="1"]').prop('checked', true);
 
@@ -259,9 +217,7 @@
     $(".bodyweight_flg-area").removeClass('d-none');
     if(user_exercise_id != 0){
       
-      var exercise_name = evCon.data('exercise_name');
-      var measurement_type = evCon.data('measurement_type');
-      var bodyweight_flg = evCon.data('bodyweight_flg');
+      var exercise_name = evCon.data('exercise_name');      
       var display_order = evCon.data('display_order');
       var display_flg = evCon.data('display_flg');
 
@@ -269,19 +225,7 @@
       $('input[name="exercise_name"]').val(exercise_name);
       $('input[name="measurement_type"][value="' + measurement_type + '"]').prop('checked', true);
 
-      
-      if(measurement_type == 1){
-
-        $(".bodyweight_flg-area").addClass('d-none');
-
-      }else{
-
-        if(bodyweight_flg == 1){
-          $('input[name="bodyweight_flg"]').prop('checked', true);
-        }else{
-          $('input[name="bodyweight_flg"]').prop('checked', false);
-        }
-      }
+     
 
       $('input[name="display_order"]').val(display_order);
       $('input[name="display_flg"][value="' + display_flg + '"]').prop('checked', true);
@@ -290,17 +234,7 @@
 
   });
   
-  $(document).on("change", 'input[name="measurement_type"]', function (e) {
-
-    var selectedRadio = document.querySelector('input[name="measurement_type"]:checked');
-    var measurement_type = selectedRadio.value;
-
-    $(".bodyweight_flg-area").removeClass('d-none');    
-    if(measurement_type == 1){
-      $(".bodyweight_flg-area").addClass('d-none');      
-    }
-
-  });
+ 
 
   $(document).on("click", "#save-button", function (e) {
 
