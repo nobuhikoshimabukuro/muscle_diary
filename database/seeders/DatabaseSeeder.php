@@ -6,6 +6,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+
 use App\Original\common;
 class DatabaseSeeder extends Seeder
 {
@@ -89,25 +91,40 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
-        // DB::table('training_history_t')->insert([            
-            
-        //     [                
-        //         'user_id' => 1,
-        //         'user_training_count' => 1,                
-        //         'user_gym_id' => 1,
-        //         'start_datetime' => "2024/10/04 16:58:32",
-        //         'end_datetime' => "2024/10/04 17:58:32"
-        //     ]
-        //     ,
-        //     [                
-        //         'user_id' => 1,
-        //         'user_training_count' => 2,                
-        //         'user_gym_id' => 1,
-        //         'start_datetime' => "2024/10/05 16:58:32",
-        //         'end_datetime' => null
-        //     ]
 
-        // ]);
+        $index = 1;
+        $dif = 0.231;
+        $weight = 90.5642;
+        $goal = 80;
+        $measure_at = Carbon::createFromFormat('YmdHis', '20231001121212'); // 初期値を設定
+        
+        while (true) {
+        
+            $randomNumber = rand(1, 3);
+        
+            if ($randomNumber == 3) {                
+                $weight = $weight + $dif;
+            } else {
+                $weight = $weight - $dif;
+            }
+        
+            DB::table('weight_log_t')->insert([
+                [
+                    'user_id' => 1,
+                    'user_weight_log_id' => $index++,                                
+                    'weight' => $weight,                
+                    'measure_at' => $measure_at->format('Y-m-d H:i:s'), // 日時をフォーマット
+                ]        
+            ]);
+        
+              // 1日加算
+            $measure_at->addDay();
+        
+            if ($weight < $goal) {
+                break; 
+            }
+        }
+        
 
     }
 }
