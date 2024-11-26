@@ -65,9 +65,9 @@ return new class extends Migration
                 ->comment('回数');
 
             $table
-                ->decimal('weight', 12, 4)                
+                ->decimal('weight', 12, 3)
                 ->nullable()
-                ->comment('重さ(g)');
+                ->comment('重さ(kg)');
 
             $table
                 ->text('remark')                

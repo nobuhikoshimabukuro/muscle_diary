@@ -34,9 +34,127 @@ class weight_log_t_controller extends Controller
         $user_info = common::get_login_user_info();
         // セッション有無
         if (!$user_info->login_status) {
+
+            // 現在のURLを取得            
+            $after_login_url = $request->fullUrl();
+            session()->forget('after_login_url');
+            session()->put(['after_login_url' => $after_login_url]);
+
             return redirect(route('user.login'));
         }
 
+        $user_id = $user_info->user_id;
+
+        $sql = "
+        
+        WITH yyyymmdd_data AS ( 
+            SELECT
+                user_id
+                , yyyymmdd
+                , AVG(weight) AS weight 
+            FROM
+                ( 
+                    SELECT
+                        user_id
+                        , DATE_FORMAT(measure_at, '%Y%m%d') AS yyyymmdd
+                        , weight 
+                    FROM
+                        weight_log_t
+                ) WORK 
+            GROUP BY
+                user_id
+                , yyyymmdd
+        ) 
+        , yyyymm_data AS ( 
+            SELECT
+                user_id
+                , 
+                LEFT (yyyymmdd, 6) AS yyyymm
+                , AVG(weight) AS weight 
+            FROM
+                yyyymmdd_data 
+            GROUP BY
+                user_id
+                , 
+                LEFT (yyyymmdd, 6)
+        ) 
+        , week_data AS ( 
+            SELECT
+                user_id
+                , MIN(yyyymmdd) AS start_date
+                , MAX(yyyymmdd) AS end_date
+                , YEAR (yyyymmdd) AS year
+                , WEEK(yyyymmdd, 1) AS week
+                , AVG(weight) AS weight 
+            FROM
+                yyyymmdd_data 
+            GROUP BY
+                user_id
+                , YEAR (yyyymmdd)
+                , WEEK(yyyymmdd, 1)                     -- 週番号で区切る
+        )        
+       
+        
+        ";
+
+        $select_sql = "";
+        $where_sql = "";        
+        $branch = 1;
+        if($branch == 1){
+
+            $select_sql = "
+
+            SELECT
+                * 
+            FROM
+                yyyymmdd_data 
+            
+            ";
+
+
+            // システム日付を基準に取得
+            $today = Carbon::now();
+
+            // 月初と月末の日付を取得
+            $startOfMonth = $today->startOfMonth()->format('Ymd');
+            $endOfMonth = $today->endOfMonth()->format('Ymd');
+
+            $where_sql = " AND yyyymmdd >=" .$startOfMonth; 
+            $where_sql .= " AND yyyymmdd <=" .$endOfMonth; 
+
+        }else if($branch == 2){
+
+            $select_sql = "                
+                SELECT
+                    * 
+                FROM
+                    yyyymm_data            
+            ";
+
+
+        }else if($branch == 3){
+
+            $select_sql = "                
+                SELECT
+                    * 
+                FROM
+                    week_data           
+            ";
+
+        }
+
+
+       
+
+
+
+        $sql .= $select_sql . "WHERE user_id = " . $user_id;
+
+        $sql .= $where_sql;
+
+        Log::channel('sql_log')->info($sql);
+
+        $info = DB::connection('mysql')->select($sql);
 
         $demo = "";
 

@@ -114,6 +114,14 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        // 追加ログ
+        'sql_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sql_log/sql.log'),
+            'days' => 60,
+            'permission' => 0777,
+        ],
     ],
 
 ];

@@ -35,9 +35,9 @@ return new class extends Migration
                 ->comment('ユーザー毎体重管理ID');
                 
             $table
-                ->decimal('weight', 12, 4)
-                ->default(0.0000)                
-                ->comment('重さ(g)');
+                ->decimal('weight', 12, 3)
+                ->default(0.000)                
+                ->comment('重さ(kg)');
                 
             $table
                 ->dateTime('measure_at')                

@@ -93,10 +93,12 @@ class DatabaseSeeder extends Seeder
 
 
         $index = 1;
-        $dif = 0.231;
-        $weight = 90.5642;
+        $user_id = 1;
+        $dif = 0.131;
+        $weight = 90.564;
         $goal = 80;
-        $measure_at = Carbon::createFromFormat('YmdHis', '20231001121212'); // 初期値を設定
+        $measure_at1 = Carbon::createFromFormat('YmdHis', '20231001090912'); // 初期値を設定
+        $measure_at2 = Carbon::createFromFormat('YmdHis', '20231001171758'); // 初期値を設定
         
         while (true) {
         
@@ -110,20 +112,95 @@ class DatabaseSeeder extends Seeder
         
             DB::table('weight_log_t')->insert([
                 [
-                    'user_id' => 1,
+                    'user_id' => $user_id,
                     'user_weight_log_id' => $index++,                                
                     'weight' => $weight,                
-                    'measure_at' => $measure_at->format('Y-m-d H:i:s'), // 日時をフォーマット
+                    'measure_at' => $measure_at1->format('Y-m-d H:i:s'), // 日時をフォーマット
                 ]        
             ]);
+
+
+            $randomNumber = rand(1, 3);
         
+            if ($randomNumber == 3) {                
+                $weight = $weight + $dif;
+            } else {
+                $weight = $weight - $dif;
+            }
+        
+            DB::table('weight_log_t')->insert([
+                [
+                    'user_id' => $user_id,
+                    'user_weight_log_id' => $index++,                                
+                    'weight' => $weight,                
+                    'measure_at' => $measure_at2->format('Y-m-d H:i:s'), // 日時をフォーマット
+                ]        
+            ]);
+
               // 1日加算
-            $measure_at->addDay();
+            $measure_at1->addDay();
+            $measure_at2->addDay();
         
             if ($weight < $goal) {
                 break; 
             }
         }
+
+        
+        $index = 1;
+        $user_id = 2;
+        $dif = 0.091;
+        $weight = 70.422;
+        $goal = 59;
+        $measure_at1 = Carbon::createFromFormat('YmdHis', '20231001090858'); // 初期値を設定
+        $measure_at2 = Carbon::createFromFormat('YmdHis', '20231001181902'); // 初期値を設定
+        
+        while (true) {
+        
+            $randomNumber = rand(1, 3);
+        
+            if ($randomNumber == 3) {                
+                $weight = $weight + $dif;
+            } else {
+                $weight = $weight - $dif;
+            }
+        
+            DB::table('weight_log_t')->insert([
+                [
+                    'user_id' => $user_id,
+                    'user_weight_log_id' => $index++,                                
+                    'weight' => $weight,                
+                    'measure_at' => $measure_at1->format('Y-m-d H:i:s'), // 日時をフォーマット
+                ]        
+            ]);
+
+
+            $randomNumber = rand(1, 3);
+        
+            if ($randomNumber == 3) {                
+                $weight = $weight + $dif;
+            } else {
+                $weight = $weight - $dif;
+            }
+        
+            DB::table('weight_log_t')->insert([
+                [
+                    'user_id' => $user_id,
+                    'user_weight_log_id' => $index++,                                
+                    'weight' => $weight,                
+                    'measure_at' => $measure_at2->format('Y-m-d H:i:s'), // 日時をフォーマット
+                ]        
+            ]);
+
+              // 1日加算
+            $measure_at1->addDay();
+            $measure_at2->addDay();
+        
+            if ($weight < $goal) {
+                break; 
+            }
+        }
+
         
 
     }
