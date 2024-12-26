@@ -35,11 +35,7 @@ class main_controller extends Controller
         // セッション有無
         if (!$user_info->login_status) {
             
-            // 現在のURLを取得            
-            $after_login_url = $request->fullUrl();
-            session()->forget('after_login_url');
-            session()->put(['after_login_url' => $after_login_url]);
-
+            common::set_after_login_url($request);
             return redirect(route('user.login'));
         }
 

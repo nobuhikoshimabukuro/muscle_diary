@@ -94,22 +94,28 @@ class DatabaseSeeder extends Seeder
 
         $index = 1;
         $user_id = 1;
-        $dif = 0.131;
-        $weight = 90.564;
-        $goal = 80;
-        $measure_at1 = Carbon::createFromFormat('YmdHis', '20231001090912'); // 初期値を設定
-        $measure_at2 = Carbon::createFromFormat('YmdHis', '20231001171758'); // 初期値を設定
+        $dif = 0.050;
+        $weight = 90.564;       
+
+        // 今日の日付を取得
+        $today = Carbon::today();
+
+        // YYYYMMDD形式にフォーマット
+        $formattedDate = $today->format('Ymd');
+
+        $measure_at1 = Carbon::createFromFormat('YmdHis', $formattedDate . '090912'); // 初期値を設定
+        $measure_at2 = Carbon::createFromFormat('YmdHis', $formattedDate . '171758'); // 初期値を設定        
         
-        while (true) {
+        for ($i = 1; $i <= 710; $i++) {
+
+            $randomNumber = rand(1, 5);
         
-            $randomNumber = rand(1, 3);
-        
-            if ($randomNumber == 3) {                
-                $weight = $weight + $dif;
+            if ($randomNumber % 2 != 0) {
+                $weight = $weight + $dif;                
             } else {
-                $weight = $weight - $dif;
+                $weight = $weight - $dif;                
             }
-        
+
             DB::table('weight_log_t')->insert([
                 [
                     'user_id' => $user_id,
@@ -120,14 +126,14 @@ class DatabaseSeeder extends Seeder
             ]);
 
 
-            $randomNumber = rand(1, 3);
+            $randomNumber = rand(1, 5);
         
-            if ($randomNumber == 3) {                
-                $weight = $weight + $dif;
+            if ($randomNumber % 2 != 0) {
+                $weight = $weight + $dif;                
             } else {
-                $weight = $weight - $dif;
+                $weight = $weight - $dif;                
             }
-        
+
             DB::table('weight_log_t')->insert([
                 [
                     'user_id' => $user_id,
@@ -137,69 +143,16 @@ class DatabaseSeeder extends Seeder
                 ]        
             ]);
 
-              // 1日加算
-            $measure_at1->addDay();
-            $measure_at2->addDay();
-        
-            if ($weight < $goal) {
-                break; 
-            }
+
+            // 1日マイナス
+            $measure_at1 = $measure_at1->subDay();
+            $measure_at2 = $measure_at2->subDay();
+
+            
         }
 
-        
-        $index = 1;
-        $user_id = 2;
-        $dif = 0.091;
-        $weight = 70.422;
-        $goal = 59;
-        $measure_at1 = Carbon::createFromFormat('YmdHis', '20231001090858'); // 初期値を設定
-        $measure_at2 = Carbon::createFromFormat('YmdHis', '20231001181902'); // 初期値を設定
-        
-        while (true) {
-        
-            $randomNumber = rand(1, 3);
-        
-            if ($randomNumber == 3) {                
-                $weight = $weight + $dif;
-            } else {
-                $weight = $weight - $dif;
-            }
-        
-            DB::table('weight_log_t')->insert([
-                [
-                    'user_id' => $user_id,
-                    'user_weight_log_id' => $index++,                                
-                    'weight' => $weight,                
-                    'measure_at' => $measure_at1->format('Y-m-d H:i:s'), // 日時をフォーマット
-                ]        
-            ]);
 
-
-            $randomNumber = rand(1, 3);
         
-            if ($randomNumber == 3) {                
-                $weight = $weight + $dif;
-            } else {
-                $weight = $weight - $dif;
-            }
-        
-            DB::table('weight_log_t')->insert([
-                [
-                    'user_id' => $user_id,
-                    'user_weight_log_id' => $index++,                                
-                    'weight' => $weight,                
-                    'measure_at' => $measure_at2->format('Y-m-d H:i:s'), // 日時をフォーマット
-                ]        
-            ]);
-
-              // 1日加算
-            $measure_at1->addDay();
-            $measure_at2->addDay();
-        
-            if ($weight < $goal) {
-                break; 
-            }
-        }
 
         
 

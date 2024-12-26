@@ -6,6 +6,12 @@
 @endsection
 @section('content')
 
+@php    
+  $labels = $get_record['datas']['labels'];
+  $weights = $get_record['datas']['weights'];
+  $summary = $get_record['summary'];
+@endphp
+
 <style>
 .weight_type-label
 {
@@ -106,6 +112,10 @@
 
     </div>
 
+    <div class="">
+      <canvas id="mychart"></canvas>
+    </div>
+
   </div> 
 
 </div>
@@ -153,12 +163,15 @@
   
 </div>
 
+
+
 {{-- 再ログインモーダルの読み込み --}}
 @include('user/common/login_again_modal')
 
 @endsection
 
 @section('pagejs')
+
 
 <script type="text/javascript">
 
@@ -286,6 +299,32 @@
     });
 
   });
+
+
+
+  //グラフ作成
+  var labels = @json($labels);  // Days or date labels
+  var weights = @json($weights);  // Weight data for each corresponding label
+
+  var ctx = document.getElementById('mychart');
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Blue',
+        data: weights,
+        borderColor: '#48f',
+      }],
+    },
+    options: {
+      y: {
+        min: {{ $summary['min_weight'] }},
+        max: {{ $summary['max_weight'] }},
+      },
+    },
+  });
+
 
 </script>
 

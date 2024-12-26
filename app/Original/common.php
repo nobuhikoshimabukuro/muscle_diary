@@ -162,7 +162,21 @@ class common
     
     }
 
-     //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+
+    public static function set_after_login_url(Request $request)
+    {
+
+        // 現在のURLを取得            
+        $after_login_url = $request->fullUrl();
+        session()->forget('after_login_url');
+        session()->put(['after_login_url' => $after_login_url]);
+
+        return true;
+
+    }
+
+
+    //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
     //※本番稼働後は暗号化キーは絶対に変更してはダメ
     //※$encryption_key = 'muscle';
     //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
