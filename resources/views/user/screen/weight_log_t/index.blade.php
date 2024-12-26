@@ -112,9 +112,9 @@
 
     </div>
 
-    <div class="">
+    {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
       <canvas id="mychart"></canvas>
-    </div>
+    {{-- </div> --}}
 
   </div> 
 
@@ -307,23 +307,58 @@
   var weights = @json($weights);  // Weight data for each corresponding label
 
   var ctx = document.getElementById('mychart');
+
   var myChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: 'Blue',
+        label: 'userName',
         data: weights,
         borderColor: '#48f',
+        tension: 0.1,
       }],
     },
     options: {
-      y: {
-        min: {{ $summary['min_weight'] }},
-        max: {{ $summary['max_weight'] }},
+      responsive: true,
+      scales: {
+        yAxes: [{  // v2.x系では 'yAxes' と記載します
+          ticks: {
+            beginAtZero: true,
+            min: {{ $summary['min_weight'] }},  // 最小値
+            max: {{ $summary['max_weight'] }},  // 最大値
+            stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+          },
+        }],
       },
     },
   });
+
+//   var myChart = new Chart(ctx, {
+//   type: 'line',
+//   data: {
+//     labels: labels,
+//     datasets: [{
+//       label: 'Blue',
+//       data: weights,
+//       borderColor: '#48f',
+//     }],
+//   },
+//   options: {
+//     scales: {
+//       y: {
+//         // min: {{ $summary['min_weight'] }},
+//         // max: {{ $summary['max_weight'] }},
+
+//         min: 0,
+//         max: 100,
+//       },
+//     },
+//   },
+// });
+
+
+  
 
 
 </script>

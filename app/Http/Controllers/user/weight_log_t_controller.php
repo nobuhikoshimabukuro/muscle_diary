@@ -42,20 +42,26 @@ class weight_log_t_controller extends Controller
 
         $user_id = $user_info->user_id;
 
+        // システム日付を基準に取得
+        $today = Carbon::now();
+        $today = Carbon::createFromFormat('Ymd', '20241001');
+        $startOfMonth = $today->startOfMonth()->format('Ymd');
 
-        $info = [];        
-        $info["user_id"]= $user_id;
-        $info["request"]= $request;
-        $info["branch"]= 1;
-        $get_record = self::get_record($info);
-        
+        $search_array = [
+            "user_id" => $user_id
+            ,"branch" => $request->branch == null ?  1 : $request->branch
+            ,"start_date" => $request->start_date == null ? $today->startOfMonth()->format('Ymd') : $request->start_date            
+            ,"end_date" => $request->end_date == null ? $today->endOfMonth()->format('Ymd') : $request->end_date
+        ];
 
-        return view('user/screen/weight_log_t/index', compact('get_record'));
+        $get_record = self::get_record($search_array);        
+
+        return view('user/screen/weight_log_t/index', compact('get_record' , 'search_array'),);
 
     }
 
 
-    function get_record($info)
+    function get_record($search_array)
     {    
         $with_sql = "
         
@@ -146,18 +152,13 @@ class weight_log_t_controller extends Controller
                     LEFT (yyyymmdd, 4)
             ) 
         ";
+        
+        $where_sql = "WHERE user_id = :user_id";
+        $params = ['user_id' => $search_array["user_id"]]; 
+
 
         $select_sql = "";
-        $where_sql = "WHERE user_id = :user_id";
-        $params = ['user_id' => $info["user_id"]];    
-        $branch = $info["branch"];
-
-        // システム日付を基準に取得
-        $today = Carbon::now();
-
-
-
-        switch ($branch) {
+        switch ($search_array["branch"]) {
             case 1:
                 
                 $select_sql = "
@@ -172,12 +173,12 @@ class weight_log_t_controller extends Controller
                 ";           
 
                 // 月初と月末の日付を取得
-                $startOfMonth = $today->startOfMonth()->format('Ymd');
-                $endOfMonth = $today->endOfMonth()->format('Ymd');
+                // 日付を Carbon オブジェクトに変換してからフォーマットする                
 
-                $where_sql .= " AND yyyymmdd >= :start_date AND yyyymmdd <= :end_date";
-                $params['start_date'] = $startOfMonth;
-                $params['end_date'] = $endOfMonth;
+                $where_sql .= " AND ";
+                $where_sql .= " yyyymmdd >= :start_date AND yyyymmdd <= :end_date";
+                $params['start_date'] = Carbon::parse($search_array["start_date"])->format('Ymd');
+                $params['end_date'] = Carbon::parse($search_array["end_date"])->format('Ymd');
 
                 break;
             case 2:
@@ -196,23 +197,25 @@ class weight_log_t_controller extends Controller
                         week_data
                 ";
 
-                $startOfMonth = $today->startOfMonth()->format('Ymd');
-                $endOfMonth = $today->endOfMonth()->format('Ymd');
+                // 月初と月末の日付を取得
+                $start_date = Carbon::parse($search_array["start_date"])->format('Ymd');
+                $end_date = Carbon::parse($search_array["end_date"])->format('Ymd');
 
-                $where_sql .= "(";
-                $where_sql .= "     :start_date <= start_date";
-                $where_sql .= "         AND ";
-                $where_sql .= "     :end_date >= start_date";
-                $where_sql .= ")";
+                $where_sql .= " AND ";
+                $where_sql .= " (";
+                $where_sql .= " (:start_date1 <= start_date AND :end_date1 >= start_date)";
                 $where_sql .= " OR ";
-                $where_sql .= "(";
-                $where_sql .= "     :start_date <= end_date";
-                $where_sql .= "         AND ";
-                $where_sql .= "     :end_date >= end_date";
-                $where_sql .= ")";
+                $where_sql .= " (:start_date2 <= end_date AND :end_date2 >= end_date)";
+                $where_sql .= " )";
 
-                $params['start_date'] = $startOfMonth;
-                $params['end_date'] = $endOfMonth;
+                
+                  
+                // パラメータに start_date と end_date を追加
+                $params['start_date1'] = $start_date;
+                $params['start_date2'] = $start_date;
+                $params['end_date1'] = $end_date;
+                $params['end_date2'] = $end_date;
+                
                 
                 break;
             case 3:
@@ -224,13 +227,12 @@ class weight_log_t_controller extends Controller
                         , CONCAT(LEFT (yyyymm, 4), '/', RIGHT (yyyymm, 2)) AS formatted_yyyymm
                         , weight 
                     FROM
-                        month_data        
+                        month_data
                 ";
 
-                $yyyy = $today->format('Y');
-
-                $where_sql .= " AND LEFT (yyyymm, 4) =:yyyy";             
-                $params['yyyy'] = $yyyy;
+                $where_sql .= " AND LEFT(yyyymm, 4) =:yyyy";   
+                                
+                $params['yyyy'] = Carbon::parse($search_array["start_date"])->format('Y');
 
                 break;
             case 4:
@@ -252,7 +254,7 @@ class weight_log_t_controller extends Controller
 
         $sql = $with_sql . $select_sql . $where_sql;
 
-        Log::channel('sql_log')->info($sql);
+        Log::channel('sql_log')->info($sql);        
 
         $record = DB::connection('mysql')->select($sql, $params);
 
@@ -264,38 +266,42 @@ class weight_log_t_controller extends Controller
         $min_weight = 0;
         $max_weight = 0;
         $ave_weight = 0;
+        //割算用の値を設定
+        $numerator = 2;
         foreach ($record as $index => $info) {
 
-            $yyyymmdd = Carbon::createFromFormat('Ymd', $info->yyyymmdd);
-            
             $weight = $info->weight;          
             $label = "";
-            switch ($branch) {
+            switch ($search_array["branch"]) {
                 case 1:
             
-                    $label = $yyyymmdd->formatted_yyyymmdd;
+                    $label = $info->formatted_yyyymmdd;
+                    $numerator = 2;
                     break;
                 case 2:
-                    $label = $yyyymmdd->formatted_start_date . "～";
+                    $label = $info->formatted_start_date . "～";
+                    $numerator = 5;
                     break;
                 case 3:
                     
-                    $label = $yyyymmdd->formatted_yyyymm;
+                    $label = $info->formatted_yyyymm;
+                    $numerator = 10;
                     break;
                 case 4:
                     
-                    $label = $yyyymmdd->yyyy;
+                    $label = $info->yyyy;
+                    $numerator = 10;
                     break;            
                 default:                    
             }
 
             $total_weight += $weight; // 合計体重を加算
 
-            if ($min_weight >= $weight) {
+            if ($min_weight >= $weight ||  $index == 0 ) {
                 $min_weight = $weight; // 最小値を更新
             }
 
-            if ($max_weight <= $weight) {
+            if ($max_weight <= $weight ||  $index == 0) {
                 $max_weight = $weight; // 最大値を更新
             }
 
@@ -319,8 +325,8 @@ class weight_log_t_controller extends Controller
             $min_weight = floor($min_weight);
             $min_weight -= 1;
 
-            // 小数点を切り捨てし10で割り切れるまでループ
-            if ($min_weight % 10 == 0) {
+            // 設定した値で割り切れるまでループ
+            if ($min_weight % $numerator == 0) {
                 break;
             }            
         }
@@ -331,11 +337,15 @@ class weight_log_t_controller extends Controller
             $max_weight = floor($max_weight);
             $max_weight += 1;
 
-            // 小数点を切り捨てし10で割り切れるまでループ
-            if ($max_weight % 10 == 0) {
+            // 設定した値で割り切れるまでループ
+            if ($max_weight % $numerator == 0) {
                 break;
             }            
         }
+
+        // $step_size を計算する
+        $step_size = ceil(($max_weight - $min_weight) / 10);
+
 
 
         $return_array = [
@@ -345,6 +355,7 @@ class weight_log_t_controller extends Controller
                 ,'min_weight' => $min_weight
                 ,'max_weight' => $max_weight
                 ,'ave_weight' => $ave_weight
+                ,'step_size' => $step_size
                 ]
         ];
 
