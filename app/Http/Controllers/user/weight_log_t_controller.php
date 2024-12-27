@@ -42,27 +42,76 @@ class weight_log_t_controller extends Controller
 
         $user_id = $user_info->user_id;
 
+        $get_limit_date = self::get_limit_date($user_id);
+
         // システム日付を基準に取得
-        $today = Carbon::now();
-        $today = Carbon::createFromFormat('Ymd', '20241001');
-        $startOfMonth = $today->startOfMonth()->format('Ymd');
+        
+        if($get_limit_date["end_date"] == "")
+        {
+            $now = Carbon::now();            
+        }else{
+            $now = Carbon::createFromFormat('Ymd', $get_limit_date["end_date"]);  
+        }
+        
+        $start_date = $now->startOfMonth()->format('Y/m/d');
+        $end_date = $now->endOfMonth()->format('Y/m/d');
+
+        $branch = 1;
+        if(isset($request->branch)){
+
+            $branch = $request->branch;
+
+            if(isset($request->start_date)){
+                $start_date = $request->start_date;
+            }
+
+            if(isset($request->end_date)){
+                $end_date = $request->end_date;
+            }
+        }   
 
         $search_array = [
             "user_id" => $user_id
-            ,"branch" => $request->branch == null ?  1 : $request->branch
-            ,"start_date" => $request->start_date == null ? $today->startOfMonth()->format('Ymd') : $request->start_date            
-            ,"end_date" => $request->end_date == null ? $today->endOfMonth()->format('Ymd') : $request->end_date
+            ,"branch" => $branch
+            ,"start_date" => $start_date
+            ,"end_date" => $end_date
         ];
 
         $get_record = self::get_record($search_array);        
 
-        return view('user/screen/weight_log_t/index', compact('get_record' , 'search_array'),);
+        return view('user/screen/weight_log_t/index', compact('get_record' , 'search_array'));
 
     }
 
+    function get_limit_date($user_id)
+    {    
+
+        $start_date = "";
+        $end_date = "";
+
+        $dates = weight_log_t_model::where('user_id', $user_id)
+        ->selectRaw('MIN(measure_at) as start_date, MAX(measure_at) as end_date')
+        ->first();
+    
+        if(!is_null($dates)){
+
+            $start_date = Carbon::createFromFormat('Y/m/d',  $dates->start_date);  
+            $end_date = Carbon::createFromFormat('Y/m/d',  $dates->end_date);  
+        }
+        
+
+        return ["start_date" => $start_date , "end_date" => $end_date];
+    }
 
     function get_record($search_array)
     {    
+
+        $user_id = $search_array["user_id"];
+
+        $weight_log_t = weight_log_t_model::
+        where("user_id","=",$user_id)
+        ->get();
+
         $with_sql = "
         
             WITH base_data AS ( 
@@ -154,13 +203,13 @@ class weight_log_t_controller extends Controller
         ";
         
         $where_sql = "WHERE user_id = :user_id";
-        $params = ['user_id' => $search_array["user_id"]]; 
+        $params = ['user_id' => $user_id]; 
 
 
         $select_sql = "";
         switch ($search_array["branch"]) {
-            case 1:
-                
+
+            case 1:                
                 $select_sql = "
                     SELECT
                         user_id
@@ -345,8 +394,6 @@ class weight_log_t_controller extends Controller
 
         // $step_size を計算する
         $step_size = ceil(($max_weight - $min_weight) / 10);
-
-
 
         $return_array = [
             "datas" => ["labels" => $labels , "weights" => $weights]

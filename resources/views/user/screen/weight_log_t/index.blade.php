@@ -112,6 +112,51 @@
 
     </div>
 
+
+    <div class="row">
+
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">
+
+        <div class="row m-0 p-0">
+
+          <div class="item-center">
+            <input type="date" id="start_date" name="start_date">
+            <label>～</label>
+            <input type="date" id="end_date" name="end_date">          
+          </div>
+          
+        </div>
+
+        <div class="row m-0 p-0">
+          <div class="col-3">
+            <label>
+              <input type="radio" name="branch" value="1">
+              年単位
+            </label>
+          </div>
+          <div class="col-3">
+            <label>
+              <input type="radio" name="branch" value="2">
+              月単位
+            </label>
+          </div>
+          <div class="col-3">
+            <label>
+              <input type="radio" name="branch" value="3">
+              週単位
+            </label>
+          </div>
+          <div class="col-3">
+            <label>
+              <input type="radio" name="branch" value="4">
+              日単位
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
     {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
       <canvas id="mychart"></canvas>
     {{-- </div> --}}
