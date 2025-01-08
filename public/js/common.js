@@ -100,3 +100,82 @@ $('.modal').on('hidden.bs.modal', function() {
 });
 
 
+
+
+$(document).on("click", ".search-table .search-button", function (e) {
+
+  var add_url = "";
+
+  // search-areaを取得
+  var search_area = $(".search-area");
+
+  // search_area内のinput, select, textareaを取得
+  var search_inputs = search_area.find('input, select, textarea');
+
+  // 最初のクエリパラメータかどうかを示すフラグ
+  var isFirstParameter = true;
+
+  // 各要素のnameと値を取得してオブジェクトに追加
+  search_inputs.each(function (index) {
+
+      var input_name = $(this).data("target");
+      var input_value = $(this).val().trim();
+      
+      // ラジオボタンの場合、選択された値を取得
+      if ($(this).is(":radio")) {
+
+          if($(this).is(":checked")) {
+          input_value = $(this).val().trim();
+          }else{
+          input_value = "";
+          }    
+      }
+
+      // チェックボックスの場合、選択された値を取得
+      if ($(this).is(":checkbox")) {
+
+        if($(this).is(":checked")) {
+          input_value = $(this).val().trim();
+        }else{
+          input_value = "";
+        }    
+      }
+
+      // numericクラスが存在し、input_valueにカンマが含まれている場合、カンマを除去
+      if($(this).hasClass("numeric")){
+          input_value = input_value.replace(/,/g, "");
+      }
+
+      if (input_value != null && input_value != "") {     
+
+          // inputValueが空でない場合の処理
+          if (isFirstParameter) {
+          add_url += "?" + input_name + "=" + input_value;
+
+          // 最初のクエリパラメータを追加したのでフラグを更新
+          isFirstParameter = false; 
+
+          } else {
+
+          add_url += "&" + input_name + "=" + input_value;
+          
+          }
+          
+      }
+
+  });
+
+
+
+  var current_url = window.location.href;
+
+  // URLからクエリパラメータを取り除く
+  var current_url = current_url.split('?')[0];
+
+  // 新しいURLを作成
+  var new_url = current_url + add_url;
+
+  // ページを新しいURLでリロード
+  window.location.href = new_url;  
+
+});

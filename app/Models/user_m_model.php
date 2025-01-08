@@ -14,4 +14,10 @@ class user_m_model extends Model
     protected $connection = 'mysql';
     protected $table = 'user_m';
     protected $primaryKey = 'user_id';
+
+     // user_idでデータを取得するメソッド
+     public static function get_user_info($user_id)
+     {
+         return self::where('user_id', $user_id)->first();
+     }
 }

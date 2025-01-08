@@ -123,6 +123,18 @@ class common
 
     }
 
+    public static function get_user_info($user_id)
+    {
+
+        //前回のトレーニング記録取得                                           
+        $user_m = user_m_model::       
+        where('user_id', $user_id)        
+        ->first();
+
+        return $user_m;
+
+    }
+
     /**
     * 重さ変換処理
     * 1:kgからpound

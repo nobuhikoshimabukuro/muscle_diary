@@ -10,6 +10,7 @@
   $labels = $get_record['datas']['labels'];
   $weights = $get_record['datas']['weights'];
   $summary = $get_record['summary'];
+  $count = $summary['count'];  
 @endphp
 
 <style>
@@ -38,12 +39,7 @@
     }
 }
 
-.item-center
-{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 </style>
 
 <div class="mt-3 text-center container">
@@ -113,55 +109,94 @@
     </div>
 
 
-    <div class="row">
+    
 
-      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">
 
-        <div class="row m-0 p-0">
+   
+        <table class="table search-table">
 
-          <div class="item-center">
-            <input type="date" id="start_date" name="start_date">
-            <label>～</label>
-            <input type="date" id="end_date" name="end_date">          
-          </div>
-          
-        </div>
+          <tr>
+            <td class="col-3">
 
-        <div class="row m-0 p-0">
-          <div class="col-3">
-            <label>
-              <input type="radio" name="branch" value="1">
-              年単位
-            </label>
-          </div>
-          <div class="col-3">
-            <label>
-              <input type="radio" name="branch" value="2">
-              月単位
-            </label>
-          </div>
-          <div class="col-3">
-            <label>
-              <input type="radio" name="branch" value="3">
-              週単位
-            </label>
-          </div>
-          <div class="col-3">
-            <label>
-              <input type="radio" name="branch" value="4">
-              日単位
-            </label>
-          </div>
-        </div>
+              <label>
+                <input type="radio" data-target="branch" name="branch" value="1" @if($search_array["branch"] == 1) checked @endif>
+                年単位
+              </label>
+
+            </td>
+
+            <td class="col-3">
+
+              <label>
+                <input type="radio" data-target="branch" name="branch" value="2" @if($search_array["branch"] == 2) checked @endif>
+                月単位
+              </label>
+            </td>
+
+            <td class="col-3">
+
+              <label>
+                <input type="radio" data-target="branch" name="branch" value="3" @if($search_array["branch"] == 3) checked @endif>
+                週単位
+              </label>
+            </td>
+
+            <td class="col-3">
+
+              <label>
+                <input type="radio" data-target="branch" name="branch" value="4" @if($search_array["branch"] == 4) checked @endif>
+                日単位
+              </label>
+
+            </td>
+
+          </tr>
+
+          <tr>
+            <td colspan="3">
+
+              <div class="row m-0 p-0">
+                <div class="col-5 m-0 p-0">
+                  <input type="date" data-target="start_date" class="form-control" value="{{$search_array['start_date']}}">
+                </div>
+
+                <div class="col-2 m-0 p-0">
+                  ～
+                </div>
+
+                <div class="col-5 m-0 p-0">
+                  <input type="date" data-target="end_date" class="form-control" value="{{$search_array['end_date']}}">
+                </div>
+              </div>
+
+             
+
+            </td>
+
+            <td>
+              <button class="btn btn-outline-primary search-button">
+                表示
+              </button>
+
+            </td>
+
+          </tr>
+
+        </table>
+
+        
 
       </div>
 
-    </div>
-    {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
-      <canvas id="mychart"></canvas>
-    {{-- </div> --}}
-
   </div> 
+
+
+  @if($count > 0)
+  {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
+    <canvas id="mychart"></canvas>
+  {{-- </div> --}}
+  @endif
 
 </div>
 
@@ -346,62 +381,43 @@
   });
 
 
+  @if($count > 0)
 
-  //グラフ作成
-  var labels = @json($labels);  // Days or date labels
-  var weights = @json($weights);  // Weight data for each corresponding label
+    //グラフ作成
+    var labels = @json($labels);  // Days or date labels
+    var weights = @json($weights);  // Weight data for each corresponding label
 
-  var ctx = document.getElementById('mychart');
+    var ctx = document.getElementById('mychart');
 
-  var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'userName',
-        data: weights,
-        borderColor: '#48f',
-        tension: 0.1,
-      }],
-    },
-    options: {
-      responsive: true,
-      scales: {
-        yAxes: [{  // v2.x系では 'yAxes' と記載します
-          ticks: {
-            beginAtZero: true,
-            min: {{ $summary['min_weight'] }},  // 最小値
-            max: {{ $summary['max_weight'] }},  // 最大値
-            stepSize: {{ $summary['step_size'] }},  // メモリの間隔
-          },
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '{{$summary['user_name']}}',
+          data: weights,
+          borderColor: '#48f',
+          tension: 0.1,
         }],
       },
-    },
-  });
+      options: {
+        responsive: true,
+        scales: {
+          yAxes: [{  // v2.x系では 'yAxes' と記載します
+            ticks: {
+              beginAtZero: true,
+              min: {{ $summary['min_weight'] }},  // 最小値
+              max: {{ $summary['max_weight'] }},  // 最大値
+              stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+            },
+          }],
+        },
+      },
+    });
 
-//   var myChart = new Chart(ctx, {
-//   type: 'line',
-//   data: {
-//     labels: labels,
-//     datasets: [{
-//       label: 'Blue',
-//       data: weights,
-//       borderColor: '#48f',
-//     }],
-//   },
-//   options: {
-//     scales: {
-//       y: {
-//         // min: {{ $summary['min_weight'] }},
-//         // max: {{ $summary['max_weight'] }},
+  @endif
 
-//         min: 0,
-//         max: 100,
-//       },
-//     },
-//   },
-// });
-
+  
 
   
 
