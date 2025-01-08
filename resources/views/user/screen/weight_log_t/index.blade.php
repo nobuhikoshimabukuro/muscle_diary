@@ -192,13 +192,17 @@
   </div> 
 
 
+
   @if($count > 0)
-  {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
-    <canvas id="mychart"></canvas>
-  {{-- </div> --}}
-  @endif
+{{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
+  <canvas id="mychart"></canvas>
+{{-- </div> --}}
+@endif
+
+
 
 </div>
+
 
 {{-- 登録更新モーダル --}}
 <div class="modal fade" id="save-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="save-modal-label" aria-hidden="true">

@@ -42,19 +42,10 @@ class weight_log_t_controller extends Controller
 
         $user_id = $user_info->user_id;
 
-        $get_limit_date = self::get_limit_date($user_id);
+        
 
-        // システム日付を基準に取得
-        
-        if($get_limit_date["end_date"] == "")
-        {
-            $now = Carbon::now();            
-        }else{
-            $now = Carbon::parse($get_limit_date["end_date"]);              
-        }
-        
-        $start_date = $now->startOfMonth()->format('Y-m-d');
-        $end_date = $now->endOfMonth()->format('Y-m-d');
+        $start_date = "";
+        $end_date = "";
 
         $branch = 4;
         if(isset($request->branch)){
@@ -68,6 +59,23 @@ class weight_log_t_controller extends Controller
             if(isset($request->end_date)){
                 $end_date = $request->end_date;
             }
+
+        }else{
+
+            $get_limit_date = self::get_limit_date($user_id);
+            // システム日付を基準に取得
+            
+            if($get_limit_date["end_date"] == "")
+            {
+                $now = Carbon::now();            
+            }else{
+                $now = Carbon::parse($get_limit_date["end_date"]);              
+            }
+            
+            $start_date = $now->startOfMonth()->format('Y-m-d');
+            $end_date = $now->endOfMonth()->format('Y-m-d');
+
+
         }   
 
         $search_array = [
@@ -204,6 +212,7 @@ class weight_log_t_controller extends Controller
 
 
         $select_sql = "";
+        $order_sql = "";
         switch ($branch) {
 
             case 1:                
@@ -216,6 +225,9 @@ class weight_log_t_controller extends Controller
                     FROM
                         year_data           
                 ";
+
+                $order_sql .= " ORDER BY ";
+                $order_sql .= " yyyy ";
 
                 break;
             case 2:
@@ -231,14 +243,20 @@ class weight_log_t_controller extends Controller
                         month_data
                 ";
 
-                $where_sql .= " AND yyyymm >=:start_yyyymm";   
-
-                $params['start_yyyymm'] = Carbon::parse($search_array["start_date"])->format('Ym');
 
                 if($search_array["start_date"] != ""){
+                    $where_sql .= " AND yyyymm >=:start_yyyymm";  
+                    $params['start_yyyymm'] = Carbon::parse($search_array["start_date"])->format('Ym');
+                }
+
+
+                if($search_array["end_date"] != ""){
                     $where_sql .= " AND yyyymm <=:end_yyyymm";  
                     $params['end_yyyymm'] = Carbon::parse($search_array["end_date"])->format('Ym');
                 }
+
+                $order_sql .= " ORDER BY ";
+                $order_sql .= " yyyymm ";
                 
                 break;
             case 3:
@@ -255,26 +273,72 @@ class weight_log_t_controller extends Controller
                         , week
                         , weight 
                     FROM
-                        week_data
+                        week_data                  
                 ";
 
-                // 月初と月末の日付を取得
-                $start_date = Carbon::parse($search_array["start_date"])->format('Ymd');
-                $end_date = Carbon::parse($search_array["end_date"])->format('Ymd');
 
-                $where_sql .= " AND ";
-                $where_sql .= " (";
-                $where_sql .= " (:start_date1 <= start_date AND :end_date1 >= start_date)";
-                $where_sql .= " OR ";
-                $where_sql .= " (:start_date2 <= end_date AND :end_date2 >= end_date)";
-                $where_sql .= " )";
-               
-                  
-                // パラメータに start_date と end_date を追加
-                $params['start_date1'] = $start_date;
-                $params['start_date2'] = $start_date;
-                $params['end_date1'] = $end_date;
-                $params['end_date2'] = $end_date;
+                $start_date = "";
+                $end_date = "";
+                if($search_array["start_date"] != ""){
+
+
+                    $temporary_sql = $with_sql . $select_sql . "                    
+                        WHERE
+                            start_date <= :start_date 
+                        ORDER BY
+                            start_date DESC
+                    
+                    ";
+
+                    $temporary_params['start_date'] = Carbon::parse($search_array["start_date"])->format('Ymd');
+                    $temporary_record = DB::connection('mysql')->select($temporary_sql, $temporary_params);
+
+
+                    if (!empty($temporary_record) && isset($temporary_record[0]->start_date)) {
+                        $start_date = $temporary_record[0]->start_date;
+                    }
+
+
+
+                }
+
+                if($search_array["end_date"] != ""){
+                    
+                    $temporary_sql = $with_sql . $select_sql . "                    
+                        WHERE
+                            end_date >= :end_date 
+                        ORDER BY
+                            end_date ASC
+                    
+                    ";
+
+                    $temporary_params =[];
+                    $temporary_params['end_date'] = Carbon::parse($search_array["end_date"])->format('Ymd');
+                    $temporary_record = DB::connection('mysql')->select($temporary_sql, $temporary_params);
+
+                    if (!empty($temporary_record) && isset($temporary_record[0]->end_date)) {
+                        $end_date = $temporary_record[0]->end_date;
+                    }
+                }
+
+                if($start_date != ""){
+
+                    $where_sql .= " AND start_date >= :start_date ";    
+                    $params['start_date'] = $start_date;
+
+                }
+
+                if($end_date != ""){
+
+                    $where_sql .= " AND end_date <= :end_date ";    
+                    $params['end_date'] = $end_date;
+
+                }
+
+         
+
+                $order_sql .= " ORDER BY ";
+                $order_sql .= " start_date ";
 
                 break;
             case 4:
@@ -291,21 +355,28 @@ class weight_log_t_controller extends Controller
                         day_data
                 ";           
 
-                // 月初と月末の日付を取得
-                // 日付を Carbon オブジェクトに変換してからフォーマットする                
+                if($search_array["start_date"] != ""){
+                    $where_sql .= " AND yyyymmdd >= :start_date ";    
+                    $params['start_date'] = Carbon::parse($search_array["start_date"])->format('Ymd');
+                }
 
-                $where_sql .= " AND ";
-                $where_sql .= " yyyymmdd >= :start_date AND yyyymmdd <= :end_date";
-                $params['start_date'] = Carbon::parse($search_array["start_date"])->format('Ymd');
-                $params['end_date'] = Carbon::parse($search_array["end_date"])->format('Ymd');
-               
+                if($search_array["end_date"] != ""){
+                    $where_sql .= " AND yyyymmdd <= :end_date ";    
+                    $params['end_date'] = Carbon::parse($search_array["end_date"])->format('Ymd');
+                }
+
+                               
+
+                $order_sql .= " ORDER BY ";
+                $order_sql .= " yyyymmdd ";
+
                 break;            
             default:
                 
         }       
        
 
-        $sql = $with_sql . $select_sql . $where_sql;
+        $sql = $with_sql . $select_sql . $where_sql .$order_sql;
 
         Log::channel('sql_log')->info($sql);        
 
@@ -331,18 +402,18 @@ class weight_log_t_controller extends Controller
                 case 1:    
                     
                     $label = $info->yyyy;
-                    $numerator = 10;
+                    $numerator = 1;
                     
                     break;
                 case 2:
 
                     $label = $info->formatted_yyyymm;
-                    $numerator = 10;
+                    $numerator = 1;
                     
                     break;
                 case 3:
                     
-                    $label = $info->formatted_start_date . "～";
+                    $label = $info->formatted_start_date . "～" .$info->formatted_end_date;
                     $numerator = 5;
                     
                     break;
@@ -375,34 +446,33 @@ class weight_log_t_controller extends Controller
         if ($count > 0) {
 
             $ave_weight = round($total_weight / $count, 3); // 小数点第3位まで  
-            
-            while (true) {
-
-                // 小数点以下を切り捨て
-                $min_weight = floor($min_weight);
+            $min_weight = floor($min_weight);
+            $max_weight = floor($max_weight) + 1;           
+    
+            while (true) {                
+                
+    
+                // 設定した値で割り切れるまでループ
+                if ($min_weight % 2 == 0) {
+                    break;
+                }            
                 $min_weight -= 1;
-    
-                // 設定した値で割り切れるまでループ
-                if ($min_weight % $numerator == 0) {
-                    break;
-                }            
             }
-    
-            while (true) {
-    
-                // 小数点以下を切り捨て
-                $max_weight = floor($max_weight);
-                $max_weight += 1;
-    
-                // 設定した値で割り切れるまでループ
-                if ($max_weight % $numerator == 0) {
-                    break;
-                }            
-            }
-    
-            // $step_size を計算する
-            $step_size = ceil(($max_weight - $min_weight) / 10);
 
+            while (true) {                
+                   
+                
+                if ($max_weight % 2 == 0) {
+                    break;
+                }            
+
+                $max_weight += 1;
+            }
+
+            // $step_size を計算する
+            $step_size = round(($max_weight - $min_weight) / 10, 0); // 小数点第3位まで
+                    
+            
         }
 
         
