@@ -45,11 +45,74 @@
 <div class="mt-3 text-center container">
   
   <div class="contents row justify-content-center p-0">
+
+    <div class="card col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">
       
+      <table class="table">
+        <tr>
+          <td>
+            <div id="timer"></div>
+          </td>
+        </tr>
 
-      <button type="button" class="btn btn-success" data-bs-toggle='modal' data-bs-target='#save-modal'>記録</button>
+        <tr>
+          <td class="item-center">
 
-      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">       
+            <label id="weight_type-label1" 
+              for="weight_type1" 
+              class="weight_type-label weight_type-select item-center">kg
+            </label>
+
+            <input type="radio" 
+              id="weight_type1"
+              name="weight_type_radio"  
+              value="1"
+              data-value="1"
+              class="d-none"
+              checked
+            >
+
+            <label id="weight_type-label2" 
+              for="weight_type2" 
+              class="weight_type-label item-center">pound
+            </label>
+            <input type="radio" 
+              id="weight_type2"
+              name="weight_type_radio" 
+              value="2"       
+              data-value="2"                         
+              class="d-none"
+            >
+          </td>                
+
+          
+        </tr>
+
+        <tr>
+          <td class="text-center">
+            <input type="text" id="integer"class="text-end" maxlength="3">
+            <span class="comma">.</span>
+            <input type="text" id="decimal" class="text-end" maxlength="3">
+            <span class="display_weight_type">kg</span>
+            
+          </td>    
+        </tr> 
+
+        <tr>
+          <td class="text-end">
+            <button type="button" class="btn btn-success" data-bs-toggle='modal' data-bs-target='#save-modal'>登録</button>            
+          </td>
+        </tr> 
+
+      </table>
+
+    </div>
+
+
+    
+
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">
+
    
         <table class="table search-table">
 
@@ -105,8 +168,9 @@
                 <div class="col-5 m-0 p-0">
                   <input type="date" data-target="end_date" class="form-control" value="{{$search_array['end_date']}}">
                 </div>
-
               </div>
+
+             
 
             </td>
 
@@ -114,6 +178,7 @@
               <button class="btn btn-outline-primary search-button">
                 表示
               </button>
+
             </td>
 
           </tr>
@@ -129,10 +194,10 @@
 
 
   @if($count > 0)
-  {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
-    <canvas id="mychart"></canvas>
-  {{-- </div> --}}
-  @endif
+{{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
+  <canvas id="mychart"></canvas>
+{{-- </div> --}}
+@endif
 
 
 
@@ -151,81 +216,18 @@
 
           <div class="modal-body">
               <div class="col-12">
-                  <div class="ajax-msg"></div>                
+                  <div class="ajax-msg1"></div>                
               </div>
               <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
                 @csrf
-
-                <input type="hidden" name="measure_at" value="">
-                <input type="hidden" name="weight" value="">
-                <input type="hidden" name="weight_type" value="">
-
-                <table class="table">
-                  <tr>
-                    <td>
-                      <div id="timer"></div>
-                    </td>
-                  </tr>
-          
-                  <tr>
-                    <td class="item-center">
-          
-                      <label id="weight_type-label1" 
-                        for="weight_type1" 
-                        class="weight_type-label weight_type-select item-center">kg
-                      </label>
-          
-                      <input type="radio" 
-                        id="weight_type1"
-                        name="weight_type_radio"  
-                        value="1"
-                        data-value="1"
-                        class="d-none"
-                        checked
-                      >
-          
-                      <label id="weight_type-label2" 
-                        for="weight_type2" 
-                        class="weight_type-label item-center">pound
-                      </label>
-                      <input type="radio" 
-                        id="weight_type2"
-                        name="weight_type_radio" 
-                        value="2"       
-                        data-value="2"                         
-                        class="d-none"
-                      >
-                    </td>                
-          
-                    
-                  </tr>
-          
-                  <tr>
-                    <td class="">
-                      <div class="row m-0 p-0">
-
-                        <div class="col-5 m-0 p-0">
-                          <input type="text" id="integer"class="form-control text-end" maxlength="3">
-                        </div>
-
-                        <div class="col-1 m-0 p-0">
-                          <span class="comma">.</span>
-                        </div>
-
-                        <div class="col-5 m-0 p-0">
-                          <input type="text" id="decimal" class="form-control text-end" maxlength="3">
-                        </div>
-
-                        <div class="col-1 m-0 p-0">
-                          <span class="display_weight_type">kg</span>                      
-                        </div>
-
-                      </div>
-                    </td>    
-                  </tr>          
-                  
-          
-                </table>                  
+                  <input type="hidden" name="measure_at" value="">
+                  <input type="hidden" name="weight" value="">
+                  <input type="hidden" name="weight_type" value="">
+      
+                  <div class="form-group row">
+                      <span id="display_measure_at"></span>
+                      <span id="display_weight"></span>                      
+                  </div>                  
               </form>
           </div>
 
@@ -235,7 +237,7 @@
               </div>
 
               <div class="col-6 m-0 p-0 text-end">
-                  <button type="button" id="save-button" class="btn btn-success">記録</button>
+                  <button type="button" id="save-button" class="btn btn-success">はい</button>
                   <button type="button" id="" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
               </div>
           </div>
@@ -244,6 +246,8 @@
   </div>
   
 </div>
+
+
 
 {{-- 再ログインモーダルの読み込み --}}
 @include('user/common/login_again_modal')
@@ -291,8 +295,8 @@
     // 選択されたラジオボタンのラベルにクラスを追加
     $("#weight_type-label" + value).addClass('weight_type-select');
 
-    var weight_type_radio = document.querySelector('input[name="weight_type_radio"]:checked');
-    var weight_type = weight_type_radio.value;
+    var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
+    var weight_type = selectedRadio.value;
 
     if(weight_type == 1){
       $('.display_weight_type').text("kg");
@@ -304,18 +308,31 @@
 
   $('#save-modal').on('show.bs.modal', function(e) {
 
-    $('.ajax-msg').html("");
-    $("#save-modal .is-invalid").removeClass('is-invalid');
+    var measure_at = document.getElementById('timer').textContent;
+    var weight = $('#integer').val() + "." + $('#decimal').val();
 
-    $('input[name="measure_at"]').val("");
-    $('input[name="weight"]').val("");
-    $('input[name="weight_type"]').val("");    
+    var selectedRadio = document.querySelector('input[name="weight_type_radio"]:checked');
+    var weight_type = selectedRadio.value;
+
+    $('input[name="measure_at"]').val(measure_at);
+    $('input[name="weight"]').val(weight);
+    $('input[name="weight_type"]').val(weight_type);
+
+    var display_weight = weight;
+    if(weight_type == 1){
+      display_weight += "kg";
+    }else{
+      display_weight += "lb";
+    }
+
+    $('#display_measure_at').text(measure_at);
+    $('#display_weight').text(display_weight); 
 
   });
 
   $(document).on("click", "#save-button", function (e) {
 
-    // e.preventDefault();
+    e.preventDefault();
 
     var button = $(this);
 
@@ -325,31 +342,6 @@
     let f = $('#save-form');
 
     standby_processing(1,button,"#save-modal");
-
-    var measure_at = document.getElementById('timer').textContent;
-
-
-    var integer = $('#integer').val();    
-    var decimal = $('#decimal').val();
-
-    if (integer.trim() == "") {
-      integer = 0;
-    }
-
-    if (decimal.trim() == "") {
-      decimal = 0;
-    }
-
- 
-
-    var weight = integer + "." + decimal;
-
-    var weight_type_radio = document.querySelector('input[name="weight_type_radio"]:checked');
-    var weight_type = weight_type_radio.value;
-
-    $('input[name="measure_at"]').val(measure_at);
-    $('input[name="weight"]').val(weight);
-    $('input[name="weight_type"]').val(weight_type);
 
     $.ajax({
       url: f.prop('action'), // 送信先
@@ -374,7 +366,9 @@
             $("#login_again-modal").modal('show');
 
         } else{
-                                               
+          
+          button.prop("disabled", false);          
+          document.body.style.cursor = 'auto';                               
 
           var message = result_array["message"];
 
@@ -383,41 +377,8 @@
     })
     .fail(function (data, textStatus, errorThrown) {
 
-        standby_processing(2,button);
+      standby_processing(2,button);
 
-        
-        var errorsHtml = '<div class="alert alert-danger text-left">';
-
-        if (data.status == '422') {
-            
-            //{{-- vlidationエラー --}}
-            $.each(data.responseJSON.errors, function(key, value) {
-
-                //{{-- responsからerrorsを取得しメッセージと赤枠を設定 --}}
-                errorsHtml += '<li>' + value[0] + '</li>';
-
-                if(key == 'weight'){
-
-                  $("#integer").addClass('is-invalid');
-                  $("#decimal").addClass('is-invalid');
-                  
-                }else{
-
-                  $("[name='" + key + "']").addClass('is-invalid');                  
-
-                }
-
-                
-            });
-
-        } else {
-            //{{-- その他のエラー --}}
-            errorsHtml += '<li>Processing Error</li>';
-            errorsHtml += '<li>' + data.status + ':' + errorThrown + '</li>';
-        }
-        errorsHtml += '</div>';
-        //{{-- アラート --}}
-        $('.ajax-msg').html(errorsHtml);
 
     });
 
@@ -433,39 +394,37 @@
     var ctx = document.getElementById('mychart');
 
     var myChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '{{$summary['user_name']}}',
-      data: weights,
-      borderColor: '#f1a150',
-      tension: 0.1,
-    }],
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: {  // v3.x以降では 'y' に変更されました
-        ticks: {
-          beginAtZero: true,
-          min: {{ $summary['min_weight'] }},  // 最小値
-          max: {{ $summary['max_weight'] }},  // 最大値
-          stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '{{$summary['user_name']}}',
+          data: weights,
+          borderColor: '#48f',
+          tension: 0.1,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          yAxes: [{  // v2.x系では 'yAxes' と記載します
+            ticks: {
+              beginAtZero: true,
+              min: {{ $summary['min_weight'] }},  // 最小値
+              max: {{ $summary['max_weight'] }},  // 最大値
+              stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+            },
+          }],
         },
       },
-    },
-    plugins: {
-      legend: {
-        labels: {
-          color: '#f1a150'  // ここで凡例のテキストカラーを指定
-        }
-      }
-    }
-  },
-});
+    });
 
   @endif
+
+  
+
+  
+
 
 </script>
 

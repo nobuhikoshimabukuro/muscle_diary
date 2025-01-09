@@ -23,8 +23,7 @@ class training_detail_t_request extends FormRequest
      */
     public function rules()
     {
-        return [
-            // 'reps'        => 'required|string|max:100',
+        return [           
             
         ];
     }
@@ -32,8 +31,7 @@ class training_detail_t_request extends FormRequest
     public function attributes()
     {
         return [
-            'reps'        => 'レップ数',
-            
+            'reps'        => 'レップ数',            
         ];
     }
 

@@ -25,6 +25,11 @@ use App\Models\user_m_model;
 use App\Models\weight_log_t_model;
 // Model ↑
 
+// Request ↓
+
+use App\Http\Requests\weight_log_t_request;
+// Request ↑
+
 class weight_log_t_controller extends Controller
 {
     function index(Request $request)
@@ -391,8 +396,7 @@ class weight_log_t_controller extends Controller
         $max_weight = 0;
         $ave_weight = 0;
         $step_size = 0;
-        //割算用の値を設定
-        $numerator = 1;
+        
         foreach ($record as $index => $info) {
 
             $weight = $info->weight;          
@@ -402,26 +406,18 @@ class weight_log_t_controller extends Controller
                 case 1:    
                     
                     $label = $info->yyyy;
-                    $numerator = 1;
-                    
                     break;
                 case 2:
 
-                    $label = $info->formatted_yyyymm;
-                    $numerator = 1;
-                    
+                    $label = $info->formatted_yyyymm;                    
                     break;
                 case 3:
                     
-                    $label = $info->formatted_start_date . "～" .$info->formatted_end_date;
-                    $numerator = 5;
-                    
+                    $label = $info->formatted_start_date . "～" .$info->formatted_end_date;                    
                     break;
                 case 4:
 
-                    $label = $info->formatted_yyyymmdd;
-                    $numerator = 2;                   
-                    
+                    $label = $info->formatted_yyyymmdd;                    
                     break;            
                 default:
             }
@@ -470,7 +466,7 @@ class weight_log_t_controller extends Controller
             }
 
             // $step_size を計算する
-            $step_size = round(($max_weight - $min_weight) / 10, 0); // 小数点第3位まで
+            $step_size = round(($max_weight - $min_weight) / 10, 0);
                     
             
         }
@@ -493,7 +489,7 @@ class weight_log_t_controller extends Controller
         return $return_array;
     }
         
-    function save(Request $request)
+    function save(weight_log_t_request $request)
     {        
         // セッション情報取得
         $user_info = common::get_login_user_info();
