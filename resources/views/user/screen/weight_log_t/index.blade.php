@@ -120,18 +120,55 @@
 
         </table>
 
-        
-
       </div>
+
+      <div class="contents row justify-content-center d-flex p-5 gap-3">
+
+        <button class="btn btn-outline-primary list_graph_change_button w-120px" data-target="1">
+          グラフ
+        </button>
+
+        <button class="btn btn-outline-primary list_graph_change_button w-120px" data-target="2">
+          表
+        </button>
+
+ 
+    
+      </div>
+
+      <div class="weight_list_area d-none">
+        <table class="table"> 
+          <tr>
+            <th>
+              記録日時              
+            </th>
+            <th>
+              体重
+            </th>
+          </tr>
+
+          @foreach ($weight_log_t as $item)
+          <tr>
+            <th class="">
+              {{$item->measure_at}}
+            </th>
+
+            <th class="">
+              {{$item->weight}}
+            </th>
+          </tr>
+          @endforeach
+        </table>
+        </div>
 
   </div> 
 
 
 
   @if($count > 0)
-  {{-- <div style="position: relative; height: 400px; width: 1400px;" class="data-display-area"> --}}
-    <canvas id="mychart"></canvas>
-  {{-- </div> --}}
+    <div class="weight_graph_area">  
+      <canvas id="mychart"></canvas>
+    </div>
   @endif
 
 
@@ -312,6 +349,24 @@
     $('input[name="weight_type"]').val("");    
 
   });
+
+
+  $(document).on("click", ".list_graph_change_button", function (e) {
+    
+    var target = $(this).data('target');
+
+    $(".weight_list_area").removeClass('d-none');
+    $(".weight_graph_area").removeClass('d-none');
+
+    if(target == 1){
+      $(".weight_list_area").addClass('d-none');      
+    }else{
+      $(".weight_graph_area").addClass('d-none');
+    }
+
+
+  });
+
 
   $(document).on("click", "#save-button", function (e) {
 

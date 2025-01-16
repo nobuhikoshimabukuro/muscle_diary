@@ -83,6 +83,8 @@ class weight_log_t_controller extends Controller
 
         }   
 
+
+
         $search_array = [
             "user_id" => $user_id
             ,"branch" => $branch
@@ -90,9 +92,22 @@ class weight_log_t_controller extends Controller
             ,"end_date" => $end_date
         ];
 
-        $get_record = self::get_record($search_array);        
+        $get_record = self::get_record($search_array);      
+        
+        
+        $weight_log_t = weight_log_t_model::where('user_id', $user_id);
+        
+        if($search_array["start_date"] != ""){
+            $weight_log_t = $weight_log_t->where("measure_at" , ">=" ,$search_array["start_date"]);
+        }
 
-        return view('user/screen/weight_log_t/index', compact('get_record' , 'search_array'));
+        if($search_array["end_date"] != ""){
+            $weight_log_t = $weight_log_t->where("measure_at" , "<=" ,$search_array["end_date"]);
+        }
+
+        $weight_log_t = $weight_log_t->orderBy('measure_at', 'asc')->get();;
+
+        return view('user/screen/weight_log_t/index', compact('get_record' , 'weight_log_t' , 'search_array'));
 
     }
 
