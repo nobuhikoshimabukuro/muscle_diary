@@ -63,7 +63,18 @@
   border-bottom: solid 2px rgb(189, 184, 184);
 }
 
+.weight_graph_area{
+  overflow-y: auto; 
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+#mychart{
+  min-width: 1000px; 
+  min-height: 400px;
+}
 </style>
 
 <div class="mt-3 text-center container">
@@ -194,8 +205,9 @@
         </table>
       </div>
 
-  </div> 
 
+
+  </div> 
 
 
   @if($count > 0)
@@ -203,6 +215,7 @@
       <canvas id="mychart"></canvas>
     </div>
   @endif
+
 
 
 
@@ -324,6 +337,7 @@
 
 
 <script type="text/javascript">
+
 
   function updateTimer() {
     // 現在の日時を取得
@@ -521,37 +535,41 @@
     var ctx = document.getElementById('mychart');
 
     var myChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '{{$summary['user_name']}}',
-      data: weights,
-      borderColor: '#f1a150',
-      tension: 0.1,
-    }],
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: {  // v3.x以降では 'y' に変更されました
-        ticks: {
-          beginAtZero: true,
-          min: {{ $summary['min_weight'] }},  // 最小値
-          max: {{ $summary['max_weight'] }},  // 最大値
-          stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '{{$summary['user_name']}}',
+        data: weights,
+        borderColor: '#f1a150',
+        tension: 0.1,
+      }],
+    },
+    options: {
+      // responsive: false,
+      responsive: false,
+      scales: {
+        y: {  // v3.x以降では 'y' に変更されました
+          ticks: {
+            beginAtZero: true,
+            min: {{ $summary['min_weight'] }},  // 最小値
+            max: {{ $summary['max_weight'] }},  // 最大値
+            stepSize: {{ $summary['step_size'] }},  // メモリの間隔
+          },
         },
       },
-    },
-    plugins: {
-      legend: {
-        labels: {
-          color: '#f1a150'  // ここで凡例のテキストカラーを指定
+      plugins: {
+        legend: {
+          labels: {
+            color: '#f1a150'  // ここで凡例のテキストカラーを指定
+          }
         }
       }
-    }
-  },
-});
+    },
+  });
+
+
+  
 
   @endif
 
