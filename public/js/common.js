@@ -73,20 +73,18 @@ function standby_processing(process_branch ,button ,target = 'body'){
   
 }
 
-$(document).on("click", ".page-transition-button1", function (e) {
+$(document).on("click", ".page-transition-button", function (e) {
 
+  var process = $(this).data('process');
   var url = $(this).data('url');
-  window.location.href = url;
+  if(process == 1){
+    window.location.href = url;
+  }else{
+    window.open(url, '_blank');    
+  }  
 
 });
 
-//画面遷移ボタン別タブ
-$(document).on("click", ".page-transition-button2", function (e) {
-
-  var url = $(this).data('url');
-  window.open(url, '_blank');
-
-});
 
 
 //モーダルを開いた時の共通イベント

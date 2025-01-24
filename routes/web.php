@@ -35,8 +35,12 @@ Route::get('/user/logout', [login_controller::class, 'logout'])->name('user.logo
 Route::get('/user/top', [user_controller::class, 'top'])->name('user.top');
 
 
+
+
 Route::get('/training', [training_controller::class, 'index'])->name('user.training.index');
 Route::get('/training/detail', [training_controller::class, 'detail'])->name('user.training.detail');
+Route::get('/training/analysis', [training_controller::class, 'analysis'])->name('user.training.analysis');
+
 Route::post('/training/training_history_save', [training_controller::class, 'training_history_save'])->name('user.training_history.save');
 Route::post('/training/training_detail_save', [training_controller::class, 'training_detail_save'])->name('user.training_detail.save');
 

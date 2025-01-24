@@ -30,7 +30,7 @@ class dashboard_controller extends Controller
         if (!$user_info->login_status) {
 
             //ログイン後のURLをセットする
-            common::set_after_login_url($request);            
+            common::set_after_login_url($request);
             return redirect(route('user.login'));
         }
         

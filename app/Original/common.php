@@ -224,4 +224,19 @@ class common
         return $encryption_key;
     }
 
+
+    // 時間を秒に変換する関数
+    public static function time_to_seconds($time) {
+        list($hours, $minutes, $seconds) = explode(':', $time);
+        return $hours * 3600 + $minutes * 60 + $seconds;
+    }
+
+    // 秒を時間形式 (HH:MM:SS) に戻す関数
+    public static function seconds_to_time($seconds) {
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $seconds = $seconds % 60;
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
+
 }

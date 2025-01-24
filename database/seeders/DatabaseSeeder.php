@@ -4,11 +4,28 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
+// controller作成時ここからコピー↓
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Original\common;
+use App\Original\db_common;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+// controller作成時ここまでコピー↑
+
+// Model ↓
+use App\Models\exercise_m_model;
+use App\Models\gym_m_model;
+use App\Models\training_detail_t_model;
+use App\Models\training_history_t_model;
+use App\Models\user_m_model;
+use App\Models\weight_log_t_model;
+// Model ↑
+
+
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -42,7 +59,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user_id,
                 'user_gym_id' => $index,                                
                 'gym_name' => "AF浦添店",                
-                'display_flg' => 1,        
+                'display_flg' => $index,
                 'display_order' => $index++,        
             ]
             ,
@@ -50,7 +67,15 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user_id,
                 'user_gym_id' => $index,                                
                 'gym_name' => "AF沖縄市店",                
-                'display_flg' => 1,        
+                'display_flg' => $index,
+                'display_order' => $index++,    
+            ]
+            ,
+            [                
+                'user_id' => $user_id,
+                'user_gym_id' => $index,                                
+                'gym_name' => "AF北谷店",                
+                'display_flg' => $index,       
                 'display_order' => $index++,    
             ]
 
@@ -271,5 +296,60 @@ class DatabaseSeeder extends Seeder
             $measure_at2 = $measure_at2->subDay();
             
         }
+
+
+
+
+        $user_id = 1;
+        $dif = 0;        
+        $today = Carbon::today();        
+        $formattedDate = $today;   
+
+        $index = 1100;        
+        $loop = $index;
+        for ($i = 1; $i <= $loop; $i++) {
+
+            $user_gym_id = rand(1, 2);
+
+            $hour = sprintf('%02d', rand(0, 23));
+            $minutes = sprintf('%02d', rand(0, 59));
+            $second = sprintf('%02d', rand(0, 59));
+            
+       
+            // 日付と時刻を結合して開始日時を生成
+            $start_datetime = Carbon::createFromFormat(
+                'YmdHis', 
+                $formattedDate->format('Ymd') . $hour . $minutes . $second
+            );
+
+            $add_hour = rand(1, 2);
+            $add_minutes = rand(0, 33);
+            $add_second = rand(0, 59);            
+            $end_datetime = $start_datetime->copy()->addHours($add_hour)->addMinutes($add_minutes)->addSeconds($add_second); 
+       
+            try{
+
+                DB::table('training_history_t')->insert([
+                    [
+                        'training_history_id' => $index,
+                        'user_id' => $user_id,
+                        'user_training_count' => $index--,                                
+                        'user_gym_id' => $user_gym_id,                
+                        'start_datetime' => $start_datetime->format('Y-m-d H:i:s'),
+                        'end_datetime' => $end_datetime->format('Y-m-d H:i:s'),
+                    ]        
+                ]);
+    
+                // 1日マイナス
+                $formattedDate = $formattedDate->subDay();        
+
+            }catch(Exception $e){
+
+
+            }
+              
+        }
+
+
     }
 }
