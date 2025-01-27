@@ -161,12 +161,7 @@
 
 
 
-
-
-
-
-
-  // 日付ラベル
+// 日付ラベル
 var labels = ["2025/01/01","2025/01/02","2025/01/03","2025/01/04","2025/01/06","2025/01/06","2025/01/07","2025/01/08","2025/01/10","2025/01/11","2025/01/11","2025/01/12","2025/01/13","2025/01/14","2025/01/15","2025/01/16","2025/01/17","2025/01/18","2025/01/19","2025/01/20","2025/01/22","2025/01/23","2025/01/23","2025/01/24"];  
 
 // elapsed_times を秒に変換する関数
@@ -184,6 +179,14 @@ var elapsed_times = [
     "02:18:12", "02:04:00", "01:30:22", "01:16:04"
 ].map(time => timeToSeconds(time));  // 秒に変換
 
+// 秒数を時:分:秒形式に変換する関数
+function secondsToTime(seconds) {
+    var hours = Math.floor(seconds / 3600);
+    var minutes = Math.floor((seconds % 3600) / 60);
+    var remainingSeconds = seconds % 60;
+    return hours + ':' + ('00' + minutes).slice(-2) + ':' + ('00' + remainingSeconds).slice(-2);
+}
+
 // グラフ作成
 var ctx = document.getElementById('mychart');
 
@@ -193,6 +196,7 @@ var myChart = new Chart(ctx, {
         labels: labels,
         datasets: [{
             label: '1111さん',
+            // グラフのデータは秒数のまま
             data: elapsed_times,
             borderColor: '#f1a150',
             tension: 0.1,
@@ -202,18 +206,16 @@ var myChart = new Chart(ctx, {
         responsive: false,
         scales: {
             y: {  
+                beginAtZero: true,
+                min: 0,  // 秒数で設定
+                max: timeToSeconds("03:00:00"),  // 秒数で設定
+                stepSize: 3600,  // 1時間ごとに表示
                 ticks: {
-                    beginAtZero: true,
-                    min: 0,  // 秒単位の最小値
-                    max: 10800,  // 最大値（例：3時間 = 10800秒）
-                    stepSize: 3600,  // 1時間ごと
                     callback: function(value) {
-                        var hours = Math.floor(value / 3600);
-                        var minutes = Math.floor((value % 3600) / 60);
-                        var seconds = value % 60;
-                        return hours + ':' + ('00' + minutes).slice(-2) + ':' + ('00' + seconds).slice(-2);
+                        // 秒数から「時:分:秒」形式に変換
+                        return secondsToTime(value);
                     }
-                },
+                }
             },
         },
         plugins: {
@@ -225,6 +227,8 @@ var myChart = new Chart(ctx, {
         }
     },
 });
+
+
 
 
   

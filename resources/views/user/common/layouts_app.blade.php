@@ -15,6 +15,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="{{ asset('css/all.css') . $system_version}}" rel="stylesheet">
@@ -186,18 +187,6 @@
         </li>
       @endforeach
    
-      {{-- <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Service</a>
-      </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Company</a>
-      </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Recruit</a>
-      </li>
-      <li class="c-header_list-item">
-        <a href="#" class="c-header_list-link">Contact</a>
-      </li> --}}
     </ul>
     <label for="hamburger" class="c-hamburger-menu_button"><!-- 追記 ハンバーガーメニューのボタン -->
       <span class="c-hamburger-menu_button-mark"></span>
