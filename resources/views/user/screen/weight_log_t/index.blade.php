@@ -234,7 +234,7 @@
 
           <div class="modal-body">
               <div class="col-12">
-                  <div class="ajax-msg"></div>                
+                  <div class="error_message_area"></div>                
               </div>
               <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
                 @csrf
@@ -245,7 +245,7 @@
 
                 <table class="table">
                   <tr>
-                    <td>
+                    <td class="item-center">
                       <div id="timer"></div>
                     </td>
                   </tr>
@@ -253,31 +253,18 @@
                   <tr>
                     <td class="item-center">
           
-                      <label id="weight_type-label1" 
-                        for="weight_type1" 
-                        class="weight_type-label weight_type-select item-center">kg
+                      <label for="weight_type1">
+                        <input type="radio" id="weight_type1" name="weight_type_radio" value="1" checked >
+                        kg
                       </label>
-          
-                      <input type="radio" 
-                        id="weight_type1"
-                        name="weight_type_radio"  
-                        value="1"
-                        data-value="1"
-                        class="d-none"
-                        checked
-                      >
-          
-                      <label id="weight_type-label2" 
-                        for="weight_type2" 
-                        class="weight_type-label item-center">pound
+
+
+                      <label for="weight_type2">
+                        <input type="radio" id="weight_type2" name="weight_type_radio" value="2">
+                        pound
                       </label>
-                      <input type="radio" 
-                        id="weight_type2"
-                        name="weight_type_radio" 
-                        value="2"       
-                        data-value="2"                         
-                        class="d-none"
-                      >
+
+                      
                     </td>                
           
                     
@@ -365,30 +352,28 @@
   updateTimer();
 
 
-  $(document).on("change", 'input[name="weight_type_radio"]', function (e) {
+  // ラジオボタンの変更イベントを監視
+  $('input[name="weight_type_radio"]').on('change', function() {
 
-    var value = $(this).data('value');
-    
-    // クラスをリセット
-    $(".weight_type-label").removeClass('weight_type-select');
-
-    // 選択されたラジオボタンのラベルにクラスを追加
-    $("#weight_type-label" + value).addClass('weight_type-select');
-
-    var weight_type_radio = document.querySelector('input[name="weight_type_radio"]:checked');
-    var weight_type = weight_type_radio.value;
-
-    if(weight_type == 1){
-      $('.display_weight_type').text("kg");
-    }else{
-      $('.display_weight_type').text("lb");
+    // 選択されたラジオボタンの値を取得
+    const selectedValue = $('input[name="weight_type_radio"]:checked').val();
+     // 表示用の文字列を決定
+    var display;
+    if (selectedValue == 1) {
+        display = "kg";
+    } else {
+        display = "pound";
     }
+    
+    // <span>要素の値を更新
+    $('.display_weight_type').text(display);    
 
   });
+ 
 
   $('#save-modal').on('show.bs.modal', function(e) {
 
-    $('.ajax-msg').html("");
+    $('.error_message_area').html("");
     $("#save-modal .is-invalid").removeClass('is-invalid');
 
     $('input[name="measure_at"]').val("");
@@ -421,15 +406,12 @@
 
     var button = $(this);
 
-    button.prop("disabled", true);
-    document.body.style.cursor = 'wait';
-
     let f = $('#save-form');
 
+    clear_error_message(".error_message_area");
     standby_processing(1,button,"#save-modal");
 
     var measure_at = document.getElementById('timer').textContent;
-
 
     var integer = $('#integer').val();    
     var decimal = $('#decimal').val();
@@ -440,9 +422,7 @@
 
     if (decimal.trim() == "") {
       decimal = 0;
-    }
-
- 
+    } 
 
     var weight = integer + "." + decimal;
 
@@ -476,8 +456,7 @@
             $("#login_again-modal").modal('show');
 
         } else{
-                                               
-
+                           
           var message = result_array["message"];
 
         }    
@@ -486,7 +465,6 @@
     .fail(function (data, textStatus, errorThrown) {
 
         standby_processing(2,button);
-
         
         var errorsHtml = '<div class="alert alert-danger text-left">';
 
@@ -505,7 +483,7 @@
                   
                 }else{
 
-                  $("[name='" + key + "']").addClass('is-invalid');                  
+                  $("[name='" + key + "']").addClass('is-invalid');
 
                 }
 
@@ -519,7 +497,7 @@
         }
         errorsHtml += '</div>';
         //{{-- アラート --}}
-        $('.ajax-msg').html(errorsHtml);
+        $('.error_message_area').html(errorsHtml);
 
     });
 
@@ -529,8 +507,11 @@
   @if($count > 0)
 
     //グラフ作成
-    var labels = @json($labels);  // Days or date labels
-    var weights = @json($weights);  // Weight data for each corresponding label
+    // Days or date labels
+    var labels = @json($labels);  
+    
+    // Weight data for each corresponding label
+    var weights = @json($weights);
 
     var ctx = document.getElementById('mychart');
 

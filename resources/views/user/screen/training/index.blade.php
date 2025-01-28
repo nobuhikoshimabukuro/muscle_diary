@@ -7,11 +7,6 @@
 @section('content')
 
 <style>
-/* 操作不可能 */
-.impossible {
-	pointer-events: none;
-	opacity: 0.3;
-}
 
 </style>
 
@@ -176,7 +171,7 @@
 
           <div class="modal-body">
               <div class="col-12">
-                  <div class="ajax-msg"></div>                
+                  <div class="error_message_area"></div>                
               </div>
               <form id='save-form' enctype="multipart/form-data">                
 
@@ -293,14 +288,13 @@
 
     e.preventDefault();
 
-    var button = $(this);
+    var button = $(this);    
 
-    button.prop("disabled", true);
-    document.body.style.cursor = 'wait';
+    clear_error_message(".error_message_area");
+    standby_processing(1,button,"body");
+    
 
     var url = "{{ route('user.training_history.save') }}";
-
-    standby_processing(1,button,"body");
 
     $.ajax({
             url: url, // 送信先
@@ -339,10 +333,7 @@
           // モーダルを表示する
           $("#login_again-modal").modal('show');
 
-        } else{
-          
-          button.prop("disabled", false);          
-          document.body.style.cursor = 'auto';                               
+        } else{                                     
 
           var message = result_array["message"];
 

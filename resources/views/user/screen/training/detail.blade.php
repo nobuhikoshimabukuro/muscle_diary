@@ -7,17 +7,11 @@
 @section('content')
 
 <style>
-/* 操作不可能 */
-.impossible {
-	pointer-events: none;
-	opacity: 0.3;
-}
+
 
 </style>
 
-@php
 
-@endphp
 
 <div class="mt-3 text-center container">
   
@@ -478,12 +472,11 @@
 
     var button = $(this);
 
-    button.prop("disabled", true);
-    document.body.style.cursor = 'wait';
+    clear_error_message(".error_message_area");
+    standby_processing(1,button,"body");
+    
 
     var url = "{{ route('user.training_history.save') }}";    
-
-    standby_processing(1,button,"body");
 
     $.ajax({
             url: url, // 送信先
@@ -517,9 +510,6 @@
 
         } else{
           
-          button.prop("disabled", false);          
-          document.body.style.cursor = 'auto';                               
-
           var message = result_array["message"];
 
         }    
@@ -528,7 +518,6 @@
     .fail(function (data, textStatus, errorThrown) {
 
       standby_processing(2,button);
-
 
     });
 
@@ -539,8 +528,8 @@
   $(document).on("click", ".training_detail_t-save-button", function (e) {
 
 
-    var error_message_area = ".training_detail-save-modal-error-message-area";
-    error_reset(error_message_area);
+    
+    
     var user_training_count = $('#user_training_count').val();
     var user_training_detail_id = 0;
     var user_exercise_id = $('#user_exercise_id').val();  
@@ -554,94 +543,85 @@
 
     var button = $(this);
 
-    button.prop("disabled", true);
-    document.body.style.cursor = 'wait';
+    var error_message_area = ".training_detail-save-modal-error-message-area";
+    clear_error_message(error_message_area);
+    standby_processing(1,button,"body");
+    
 
     var url = "{{ route('user.training_detail.save') }}";   
 
-    standby_processing(1,button,"body");
-
-  $.ajax({
-          url: url, // 送信先
-          type: 'post',
-          dataType: 'json',
-          data: { 
-              'user_training_count' : user_training_count,
-              'user_training_detail_id' : user_training_detail_id,
-              'user_exercise_id' : user_exercise_id,
-              'type' : type,
-              'time' : time,
-              'weight_type' : weight_type,
-              'reps' : reps,
-              'weight' : weight
-          },
-          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+    $.ajax({
+            url: url, // 送信先
+            type: 'post',
+            dataType: 'json',
+            data: { 
+                'user_training_count' : user_training_count,
+                'user_training_detail_id' : user_training_detail_id,
+                'user_exercise_id' : user_exercise_id,
+                'type' : type,
+                'time' : time,
+                'weight_type' : weight_type,
+                'reps' : reps,
+                'weight' : weight
+            },
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
     })
-  .done(function (data, textStatus, jqXHR) {
+      .done(function (data, textStatus, jqXHR) {
 
-      standby_processing(2,button);
+          standby_processing(2,button);
 
-      var result_array = data.result_array;
+          var result_array = data.result_array;
 
-      if(result_array["result"] == 'success'){
+          if(result_array["result"] == 'success'){
 
-          location.reload();
+              location.reload();
 
-      }else if(result_array["result"] == 'login_again'){
-                    
-        // モーダルを表示する
-        $("#login_again-modal").modal('show');
+          }else if(result_array["result"] == 'login_again'){
+                        
+            // モーダルを表示する
+            $("#login_again-modal").modal('show');
 
-      } else{
-        
-        button.prop("disabled", false);          
-        document.body.style.cursor = 'auto';                               
+          } else{
 
-        var message = result_array["message"];
+            var message = result_array["message"];
 
-      }    
+          }    
 
-  })
-    .fail(function (data, textStatus, errorThrown) {
+      })
+        .fail(function (data, textStatus, errorThrown) {
 
-        standby_processing(2,button);
+            standby_processing(2,button);
 
-        //{{-- アラートメッセージ表示 --}}
-        let errors_html = '<div class="alert alert-danger text-left">';
+            //{{-- アラートメッセージ表示 --}}
+            let errors_html = '<div class="alert alert-danger text-left">';
 
-        if (data.status == '422') {
-          //{{-- vlidationエラー --}}
-          $.each(data.responseJSON.errors, function (key, value) {
-            //{{-- responsからerrorsを取得しメッセージと赤枠を設定 --}}
-            errors_html += '<li>' + value[0] + '</li>';
+            if (data.status == '422') {
+              //{{-- vlidationエラー --}}
+              $.each(data.responseJSON.errors, function (key, value) {
+                //{{-- responsからerrorsを取得しメッセージと赤枠を設定 --}}
+                errors_html += '<li>' + value[0] + '</li>';
 
-            $("[name='" + key + "']").addClass('is-invalid');
+                $("[name='" + key + "']").addClass('is-invalid');
 
-            $("[name='" + key + "']").next('.invalid-feedback').text(value);
+                $("[name='" + key + "']").next('.invalid-feedback').text(value);
 
-          });
+              });
 
-        } else {
-          //{{-- その他のエラー --}}
-          errors_html += '<li>' + data.status + ':' + errorThrown + '</li>';
-        }
+            } else {
+              //{{-- その他のエラー --}}
+              errors_html += '<li>' + data.status + ':' + errorThrown + '</li>';
+            }
 
-        errors_html += '</div>';
-        //{{-- アラート --}}
-        $(error_message_area).html(errors_html);      
+            errors_html += '</div>';
+            //{{-- アラート --}}
+            $(error_message_area).html(errors_html);      
 
 
-    });
+        });
 
   });
 
 
-
-  function error_reset(target) {
-    $(target).html("");    
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').removeClass('invalid-feedback');
-  }
 
 </script>
 

@@ -31,7 +31,15 @@ function end_loader() {
     element.remove();
   });
 }
-  
+
+function clear_error_message(target){
+
+  $(target).html("");    
+  $('.is-invalid').removeClass('is-invalid');
+  $('.invalid-feedback').removeClass('invalid-feedback');
+      
+}
+
 
 function standby_processing(process_branch ,button ,target = 'body'){
 
@@ -101,6 +109,10 @@ $('.modal').on('hidden.bs.modal', function() {
 
 
 $(document).on("click", ".search-table .search-button", function (e) {
+
+  var button = $(this);
+
+  standby_processing(1,button,"body");
 
   var add_url = "";
 

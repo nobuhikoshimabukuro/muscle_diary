@@ -173,3 +173,10 @@ a{
   justify-content: center;
   align-items: center;
 }
+
+/* 操作不可能 */
+.impossible
+{
+	pointer-events: none;
+	opacity: 0.3;
+}

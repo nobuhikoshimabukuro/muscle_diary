@@ -163,7 +163,7 @@ $(function(){
    function login_process(){
 
       //{{-- メッセージクリア --}}
-      $('.ajax-msg').html('');
+      $('.error_message_area').html('');
        $('.is-invalid').removeClass('is-invalid');
 
        var mailaddress = $("#mailaddress").val();

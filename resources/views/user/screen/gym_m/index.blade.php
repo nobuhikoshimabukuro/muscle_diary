@@ -117,7 +117,7 @@
 
           <div class="modal-body">
               <div class="col-12">
-                  <div class="ajax-msg1"></div>                
+                  <div class="error_message_area1"></div>                
               </div>
               <form id='save-form' action="{{ route('user.gym_m.save') }}" method="post" enctype="multipart/form-data">
                 @csrf
@@ -234,7 +234,9 @@
 
     let f = $('#save-form');
 
+    clear_error_message(".error_message_area");
     standby_processing(1,button,"#save-modal");
+    
 
     $.ajax({
       url: f.prop('action'), // 送信先
@@ -257,10 +259,7 @@
             // モーダルを表示する
             $("#login_again-modal").modal('show');
 
-        } else{
-          
-          button.prop("disabled", false);          
-          document.body.style.cursor = 'auto';                               
+        } else{                                       
 
           var message = result_array["message"];
 
