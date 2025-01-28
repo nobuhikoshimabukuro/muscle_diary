@@ -44,8 +44,7 @@ class training_controller extends Controller
         }
 
         $user_id = $user_info->user_id;
-        $keep_user_training_count = 0;
-        
+                
         //トレーニング記録取得                                           
         $training_history_t = training_history_t_model::
         select(
@@ -66,15 +65,12 @@ class training_controller extends Controller
             // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
             $info->start_datetime = $info->start_datetime ? Carbon::parse($info->start_datetime)->format('Y/m/d H:i:s') : "";
             $info->end_datetime = $info->end_datetime ? Carbon::parse($info->end_datetime)->format('Y/m/d H:i:s') : "";
-
-            if(count($training_history_t) == ($index + 1) &&  $info->end_datetime == ""){
-                $keep_user_training_count = $info->user_training_count;
-            }
+            
         }
 
         $gym_m = db_common::get_user_item($user_id,1);
                 
-        return view('user/screen/training/index', compact('training_history_t','keep_user_training_count','gym_m'));     
+        return view('user/screen/training/index', compact('training_history_t','gym_m'));     
     }
 
 
@@ -94,79 +90,64 @@ class training_controller extends Controller
         $user_training_count = $request->user_training_count;
 
 
-        // 新しいモデルオブジェクトを作成
-        $training_history_t = (object)array();
-        $training_detail_t = (object)array();
-        
- 
-        $data_type = 0;
+        //トレーニング記録取得                                           
+        $training_history_t = training_history_t_model::
+        select(
+            'training_history_t.*',
+            DB::raw('TIMEDIFF(training_history_t.end_datetime, training_history_t.start_datetime) as elapsed_time'),
+            'gym_m.gym_name'
+        )
+        ->leftJoin('gym_m', function ($join) {
+            $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
+                ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
+        })
+        ->where('training_history_t.user_id', $user_id)
+        ->where('training_history_t.user_training_count', $user_training_count)
+        ->orderBy('training_history_t.user_training_count', 'desc')->first();
 
-        if($user_training_count == 0){           
-            $training_history_t = (object)['start_datetime' => "" ,'user_training_count' => $user_training_count];
-            $data_type = 1;
+        $data_type = 1;
 
-        }else{
+        if(!is_null($training_history_t)){                                  
 
-            
-            //トレーニング記録取得                                           
-            $training_history_t = training_history_t_model::
-            select(
-                'training_history_t.*',
-                DB::raw('TIMEDIFF(training_history_t.end_datetime, training_history_t.start_datetime) as elapsed_time'),
-                'gym_m.gym_name'
-            )
-            ->leftJoin('gym_m', function ($join) {
-                $join->on('gym_m.user_id', '=', 'training_history_t.user_id')
-                    ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
-            })
-            ->where('training_history_t.user_id', $user_id)
-            ->where('training_history_t.user_training_count', $user_training_count)
-            ->orderBy('training_history_t.user_training_count', 'desc')->first();
+            // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
+            $training_history_t->start_datetime = $training_history_t->start_datetime ? Carbon::parse($training_history_t->start_datetime)->format('Y/m/d H:i:s') : "";
+            $training_history_t->end_datetime = $training_history_t->end_datetime ? Carbon::parse($training_history_t->end_datetime)->format('Y/m/d H:i:s') : "";
 
-            if(!is_null($training_history_t)){                                  
+            if( $training_history_t->end_datetime == ""){
 
-                // start_datetimeとend_datetimeをスラッシュ形式で取得（NULLの場合はnullのまま）
-                $training_history_t->start_datetime = $training_history_t->start_datetime ? Carbon::parse($training_history_t->start_datetime)->format('Y/m/d H:i:s') : "";
-                $training_history_t->end_datetime = $training_history_t->end_datetime ? Carbon::parse($training_history_t->end_datetime)->format('Y/m/d H:i:s') : "";
+                $data_type = 1;
 
-                if( $training_history_t->end_datetime == ""){
-                    $data_type = 2;
-                }else{
-                    $data_type = 3;
-                }
+            }else{
 
-                $training_detail_t = training_detail_t_model::select(
-                    'training_detail_t.*',
-                    'exercise_m.exercise_name'
-                )
-                ->leftJoin('exercise_m', function ($join) {
-                    $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
-                        ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
-                })
-                ->where('training_detail_t.user_id', $user_id)
-                ->where('training_detail_t.user_training_count', $user_training_count)
-                ->get();
+                $data_type = 2;
 
             }
-        } 
 
+            $training_detail_t = training_detail_t_model::select(
+                'training_detail_t.*',
+                'exercise_m.exercise_name'
+            )
+            ->leftJoin('exercise_m', function ($join) {
+                $join->on('training_detail_t.user_id', '=', 'exercise_m.user_id')
+                    ->on('training_detail_t.user_exercise_id', '=', 'exercise_m.user_exercise_id');
+            })
+            ->where('training_detail_t.user_id', $user_id)
+            ->where('training_detail_t.user_training_count', $user_training_count)
+            ->get();
 
-        if($data_type == 0){            
-
+        }else{
+            
             return redirect(route('user.training.index'));
 
         }
-
-        
         
         $training_history_t->data_type = $data_type;
-
 
         $gym_m = db_common::get_user_item($user_id,1);
         $exercise_m = db_common::get_user_item($user_id,2);       
 
-        return view('user/screen/training/detail', compact('training_history_t','training_detail_t','gym_m','exercise_m'));       
-     
+        return view('user/screen/training/detail', compact('training_history_t','training_detail_t','gym_m','exercise_m'));
+
     }
 
     
@@ -203,8 +184,10 @@ class training_controller extends Controller
 
             if (empty($table)) {
                 
-                $user_training_count = db_common::get_user_max_value($user_id,3);
-
+                
+                $user_training_count = db_common::get_user_max_value($user_id,3);    
+                
+                
                 $table = new training_history_t_model;
                 $table->user_id = $user_id;
                 $table->user_training_count = $user_training_count;
@@ -216,8 +199,9 @@ class training_controller extends Controller
 
             }else{
 
-                if($process == 2){
-                                        
+                if($process == 1){
+                    $table->user_gym_id = $request->user_gym_id;                    
+                }elseif($process == 2){
                     $table->end_datetime = now();
                 }
             }
@@ -356,11 +340,10 @@ class training_controller extends Controller
         }
 
         $user_id = $user_info->user_id;
-        $training_history_t = common::get_latest_training_history_t($user_id);
-      
+        $training_history_t = common::get_latest_training_history_t($user_id);      
 
-        return view('user/screen/training/record_sheet', compact('training_history_t'));       
-     
+        return view('user/screen/training/record_sheet', compact('training_history_t'));
+
     }
 
     function get_training_history_t($user_id)
@@ -489,7 +472,7 @@ class training_controller extends Controller
                 SELECT
                     user_id
                     , yyyymmdd
-                    , SEC_TO_TIME(elapsed_seconds) AS elapsed_time
+                    , elapsed_seconds
                     , CASE 
                         WHEN DAYOFWEEK(STR_TO_DATE(yyyymmdd, '%Y%m%d')) = 1 
                             THEN 'Mon' 
@@ -516,7 +499,7 @@ class training_controller extends Controller
                     , MAX(yyyymmdd) AS end_date
                     , YEAR (yyyymmdd) AS year
                     , WEEK(yyyymmdd, 1) AS week
-                    , SEC_TO_TIME(SUM(elapsed_seconds)) AS elapsed_time 
+                    , SUM(elapsed_seconds) AS elapsed_seconds 
                 FROM
                     base_data 
                 GROUP BY
@@ -529,7 +512,7 @@ class training_controller extends Controller
                     user_id
                     , 
                     LEFT (yyyymmdd, 6) AS yyyymm
-                    , SEC_TO_TIME(SUM(elapsed_seconds)) AS elapsed_time 
+                    , SUM(elapsed_seconds) AS elapsed_seconds
                 FROM
                     base_data 
                 GROUP BY
@@ -542,14 +525,14 @@ class training_controller extends Controller
                     user_id
                     , 
                     LEFT (yyyymmdd, 4) AS yyyy
-                    , SEC_TO_TIME(SUM(elapsed_seconds)) AS elapsed_time 
+                    , SUM(elapsed_seconds) AS elapsed_seconds 
                 FROM
                     base_data 
                 GROUP BY
                     user_id
                     , 
                     LEFT (yyyymmdd, 4)
-            ) 
+            )
         ";
         
         $where_sql = "WHERE user_id = :user_id";
@@ -566,7 +549,7 @@ class training_controller extends Controller
                     SELECT
                         user_id
                         , yyyy
-                        , elapsed_time 
+                        , elapsed_seconds 
                     FROM
                         year_data           
                 ";
@@ -583,7 +566,7 @@ class training_controller extends Controller
                         user_id
                         , yyyymm
                         , CONCAT(LEFT (yyyymm, 4), '/', RIGHT (yyyymm, 2)) AS formatted_yyyymm
-                        , elapsed_time 
+                        , elapsed_seconds 
                     FROM
                         month_data
                 ";
@@ -616,7 +599,7 @@ class training_controller extends Controller
                         , DATE_FORMAT(STR_TO_DATE(end_date, '%Y%m%d'), '%Y/%m/%d') AS formatted_end_date
                         , year
                         , week
-                        , elapsed_time 
+                        , elapsed_seconds 
                     FROM
                         week_data                  
                 ";
@@ -694,7 +677,7 @@ class training_controller extends Controller
                         user_id
                         , yyyymmdd
                         , DATE_FORMAT(STR_TO_DATE(yyyymmdd, '%Y%m%d'), '%Y/%m/%d') AS formatted_yyyymmdd
-                        , elapsed_time
+                        , elapsed_seconds
                         , day_of_week_jp 
                     FROM
                         day_data
@@ -728,13 +711,13 @@ class training_controller extends Controller
         $record = DB::connection('mysql')->select($sql, $params);
 
         $labels = [];
-        $elapsed_times = [];
+        $elapsed_seconds_data = [];
 
         $count = 0;
-        $total_elapsed_time = 0;
-        $ave_elapsed_time = "00:00:00";
-        $min_elapsed_time = "00:00:00";
-        $max_elapsed_time = "0";          
+        $total_elapsed_seconds = 0;
+        $ave_elapsed_seconds = 0;
+        $min_elapsed_seconds = 0;
+        $max_elapsed_seconds = 0;          
         $step_size = 0;
         
         foreach ($record as $index => $info) {
@@ -763,56 +746,44 @@ class training_controller extends Controller
                 default:
             }
             
-            $elapsed_time = common::time_to_seconds($info->elapsed_time);  
+            $elapsed_seconds = $info->elapsed_seconds;
             
-            $total_elapsed_time += $elapsed_time;
+            $total_elapsed_seconds += $elapsed_seconds;
 
 
-            if ($max_elapsed_time <= $elapsed_time || $index == 0) {
-                $max_elapsed_time = $elapsed_time; // 最大値を更新
+            if ($max_elapsed_seconds <= $elapsed_seconds || $index == 0) {
+                $max_elapsed_seconds = $elapsed_seconds; // 最大値を更新
             }
 
             $labels[]= $label;
-            $elapsed_times[]= $info->elapsed_time;
+            $elapsed_seconds_data[]= $info->elapsed_time;
 
             $count = $index + 1;
         }
 
-        // 平均体重を計算（小数点第3位まで）
+        
         if ($count > 0) {
 
-            $ave_elapsed_time = round($total_elapsed_time / $count); // 小数点第3位まで                                
+            $ave_elapsed_seconds = round($total_elapsed_seconds / $count);            
             
-            $ave_elapsed_time = common::seconds_to_time($ave_elapsed_time);
-            $max_elapsed_time = common::seconds_to_time($max_elapsed_time);
-
-            list($hours, $minutes, $seconds) = explode(':', $max_elapsed_time);
-
-            $hours = (int)$hours;
-            $minutes = (int)$minutes;
-            $seconds = 0;
-
-            if ($minutes >= 30 && $minutes <= 60) {
-                $minutes = 0;
-                $hours += 1;
-            }else{
-                $minutes = 30;
-            }
-
-            $max_elapsed_time = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         
+        $total_elapsed_seconds = 0;
+        $ave_elapsed_seconds = 0;
+        $min_elapsed_seconds = 0;
+        $max_elapsed_seconds = 0;   
+
 
         $user_info = user_m_model::get_user_info($user_id);
         $return_array = [
-            "datas" => ["labels" => $labels , "elapsed_times" => $elapsed_times]
+            "datas" => ["labels" => $labels , "elapsed_seconds_data" => $elapsed_seconds_data]
             ,"summary" => [
                 'user_name' => $user_info->user_name
                 ,'count' => $count
-                ,'min_elapsed_time' => $min_elapsed_time
-                ,'max_elapsed_time' => $max_elapsed_time
-                ,'ave_elapsed_time' => $ave_elapsed_time
+                ,'min_elapsed_seconds' => $min_elapsed_seconds
+                ,'max_elapsed_seconds' => $max_elapsed_seconds
+                ,'ave_elapsed_seconds' => $ave_elapsed_seconds
                 ,'step_size' => $step_size
             ]
         ];

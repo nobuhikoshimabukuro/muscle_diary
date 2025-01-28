@@ -8,10 +8,7 @@
 
 <style>
 
-
 </style>
-
-
 
 <div class="mt-3 text-center container">
   
@@ -23,122 +20,97 @@
 
       <table class="table">
 
-     
+        <tr>
+          <th colspan="3">
+            時刻
+          </th>          
+        </tr>  
+        <tr>
+          <td colspan="3">
+            <div id="timer"></div>
+          </td>          
+        </tr>  
 
-          @if($training_history_t->data_type == 1)
+        <tr>
+          <th colspan="3">
+            ジム選択
+          </th>        
+        </tr>  
+        <tr>
+          <td colspan="2">
+            <select id="user_gym_id" name="user_gym_id" class="form-control">
 
-            <tr>
-              <td colspan="3">
-                <div id="timer"></div>
-              </td>          
-            </tr>  
+              <option value="0">未選択</option>                  
+              @foreach ($gym_m as $info1)
+            
+                <option value="{{$info1->user_gym_id}}"
+                  @if($info1->user_gym_id == $training_history_t->user_gym_id) selected @endif
+                >{{$info1->gym_name}}</option>                  
+              @endforeach
+            </select>    
+          </td> 
+          
+          <td colspan="1">
+            <button class="training_history_t-save-button btn btn-outline-success" data-process="1">ジム情報更新</button>
+          </td>    
+        </tr>  
+          
+        <tr>
+          <th colspan="3">
+            開始日時
+          </th>        
+        </tr>  
 
+        <tr>
+          <td colspan="3">
+            {{$training_history_t->start_datetime}}
+          </td>        
+        </tr>  
+            
+        @if($training_history_t->data_type == 1)
 
-            <tr>          
-              <td>
-                ジム選択
-              </td>
+          <tr>
+            <th colspan="3">
+              経過時間
+            </th>        
+          </tr>  
 
-              <td>
-                <select id="user_gym_id" name="user_gym_id" class="form-control">
-
-                  <option value="0">未選択</option>                  
-                  @foreach ($gym_m as $info1)
-                
-                    <option value="{{$info1->user_gym_id}}"                                        
-                    >{{$info1->gym_name}}</option>                  
-                  @endforeach
-                </select>      
-              </td>   
+          <tr>
+            <td colspan="3">
+              <div id="elapsed_timer"></div>   
+            </td>        
+          </tr>       
+          
+       
+          <tr>
+            <td colspan="3">
+              <button class="training_history_t-save-button btn btn-outline-danger" data-process="2">終了</button> 
+            </td>        
+          </tr>       
               
-              <td>
-                <button class="training_history_t-save-button btn btn-outline-success" data-process="1">開始</button>
-              </td>
-            </tr>  
+        @elseif($training_history_t->data_type == 2)
 
-            
-
-          @elseif($training_history_t->data_type == 2)
-
-          
-            <tr>
-              <td colspan="3">
-                <div id="timer"></div>
-              </td>          
-            </tr>  
-
-            <tr>          
-              <td>
-                ジム
-              </td>
-
-              <td colspan="2">
-                {{$training_history_t->gym_name}}                
-              </td>   
-            </tr>  
-
-            <tr>          
-              <td>
-                開始日時
-              </td>
-
-              <td colspan="2">
-                {{$training_history_t->start_datetime}}              
-              </td>   
-            </tr>  
-            
-            
-            <tr>          
-              <td>
-                経過時間
-              </td>
-
-              <td colspan="2">
-                <div id="elapsed_timer"></div>    
-              </td>   
-            </tr>  
-
-
-            <tr>          
-              <td>
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle='modal' data-bs-target='#training_detail-save-modal'
-                >種目記録</button>
-               
-              </td>
-              <td>
-               
-              </td>
-              <td>
-                <button class="training_history_t-save-button btn btn-outline-danger" data-process="2">終了</button>
-              </td>
-            </tr>  
-
-          @elseif($training_history_t->data_type == 3)
-
-          <tr>          
-            <td>
-              ジム
-            </td>
-
-            <td colspan="2">
-              {{$training_history_t->gym_name}}                
-            </td>   
-          </tr>  
-
-          <tr>          
-            <td>
+          <tr>
+            <th colspan="3">
               トレーニング時間
-            </td>
-
-            <td colspan="2">
-              {{$training_history_t->start_datetime}}～{{$training_history_t->end_datetime}}
-            </td>   
+            </th>        
           </tr>  
-          
-          
-          
 
-          @endif
+          <tr>
+            <td colspan="3">
+              {{$training_history_t->start_datetime}}～{{$training_history_t->end_datetime}}
+            </td>        
+          </tr>          
+
+        @endif
+
+        <tr>          
+          <td>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle='modal' data-bs-target='#training_detail-save-modal'
+            >種目記録</button>               
+          </td>
+  
+        </tr>  
           
       </table>
 
@@ -421,7 +393,6 @@
     // 時間はゼロ埋めせずそのまま表示、分と秒はゼロ埋め
     const formattedElapsedTime = `${elapsedHours}時間${('0' + elapsedMinutes).slice(-2)}分${('0' + elapsedSecs).slice(-2)}秒`;
 
-
     // 経過時間表示部分を更新
     document.getElementById('elapsed_timer').textContent = formattedElapsedTime;
   }
@@ -454,11 +425,6 @@
       }
   });
 
-
-
-
-
-
   //トレーニング履歴ボタン
   $(document).on("click", ".training_history_t-save-button", function (e) {
 
@@ -474,7 +440,6 @@
 
     clear_error_message(".error_message_area");
     standby_processing(1,button,"body");
-    
 
     var url = "{{ route('user.training_history.save') }}";    
 
@@ -526,9 +491,6 @@
 
   //トレーニング詳細ボタン
   $(document).on("click", ".training_detail_t-save-button", function (e) {
-
-
-    
     
     var user_training_count = $('#user_training_count').val();
     var user_training_detail_id = 0;
@@ -602,7 +564,6 @@
                 errors_html += '<li>' + value[0] + '</li>';
 
                 $("[name='" + key + "']").addClass('is-invalid');
-
                 $("[name='" + key + "']").next('.invalid-feedback').text(value);
 
               });

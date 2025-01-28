@@ -259,8 +259,6 @@
   // 初期表示
   updateTimer();
 
-
-  
   $(document).on("click", ".training_detail-button", function (e) {
       // this の target を取得
       var target = $(this).data('target');      
@@ -273,22 +271,17 @@
   
   $(document).on("click", ".training_history_t-save-button", function (e) {
 
+    e.preventDefault();
+    var button = $(this);    
 
     var process = $(this).data('process');     
     var set_datetime = document.getElementById('timer').textContent;
     var user_gym_id = $('#user_gym_id').val();
-    var user_training_count = $('#user_training_count').val();
-
+    
     var user_training_count = 0;
-
     if(process == 2){
       user_training_count = $(this).data('user_training_count'); 
     }
-    
-
-    e.preventDefault();
-
-    var button = $(this);    
 
     clear_error_message(".error_message_area");
     standby_processing(1,button,"body");
@@ -324,12 +317,11 @@
             url = "{{ route('user.training.index') }}";
           }
           
-
           // パラメータを付けて遷移
           window.location.href = url;
 
         }else if(result_array["result"] == 'login_again'){
-                      
+
           // モーダルを表示する
           $("#login_again-modal").modal('show');
 
@@ -343,7 +335,6 @@
     .fail(function (data, textStatus, errorThrown) {
 
       standby_processing(2,button);
-
 
     });
 

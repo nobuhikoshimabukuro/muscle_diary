@@ -1,0 +1,42 @@
+coreserver V2　導入
+
+①coreserver　ドメイン管理にドメイン追加
+
+②SSH接続
+
+③【domain】階層に移動
+
+④①で追加したドメインを確認
+
+⑤【domain】階層でgit clone
+コマンド：git clone https://github.com/nobuhikoshimabukuro/gakupro.git
+
+⑥【domain】階層でcomposer update
+コマンド：composer update
+※事前にcomposerのインストールとパスフリが必要
+【.bashrc】ファイルに下記の追記が必要
+alias composer='php /home/yuyucraft/composer.phar'
+
+⑦【domain】階層のprivate_htmlのシンボリックリンクの削除と再設定が必要
+7-1:cd /home/yuyucraft/domains/yu-yu-craft.com
+7-2:ls -l
+7-3:unlink /home/yuyucraft/domains/yu-yu-craft.com/private_html
+7-4:ln -s /home/yuyucraft/domains/yu-yu-craft.com/gakupro/public /home/yuyucraft/domains/yu-yu-craft.com/private_html
+
+⑧envファイルの作成
+※事前にFTP設定が必要
+
+⑨envファイルの書き換え
+
+⑩DB作成
+コマンド：php artisan migrate:fresh --database=mysql --seed
+
+
+⑪シンボリックリンクの設定
+cd /home/yuyucraft/domains/yu-yu-craft.com/gakupro
+php artisan storage:link
+
+
+
+
+
