@@ -51,8 +51,7 @@ class login_controller extends Controller
             if (session()->has('after_login_url')) {
 
                 $after_login_url = session('after_login_url');
-                session()->forget('after_login_url');
-                
+                session()->forget('after_login_url');                
                 return redirect($after_login_url);    
 
             }else{                
