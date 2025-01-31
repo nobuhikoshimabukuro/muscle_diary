@@ -82,7 +82,9 @@
   <div class="contents row justify-content-center p-0">
       
 
-      <button type="button" class="btn btn-success" data-bs-toggle='modal' data-bs-target='#save-modal'>記録</button>
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">     
+        <button type="button" class="btn btn-success save-modal-open">記録</button>
+      </div>
 
       <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">       
    
@@ -371,17 +373,20 @@
   });
  
 
-  $('#save-modal').on('show.bs.modal', function(e) {
-
+  $('.save-modal-open').click(function(){
+        
     $('.error_message_area').html("");
     $("#save-modal .is-invalid").removeClass('is-invalid');
 
     $('input[name="measure_at"]').val("");
     $('input[name="weight"]').val("");
     $('input[name="weight_type"]').val("");    
-
+    // モーダルを表示する        
+    $("#save-modal").modal('show');
   });
 
+
+ 
 
   $(document).on("click", ".list_graph_change_button", function (e) {
     

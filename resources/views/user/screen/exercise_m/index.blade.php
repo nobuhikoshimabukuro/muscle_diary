@@ -16,7 +16,12 @@
   
   <div class="contents row justify-content-center p-0">
 
-    <button type="button" class="btn btn-success" data-user_exercise_id="0" data-bs-toggle='modal' data-bs-target='#save-modal'>新規登録</button>
+    
+    <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">     
+      <button type="button" class="btn btn-success save-modal-open" data-user_exercise_id="0">新規登録</button>
+    </div>
+
+    
 
 
     
@@ -79,12 +84,11 @@
                         </td>
 
                         <td class="{{$text_class[$text_class_index++]}}">
-                            <button type="button" class="btn btn-outline-secondary"                               
+                            <button type="button" class="btn btn-outline-secondary save-modal-open"                               
                                 data-user_exercise_id="{{$item->user_exercise_id}}" 
                                 data-exercise_name="{{$item->exercise_name}}"                                 
                                 data-display_flg="{{$item->display_flg}}"
-                                data-display_order="{{$item->display_order}}"
-                                data-bs-toggle='modal' data-bs-target='#save-modal'
+                                data-display_order="{{$item->display_order}}"                                
                             >編集</button>
                         </td>
 
@@ -199,41 +203,35 @@
 
 <script type="text/javascript">
 
+  $('.save-modal-open').click(function(){
+        
+    var button = $(this);
 
-  $('#save-modal').on('show.bs.modal', function(e) {
+    var user_exercise_id = button.data('user_exercise_id');
 
-    // イベント発生元
-    let evCon = $(e.relatedTarget);
-
-    $('input[name="user_exercise_id"]').val("");
-    $('input[name="exercise_name"]').val("");    
-    $('input[name="display_order"]').val("");
-    $('input[name="display_flg"][value="1"]').prop('checked', true);
-
-    var user_exercise_id = evCon.data('user_exercise_id');      
-
-    $('input[name="user_exercise_id"]').val(user_exercise_id);
-
+    var exercise_name = "";
+    var display_order = 1;
+    var display_flg = 1;
+    
+     
     $(".bodyweight_flg-area").removeClass('d-none');
     if(user_exercise_id != 0){
       
-      var exercise_name = evCon.data('exercise_name');      
-      var display_order = evCon.data('display_order');
-      var display_flg = evCon.data('display_flg');
-
-      
-      $('input[name="exercise_name"]').val(exercise_name);
-      $('input[name="measurement_type"][value="' + measurement_type + '"]').prop('checked', true);
-
-     
-
-      $('input[name="display_order"]').val(display_order);
-      $('input[name="display_flg"][value="' + display_flg + '"]').prop('checked', true);
-
+      exercise_name = button.data('exercise_name');      
+      display_order = button.data('display_order');    
+      display_flg = button.data('display_flg');     
     }
 
+    $('input[name="user_exercise_id"]').val(user_exercise_id);  
+    $('input[name="exercise_name"]').val(exercise_name);
+    $('input[name="display_flg"][value="' + display_flg + '"]').prop('checked', true);
+    $('input[name="display_order"]').val(display_order);
+
+    // モーダルを表示する        
+    $("#save-modal").modal('show');
+
   });
-  
+
  
 
   $(document).on("click", "#save-button", function (e) {

@@ -76,14 +76,7 @@ class exercise_m_controller extends Controller
             ->where('user_id', $user_id)
             ->first();
 
-            $measurement_type = $request->measurement_type;
-            $bodyweight_flg = 0;
-
-            //$measurement_type == 2（1 = 時間 , 2 = 重さ）のみ自重フラグの値を画面から取得する
-            if($measurement_type == 2){              
-                $bodyweight_flg = $request->bodyweight_flg ?? 0;
-            }
-
+      
             if (empty($table)) {
 
                 $table = new exercise_m_model;
@@ -94,9 +87,7 @@ class exercise_m_controller extends Controller
 
             }
      
-            $table->exercise_name = $request->exercise_name;
-            $table->measurement_type = $measurement_type;
-            $table->bodyweight_flg = $bodyweight_flg;
+            $table->exercise_name = $request->exercise_name;            
             $table->display_flg = $request->display_flg;
             $table->display_order = $request->display_order;
             $table->updated_by = $user_id;
