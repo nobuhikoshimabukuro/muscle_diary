@@ -43,6 +43,7 @@ php VIEWでのブレイクのやり方
 
 ・アップデート 各環境Clone時またライブラリを更新時
 composer update
+composer install
 
 ★マイグレーション作成
 ・新規用
