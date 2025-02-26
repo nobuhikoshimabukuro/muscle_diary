@@ -13,6 +13,7 @@ use App\Original\common;
 use App\Original\db_common;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\Paginator;
 // controller作成時ここまでコピー↑
 
 // Model ↓
@@ -57,7 +58,8 @@ class training_controller extends Controller
                 ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
         })
         ->where('training_history_t.user_id', $user_id)
-        ->orderBy('training_history_t.user_training_count', 'asc')->get();
+        ->orderBy('training_history_t.user_training_count', 'asc')
+        ->paginate(10);
     
         foreach ($training_history_t as $index => $info) {
         

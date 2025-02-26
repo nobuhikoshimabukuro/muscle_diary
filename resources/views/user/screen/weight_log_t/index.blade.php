@@ -330,18 +330,18 @@
 
   function updateTimer() {
     // 現在の日時を取得
-    const now = new Date();
+    var now = new Date();
 
     // 各値を取得
-    const year = now.getFullYear();
-    const month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
-    const day = ('0' + now.getDate()).slice(-2);
-    const hours = ('0' + now.getHours()).slice(-2);
-    const minutes = ('0' + now.getMinutes()).slice(-2);
-    const seconds = ('0' + now.getSeconds()).slice(-2);
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
+    var day = ('0' + now.getDate()).slice(-2);
+    var hours = ('0' + now.getHours()).slice(-2);
+    var minutes = ('0' + now.getMinutes()).slice(-2);
+    var seconds = ('0' + now.getSeconds()).slice(-2);
 
     // フォーマットに合わせて文字列を作成
-    const formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    var formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 
     // タイマー表示部分を更新
     document.getElementById('timer').textContent = formattedTime;
@@ -358,7 +358,7 @@
   $('input[name="weight_type_radio"]').on('change', function() {
 
     // 選択されたラジオボタンの値を取得
-    const selectedValue = $('input[name="weight_type_radio"]:checked').val();
+    var selectedValue = $('input[name="weight_type_radio"]:checked').val();
      // 表示用の文字列を決定
     var display;
     if (selectedValue == 1) {

@@ -86,6 +86,11 @@
           $text_class_index = 0;
         @endphp
 
+
+        {{ $training_history_t->links() }}    
+
+
+        
         <div class="data-display-area">  
             <table class="table data-display-table">
 
@@ -94,7 +99,9 @@
                 <th class="{{$text_class[$text_class_index++]}}">ジム名</th>
                 <th class="{{$text_class[$text_class_index++]}}">日時</th>
                 <th class="{{$text_class[$text_class_index++]}}">合計時間</th>           
-                <th></th>
+                <th class="{{$text_class[$text_class_index++]}}">
+                  {{ $training_history_t->firstItem() }}～{{ $training_history_t->lastItem() }} / {{ $training_history_t->total() }}
+                </th>
               </tr>
 
               @foreach ($training_history_t as $training_history_info)
@@ -236,18 +243,18 @@
 
   function updateTimer() {
     // 現在の日時を取得
-    const now = new Date();
+    var now = new Date();
 
     // 各値を取得
-    const year = now.getFullYear();
-    const month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
-    const day = ('0' + now.getDate()).slice(-2);
-    const hours = ('0' + now.getHours()).slice(-2);
-    const minutes = ('0' + now.getMinutes()).slice(-2);
-    const seconds = ('0' + now.getSeconds()).slice(-2);
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
+    var day = ('0' + now.getDate()).slice(-2);
+    var hours = ('0' + now.getHours()).slice(-2);
+    var minutes = ('0' + now.getMinutes()).slice(-2);
+    var seconds = ('0' + now.getSeconds()).slice(-2);
 
     // フォーマットに合わせて文字列を作成
-    const formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    var formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 
     // タイマー表示部分を更新
     document.getElementById('timer').textContent = formattedTime;

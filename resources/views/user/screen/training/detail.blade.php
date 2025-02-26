@@ -105,7 +105,7 @@
         @endif
 
         <tr>          
-          <td>
+          <td colspan="3">
             <button type="button" class="btn btn-outline-secondary" data-bs-toggle='modal' data-bs-target='#training_detail-save-modal'
             >種目記録</button>               
           </td>
@@ -231,16 +231,23 @@
 
                 <tr>                  
                   <td colspan="2">
-                    <label>                      
-                      <input type="radio" name="measurement_type" value="1" checked>Weight
-                    </label>
-                    <label>
-                      <input type="radio" name="measurement_type" value="2" >Count
+
+                    <input class="form-check-input" type="radio" name="measurement_type" value="1" id="measurement_type_1" checked>
+                    <label class="form-check-label" for="measurement_type_1">
+                      Weight
                     </label>
 
-                    <label>
-                      <input type="radio" name="measurement_type" value="3">Time
+                    <input class="form-check-input" type="radio" name="measurement_type" value="2" id="measurement_type_2">
+                    <label class="form-check-label" for="measurement_type_2">
+                      Count
                     </label>
+
+                    <input class="form-check-input" type="radio" name="measurement_type" value="3" id="measurement_type_3">
+                    <label class="form-check-label" for="measurement_type_3">
+                      Time
+                    </label>
+
+       
                   </td>                 
                 </tr>
 
@@ -258,15 +265,17 @@
                   <th colspan="" class="d-flex">
                     <input type="text" id="integer" name="integer" class="form-control text-end w-100px" maxlength="3">
                     <span class="comma">.</span>
-                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">
-                    {{-- <span class="display_weight_type">kg</span>    --}}
-                    
-                    <label>
-                      <input type="radio" name="weight_type" value="1" checked>kg
+                    <input type="text" id="decimal" name="decimal" class="form-control text-end w-100px" maxlength="3">       
+
+                    <input class="form-check-input" type="radio" name="weight_type" value="1" id="weight_type_1" checked>
+                    <label class="form-check-label" for="weight_type_1">
+                      kg
                     </label>
-                    <label>
-                      <input type="radio" name="weight_type" value="2">lb
+                    <input class="form-check-input" type="radio" name="weight_type" value="2" id="weight_type_2">
+                    <label class="form-check-label" for="weight_type_2">
+                      lb
                     </label>
+
                   </th>
 
                   <th colspan="">
@@ -336,25 +345,25 @@
 <script type="text/javascript">
 
   // 開始時刻をISO 8601形式に変換
-  const start_datetime = '{{ $training_history_t->start_datetime }}'.replace(/\//g, '-').replace(' ', 'T');
+  var start_datetime = '{{ $training_history_t->start_datetime }}'.replace(/\//g, '-').replace(' ', 'T');
 
   // datetime_flg の初期値を true に設定
   var datetime_flg = true;
 
   function updateTimer() {
     // 現在の日時を取得
-    const now = new Date();
+    var now = new Date();
 
     // 各値を取得
-    const year = now.getFullYear();
-    const month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
-    const day = ('0' + now.getDate()).slice(-2);
-    const hours = ('0' + now.getHours()).slice(-2);
-    const minutes = ('0' + now.getMinutes()).slice(-2);
-    const seconds = ('0' + now.getSeconds()).slice(-2);
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);  // 月は0から始まるので +1
+    var day = ('0' + now.getDate()).slice(-2);
+    var hours = ('0' + now.getHours()).slice(-2);
+    var minutes = ('0' + now.getMinutes()).slice(-2);
+    var seconds = ('0' + now.getSeconds()).slice(-2);
 
     // フォーマットに合わせて文字列を作成
-    const formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    var formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 
     // タイマー表示部分を更新
     document.getElementById('timer').textContent = formattedTime;
@@ -370,7 +379,7 @@
       return;
     }
 
-    const start = new Date(start_datetime);
+    var start = new Date(start_datetime);
 
     // 有効な日付か確認
     if (isNaN(start.getTime())) {
@@ -379,22 +388,27 @@
     }
 
     // 経過時間をミリ秒で計算
-    const elapsedMs = now - start;
+    var elapsedMs = now - start;
 
     // 経過時間を秒単位に変換
-    const elapsedSeconds = Math.floor(elapsedMs / 1000);
+    var elapsedSeconds = Math.floor(elapsedMs / 1000);
 
     // 経過時間を時、分、秒に変換
-    const elapsedHours = Math.floor(elapsedSeconds / 3600);
-    const elapsedMinutes = Math.floor((elapsedSeconds % 3600) / 60);
-    const elapsedSecs = elapsedSeconds % 60;
+    var elapsedHours = Math.floor(elapsedSeconds / 3600);
+    var elapsedMinutes = Math.floor((elapsedSeconds % 3600) / 60);
+    var elapsedSecs = elapsedSeconds % 60;
 
     // フォーマットに合わせてゼロ埋めしながら文字列を作成
     // 時間はゼロ埋めせずそのまま表示、分と秒はゼロ埋め
-    const formattedElapsedTime = `${elapsedHours}時間${('0' + elapsedMinutes).slice(-2)}分${('0' + elapsedSecs).slice(-2)}秒`;
+    var formattedElapsedTime = `${elapsedHours}時間${('0' + elapsedMinutes).slice(-2)}分${('0' + elapsedSecs).slice(-2)}秒`;
 
-    // 経過時間表示部分を更新
-    document.getElementById('elapsed_timer').textContent = formattedElapsedTime;
+    // 経過時間表示部分を更新 
+    var elapsedTimerElement = document.getElementById('elapsed_timer');
+    if (elapsedTimerElement) {
+      elapsedTimerElement.textContent = formattedElapsedTime;
+    }
+
+    
   }
 
   // 1秒ごとにタイマーを更新
