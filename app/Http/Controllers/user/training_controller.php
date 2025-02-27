@@ -45,6 +45,16 @@ class training_controller extends Controller
         }
 
         $user_id = $user_info->user_id;
+
+        $base_display_count = 30;
+        $search_array = (object)[
+            
+            "user_gym_id" => $request->user_gym_id ?? "",
+            "training_date_f" => $request->training_date_f ?? "",          
+            "training_date_t" => $request->training_date_t ?? "",
+            "display_count" => $request->display_count ?? $base_display_count,
+        ];
+
                 
         //トレーニング記録取得                                           
         $training_history_t = training_history_t_model::
@@ -58,8 +68,22 @@ class training_controller extends Controller
                 ->on('gym_m.user_gym_id', '=', 'training_history_t.user_gym_id');
         })
         ->where('training_history_t.user_id', $user_id)
-        ->orderBy('training_history_t.user_training_count', 'asc')
-        ->paginate(10);
+        ->orderBy('training_history_t.user_training_count', 'desc');
+
+        if($search_array->user_gym_id != "") {
+            $training_history_t = $training_history_t->where("training_history_t.user_gym_id", $search_array->user_gym_id);
+        }
+
+        if($search_array->training_date_f != "") {
+            $training_history_t = $training_history_t->whereDate("training_history_t.start_datetime", ">=", $search_array->training_date_f);
+        }
+
+        if($search_array->training_date_t != "") {
+            $training_history_t = $training_history_t->whereDate("training_history_t.start_datetime", "<=", $search_array->training_date_t);
+        }
+
+
+        $training_history_t = $training_history_t->paginate($search_array->display_count);
     
         foreach ($training_history_t as $index => $info) {
         
@@ -70,9 +94,9 @@ class training_controller extends Controller
             
         }
 
-        $gym_m = db_common::get_user_item($user_id,1);
-                
-        return view('user/screen/training/index', compact('training_history_t','gym_m'));     
+        $gym_m = db_common::get_user_item($user_id,1);                
+        $display_counts = [10,30,50];
+        return view('user/screen/training/index', compact('search_array','training_history_t','gym_m','display_counts'));     
     }
 
 

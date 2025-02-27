@@ -106,81 +106,11 @@ $('.modal').on('hidden.bs.modal', function() {
 });
 
 
-$(document).on("click", ".page-link", function (e) {
-
-  var button = $(this);
-
-  standby_processing(1,button,"body");
-
-  var add_url = "";
-
-  // search-areaを取得
-  var search_area = $(".search-area");
-
-  // search_area内のinput, select, textareaを取得
-  var search_inputs = search_area.find('input, select, textarea');
-
-  
-  // 各要素のnameと値を取得してオブジェクトに追加
-  search_inputs.each(function (index) {
-
-      var input_name = $(this).data("target");
-      var input_value = $(this).val().trim();
-      
-      // ラジオボタンの場合、選択された値を取得
-      if ($(this).is(":radio")) {
-
-          if($(this).is(":checked")) {
-          input_value = $(this).val().trim();
-          }else{
-          input_value = "";
-          }    
-      }
-
-      // チェックボックスの場合、選択された値を取得
-      if ($(this).is(":checkbox")) {
-
-        if($(this).is(":checked")) {
-          input_value = $(this).val().trim();
-        }else{
-          input_value = "";
-        }    
-      }
-
-      // numericクラスが存在し、input_valueにカンマが含まれている場合、カンマを除去
-      if($(this).hasClass("numeric")){
-          input_value = input_value.replace(/,/g, "");
-      }
-
-      if (input_value != null && input_value != "") {     
-
-        add_url += "&" + input_name + "=" + input_value;
-          
-      }
-
-  });
 
 
 
-  var current_url = window.location.href;
 
-  // URLからクエリパラメータを取り除く
-  var current_url = current_url.split('?')[0];
-
-  // 新しいURLを作成
-  var new_url = current_url + add_url;
-  // ページを新しいURLでリロード
-  window.location.href = new_url;
-
-  setTimeout(function() {
-    standby_processing(2,button,"body");
-  }, 1000);
-
-
-
-});
-
-$(document).on("click", ".search-table .search-button", function (e) {
+$(document).on("click", ".common-search-button", function (e) {
 
   var button = $(this);
 
@@ -263,5 +193,22 @@ $(document).on("click", ".search-table .search-button", function (e) {
   setTimeout(function() {
     standby_processing(2,button,"body");
   }, 1000);
+
+});
+
+
+$(document).on("click", ".common-clear-button", function (e) {
+
+ 
+  var current_url = window.location.href;
+
+  // URLからクエリパラメータを取り除く
+  var current_url = current_url.split('?')[0];
+
+  // 新しいURLを作成
+  var new_url = current_url;
+
+  // ページを新しいURLでリロード
+  window.location.href = new_url;  
 
 });

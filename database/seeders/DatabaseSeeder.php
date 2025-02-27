@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user_id,
                 'user_gym_id' => $index,                                
                 'gym_name' => "AF浦添店",                
-                'display_flg' => $index,
+                'display_flg' => 1,
                 'display_order' => $index++,        
             ]
             ,
@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user_id,
                 'user_gym_id' => $index,                                
                 'gym_name' => "AF沖縄市店",                
-                'display_flg' => $index,
+                'display_flg' => 1,
                 'display_order' => $index++,    
             ]
             ,
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user_id,
                 'user_gym_id' => $index,                                
                 'gym_name' => "AF北谷店",                
-                'display_flg' => $index,       
+                'display_flg' => 1,
                 'display_order' => $index++,    
             ]
 
@@ -303,7 +303,7 @@ class DatabaseSeeder extends Seeder
         $user_id = 1;
         $dif = 0;        
         $today = Carbon::today();        
-        $formattedDate = $today;   
+        $formattedDate = $today->copy()->subDay(); // $today を変更せずに減算
 
         $index = 1100;        
         $loop = $index;

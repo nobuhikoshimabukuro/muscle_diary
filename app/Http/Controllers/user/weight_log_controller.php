@@ -30,7 +30,7 @@ use App\Models\weight_log_t_model;
 use App\Http\Requests\weight_log_t_request;
 // Request ↑
 
-class weight_log_t_controller extends Controller
+class weight_log_controller extends Controller
 {
     function index(Request $request)
     {       
@@ -105,9 +105,9 @@ class weight_log_t_controller extends Controller
             $weight_log_t = $weight_log_t->where("measure_at" , "<=" ,$search_array["end_date"]);
         }
 
-        $weight_log_t = $weight_log_t->orderBy('measure_at', 'asc')->get();;
+        $weight_log_t = $weight_log_t->orderBy('measure_at', 'desc')->get();;
 
-        return view('user/screen/weight_log_t/index', compact('get_record' , 'weight_log_t' , 'search_array'));
+        return view('user/screen/weight_log/index', compact('get_record' , 'weight_log_t' , 'search_array'));
 
     }
 

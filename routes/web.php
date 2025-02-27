@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\user\main_controller;
 use App\Http\Controllers\user\login_controller;
 use App\Http\Controllers\user\dashboard_controller;
-use App\Http\Controllers\user\weight_log_t_controller;
+use App\Http\Controllers\user\weight_log_controller;
 use App\Http\Controllers\user\training_controller;
 use App\Http\Controllers\user\user_controller;
 
@@ -57,5 +57,5 @@ Route::get('/gym_m', [gym_m_controller::class, 'index'])->name('user.gym_m.index
 Route::post('/gym_m/save', [gym_m_controller::class, 'save'])->name('user.gym_m.save');
 
 
-Route::get('/weight_log', [weight_log_t_controller::class, 'index'])->name('user.weight_log.index');
-Route::post('/weight_log/save', [weight_log_t_controller::class, 'save'])->name('user.weight_log.save');
+Route::get('/weight_log', [weight_log_controller::class, 'index'])->name('user.weight_log.index');
+Route::post('/weight_log/save', [weight_log_controller::class, 'save'])->name('user.weight_log.save');

@@ -1,7 +1,7 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'training_management')  
+@section('title', 'Training Management')  
 
 @endsection
 @section('content')
@@ -15,61 +15,16 @@
   
   <div class="contents row justify-content-center p-0">
 
-    <div class="col-12">
+    <div class="col-6 text-start">
+      <button class="save-modal-open btn btn-outline-success">開始</button>      
+    </div>
+    <div class="col-6 text-end">      
+      <button class="search-modal-open btn btn-outline-success">検索設定</button>
+    </div>
+
+    <div class="col-12 mt-2">
       
-       <table class="table">
-
-          <tr>
-            <td>              
-              <button class="btn btn-outline-success page-transition-button"
-              data-url="{{ route('user.training.analysis') }}"
-              data-process="1"
-              >トレーニング解析
-              </button>
-            </td>          
-
-            <td>
-              
-            </td>          
-
-            <td>
-              
-            </td>          
-          </tr>  
-
-
-          <tr>
-            <td colspan="3">
-              <div id="timer"></div>
-            </td>          
-          </tr>  
-
-
-          <tr>          
-            <td class="">
-              <label for="user_gym_id">ジム選択</label>
-            </td>
-
-            <td>
-              <select id="user_gym_id" name="user_gym_id" class="form-control">
-
-                <option value="0">未選択</option>                  
-                  @foreach ($gym_m as $info1)
                 
-                    <option value="{{$info1->user_gym_id}}"                                        
-                    >{{$info1->gym_name}}</option>                  
-                  @endforeach
-              </select>      
-            </td>   
-
-            <td>
-              <button class="training_history_t-save-button btn btn-outline-success" data-process="1">開始</button>
-            </td>   
-      
-          </tr>  
-  
-      </table>      
-          
       @if(count($training_history_t) > 0)
 
         @php
@@ -80,6 +35,7 @@
           $text_class []= $text_class_kinds[0];
           $text_class []= $text_class_kinds[0];
           $text_class []= $text_class_kinds[0];
+          $text_class []= $text_class_kinds[0];
           $text_class []= $text_class_kinds[2];
           
 
@@ -87,18 +43,22 @@
         @endphp
 
 
-        {{ $training_history_t->links() }}    
+     
 
-
-        
+   
         <div class="data-display-area">  
+          <div class="pagination-area text-end">
+            {{ $training_history_t->appends(request()->query())->links() }}            
+          </div>
+        
             <table class="table data-display-table">
 
               <tr>
-                <th class="{{$text_class[$text_class_index++]}}">記録ID</th>
-                <th class="{{$text_class[$text_class_index++]}}">ジム名</th>
-                <th class="{{$text_class[$text_class_index++]}}">日時</th>
-                <th class="{{$text_class[$text_class_index++]}}">合計時間</th>           
+                <th class="{{$text_class[$text_class_index++]}}">Record ID</th>
+                <th class="{{$text_class[$text_class_index++]}}">Gym</th>
+                <th class="{{$text_class[$text_class_index++]}}">Start</th>
+                <th class="{{$text_class[$text_class_index++]}}">End</th>
+                <th class="{{$text_class[$text_class_index++]}}">Total Time</th>           
                 <th class="{{$text_class[$text_class_index++]}}">
                   {{ $training_history_t->firstItem() }}～{{ $training_history_t->lastItem() }} / {{ $training_history_t->total() }}
                 </th>
@@ -115,16 +75,19 @@
                     <td class="{{$text_class[$text_class_index++]}}">{{$training_history_info->gym_name}}</td> 
 
                     <td class="{{$text_class[$text_class_index++]}}">
-                      @if($training_history_info->end_datetime == "")
-                        {{$training_history_info->start_datetime}}
-                      @else
-                        {{$training_history_info->start_datetime}}～{{$training_history_info->end_datetime}}
-                      @endif
+                      {{$training_history_info->start_datetime}}                      
+                      
                     </td>
+
+                    
+                    <td class="{{$text_class[$text_class_index++]}}">
+                      {{$training_history_info->end_datetime}}                    
+                    </td>
+
 
                     <td class="{{$text_class[$text_class_index++]}}">
                       @if($training_history_info->end_datetime == "")
-                        ※トレーニング中
+                        ※Training in Progress
                         <button class="training_history_t-save-button btn btn-outline-success" 
                           data-process="2" data-user_training_count="{{$training_history_info->user_training_count}}">終了</button>
                       @else
@@ -161,6 +124,97 @@
 
 </div>
 
+
+
+
+{{-- 検索モーダル --}}
+<div class="modal fade" id="search-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="search-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+          <div class="modal-header">
+              <h5 class="modal-title" id="">検索項目</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
+          </div>
+
+          <div class="modal-body">             
+
+            <div class="search-area">             
+
+              <table class="search-table w-100">
+
+                <tr>
+                  <th>ジム選択</th>
+                  <td>                  
+                    <select data-target="user_gym_id" class="form-control input-sm w-auto">
+              
+                      <option value="">未選択</option>                  
+                        @foreach ($gym_m as $info)              
+                          <option value="{{$info->user_gym_id}}"
+                            @if($info->user_gym_id == $search_array->user_gym_id) selected @endif
+                          >{{$info->gym_name}}</option>                  
+                        @endforeach
+                    </select>
+        
+                  </td>
+                </tr>
+
+                <tr>
+                  <th class="">トレ日（開始）</th>
+                  <td class="">      
+                    <input type="date" data-target="training_date_f" class="form-control w-auto" value="{{$search_array->training_date_f}}">
+                  </td>
+                </tr>
+      
+                <tr>
+                  <th class="">トレ日（終了）</th>
+                  <td class="">      
+                    <input type="date" data-target="training_date_t" class="form-control w-auto" value="{{$search_array->training_date_t}}">
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>表示件数</th>
+                  <td>      
+                    <select data-target="display_count" class="form-control input-sm text-center w-auto">                              
+                        @foreach ($display_counts as $display_count)
+                          
+                          <option value="{{$display_count}}"                                       
+                          @if($display_count == $search_array->display_count) selected @endif 
+                          >{{$display_count}}</option>                  
+                        @endforeach
+                    </select>
+                  </td>
+                </tr>
+                
+              </table>           
+          
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+
+              <div class="col-6 m-0 p-0 text-start">
+                <button class="btn btn-outline-info common-clear-button">
+                  クリア
+                </button>
+    
+                <button class="btn btn-outline-primary common-search-button">
+                    検索
+                  </button>
+              </div>
+
+              <div class="col-6 m-0 p-0 text-end">
+              
+                  <button type="button" id="" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+              </div>
+          </div>
+      </div>
+
+  </div>
+  
+</div>
 
 
 
@@ -275,7 +329,20 @@
   });
 
 
+  $('.save-modal-open').click(function(){
+    // モーダルを表示する        
+    $("#save-modal").modal('show');
+  });
+
+
+  $('.search-modal-open').click(function(){
+    // モーダルを表示する        
+    $("#search-modal").modal('show');
+  });
+
+
   
+
   $(document).on("click", ".training_history_t-save-button", function (e) {
 
     e.preventDefault();

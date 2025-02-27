@@ -185,7 +185,7 @@
           
             <tr>
               <th>
-                <div class="weight_log_table-th">　</div>                
+                <div class="weight_log_table-th">記録ID</div>                
               </th>
               <th>
                 <div class="weight_log_table-th">記録日時</div>                
@@ -193,16 +193,31 @@
               <th>
                 <div class="weight_log_table-th">体重</div>
               </th>
+
+              <th>
+                <div class="weight_log_table-th">前回比較</div>
+              </th>
             </tr>
           
           
-            @foreach ($weight_log_t as $item)
-              <tr>
-                <td>{{$loop->iteration}}</td>
-                <td>{{$item->measure_at}}</td>
-                <td>{{$item->weight}}</td>
-              </tr>
+            @foreach ($weight_log_t as $index => $item)
+                @php
+                    $comparison = 0;
+                    // 次のレコードが存在する場合のみ比較を行う
+                    if (isset($weight_log_t[$index + 1])) {
+                        $comparison = $item->weight - $weight_log_t[$index + 1]->weight;
+
+                        $comparison = number_format($comparison, 3); // 小数点3桁まで表示
+                    }
+                @endphp
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->measure_at }}</td>
+                    <td>{{ $item->weight }}</td>
+                    <td>{{ $comparison }}</td>
+                </tr>
             @endforeach
+
           
         </table>
       </div>
