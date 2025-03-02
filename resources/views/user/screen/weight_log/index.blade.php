@@ -1,12 +1,12 @@
 @extends('user.common.layouts_app')
 
 @section('pagehead')
-@section('title', 'weight management')  
+@section('title', 'weight management')
 
 @endsection
 @section('content')
 
-@php    
+@php
   $labels = $get_record['datas']['labels'];
   $weights = $get_record['datas']['weights'];
   $summary = $get_record['summary'];
@@ -18,10 +18,10 @@
 {
   margin: 0 10px;
   height: 100%;
-  width: 100px; 
-  color: rgb(53, 7, 7);       
-  border-radius: 3px;     
-  background-color: rgb(208, 208, 241);        
+  width: 100px;
+  color: rgb(53, 7, 7);
+  border-radius: 3px;
+  background-color: rgb(208, 208, 241);
 }
 
 .weight_type-select
@@ -41,7 +41,7 @@
 
 
 .weight_list_area {
-  height: 700px; 
+  height: 700px;
   overflow-y: auto;
   overflow-x: hidden;
   border: 1px solid #ccc; /* 必要なら枠線を追加 */
@@ -51,10 +51,10 @@
 .weight_log_table th {
   border: none;
   position: sticky; /* 固定 */
-  top: 0; 
-  background-color: #fff; 
-  z-index: 10; 
-  padding: 3px 0 0 0; 
+  top: 0;
+  background-color: #fff;
+  z-index: 10;
+  padding: 3px 0 0 0;
 
 }
 
@@ -64,7 +64,7 @@
 }
 
 .weight_graph_area{
-  overflow-y: auto; 
+  overflow-y: auto;
   white-space: nowrap;
   display: flex;
   justify-content: center;
@@ -72,22 +72,22 @@
 }
 
 #mychart{
-  min-width: 1000px; 
+  min-width: 1000px;
   min-height: 400px;
 }
 </style>
 
 <div class="mt-3 text-center container">
-  
-  <div class="contents row justify-content-center p-0">
-      
 
-      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">     
+  <div class="contents row justify-content-center p-0">
+
+
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7">
         <button type="button" class="btn btn-success save-modal-open">記録</button>
       </div>
 
-      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">       
-   
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 search-area">
+
         <table class="table search-table">
 
           <tr>
@@ -148,7 +148,7 @@
             </td>
 
             <td>
-              <button class="btn btn-outline-primary search-button">
+              <button class="btn btn-outline-primary common-search-button">
                 表示
               </button>
             </td>
@@ -163,11 +163,11 @@
                 <button class="btn btn-outline-primary list_graph_change_button w-120px" data-target="1">
                   グラフ
                 </button>
-        
+
                 <button class="btn btn-outline-primary list_graph_change_button w-120px" data-target="2">
                   表
-                </button>                
-            
+                </button>
+
               </div>
 
             </td>
@@ -178,17 +178,17 @@
 
       </div>
 
-     
+
 
       <div class="weight_list_area d-none">
-        <table class="table weight_log_table"> 
-          
+        <table class="table weight_log_table">
+
             <tr>
               <th>
-                <div class="weight_log_table-th">記録ID</div>                
+                <div class="weight_log_table-th">記録ID</div>
               </th>
               <th>
-                <div class="weight_log_table-th">記録日時</div>                
+                <div class="weight_log_table-th">記録日時</div>
               </th>
               <th>
                 <div class="weight_log_table-th">体重</div>
@@ -198,8 +198,8 @@
                 <div class="weight_log_table-th">前回比較</div>
               </th>
             </tr>
-          
-          
+
+
             @foreach ($weight_log_t as $index => $item)
                 @php
                     $comparison = 0;
@@ -218,17 +218,17 @@
                 </tr>
             @endforeach
 
-          
+
         </table>
       </div>
 
 
 
-  </div> 
+  </div>
 
 
   @if($count > 0)
-    <div class="weight_graph_area">  
+    <div class="weight_graph_area">
       <canvas id="mychart"></canvas>
     </div>
   @endif
@@ -246,12 +246,12 @@
 
           <div class="modal-header">
               <h5 class="modal-title" id=""></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <div class="modal-body">
               <div class="col-12">
-                  <div class="error_message_area"></div>                
+                  <div class="error_message_area"></div>
               </div>
               <form id='save-form' action="{{ route('user.weight_log.save') }}" method="post" enctype="multipart/form-data">
                 @csrf
@@ -266,10 +266,10 @@
                       <div id="timer"></div>
                     </td>
                   </tr>
-          
+
                   <tr>
                     <td class="item-center">
-          
+
                       <label for="weight_type1">
                         <input type="radio" id="weight_type1" name="weight_type_radio" value="1" checked >
                         kg
@@ -281,12 +281,12 @@
                         pound
                       </label>
 
-                      
-                    </td>                
-          
-                    
+
+                    </td>
+
+
                   </tr>
-          
+
                   <tr>
                     <td class="">
                       <div class="row m-0 p-0">
@@ -304,15 +304,15 @@
                         </div>
 
                         <div class="col-1 m-0 p-0">
-                          <span class="display_weight_type">kg</span>                      
+                          <span class="display_weight_type">kg</span>
                         </div>
 
                       </div>
-                    </td>    
-                  </tr>          
-                  
-          
-                </table>                  
+                    </td>
+                  </tr>
+
+
+                </table>
               </form>
           </div>
 
@@ -329,7 +329,7 @@
       </div>
 
   </div>
-  
+
 </div>
 
 {{-- 再ログインモーダルの読み込み --}}
@@ -381,37 +381,37 @@
     } else {
         display = "pound";
     }
-    
+
     // <span>要素の値を更新
-    $('.display_weight_type').text(display);    
+    $('.display_weight_type').text(display);
 
   });
- 
+
 
   $('.save-modal-open').click(function(){
-        
+
     $('.error_message_area').html("");
     $("#save-modal .is-invalid").removeClass('is-invalid');
 
     $('input[name="measure_at"]').val("");
     $('input[name="weight"]').val("");
-    $('input[name="weight_type"]').val("");    
-    // モーダルを表示する        
+    $('input[name="weight_type"]').val("");
+    // モーダルを表示する
     $("#save-modal").modal('show');
   });
 
 
- 
+
 
   $(document).on("click", ".list_graph_change_button", function (e) {
-    
+
     var target = $(this).data('target');
 
     $(".weight_list_area").removeClass('d-none');
     $(".weight_graph_area").removeClass('d-none');
 
     if(target == 1){
-      $(".weight_list_area").addClass('d-none');      
+      $(".weight_list_area").addClass('d-none');
     }else{
       $(".weight_graph_area").addClass('d-none');
     }
@@ -433,7 +433,7 @@
 
     var measure_at = document.getElementById('timer').textContent;
 
-    var integer = $('#integer').val();    
+    var integer = $('#integer').val();
     var decimal = $('#decimal').val();
 
     if (integer.trim() == "") {
@@ -442,7 +442,7 @@
 
     if (decimal.trim() == "") {
       decimal = 0;
-    } 
+    }
 
     var weight = integer + "." + decimal;
 
@@ -470,26 +470,26 @@
             location.reload();
 
         }else if(result_array["result"] == 'login_again'){
-            
+
             $("#save-modal").modal('hide');
             // モーダルを表示する
             $("#login_again-modal").modal('show');
 
         } else{
-                           
+
           var message = result_array["message"];
 
-        }    
+        }
 
     })
     .fail(function (data, textStatus, errorThrown) {
 
         standby_processing(2,button);
-        
+
         var errorsHtml = '<div class="alert alert-danger text-left">';
 
         if (data.status == '422') {
-            
+
             //{{-- vlidationエラー --}}
             $.each(data.responseJSON.errors, function(key, value) {
 
@@ -500,14 +500,14 @@
 
                   $("#integer").addClass('is-invalid');
                   $("#decimal").addClass('is-invalid');
-                  
+
                 }else{
 
                   $("[name='" + key + "']").addClass('is-invalid');
 
                 }
 
-                
+
             });
 
         } else {
@@ -528,8 +528,8 @@
 
     //グラフ作成
     // Days or date labels
-    var labels = @json($labels);  
-    
+    var labels = @json($labels);
+
     // Weight data for each corresponding label
     var weights = @json($weights);
 
@@ -570,7 +570,7 @@
   });
 
 
-  
+
 
   @endif
 
