@@ -84,7 +84,6 @@ class weight_log_controller extends Controller
         }   
 
 
-
         $search_array = [
             "user_id" => $user_id
             ,"branch" => $branch
@@ -92,10 +91,54 @@ class weight_log_controller extends Controller
             ,"end_date" => $end_date
         ];
 
-        $get_record = self::get_record($search_array);      
+        for ($i = 1; $i <= 4; $i++) {
+
+            $search_array["branch"] = $i;
         
+            $weight_log_t = weight_log_t_model::where('user_id', $user_id);
+            
+            if($search_array["start_date"] != ""){
+                $weight_log_t = $weight_log_t->where("measure_at" , ">=" ,$search_array["start_date"]);
+            }
+    
+            if($search_array["end_date"] != ""){
+                $weight_log_t = $weight_log_t->where("measure_at" , "<=" ,$search_array["end_date"]);
+            }
+    
+
+            switch ($i) {
+                case 1:
+                    $get_record_year = self::get_record($search_array);      
+                    break;
+                case 2:
+                    $get_record_month = self::get_record($search_array);      
+                    break;
+                case 3:
+                    $get_record_week = self::get_record($search_array);      
+                    break;
+                case 4:
+                    $get_record_day = self::get_record($search_array);      
+                    break;
+                default:
+                    
+                    break;
+            }           
+
+        }
+        $get_records = [];
+        $get_records []= $get_record_year;
+        $get_records []= $get_record_month;
+        $get_records []= $get_record_week;
+        $get_records []= $get_record_day;
+       
+        Log::channel('sql_log')->info(print_r($get_records, true));       
+
         
+
         $weight_log_t = weight_log_t_model::where('user_id', $user_id);
+
+        
+
         
         if($search_array["start_date"] != ""){
             $weight_log_t = $weight_log_t->where("measure_at" , ">=" ,$search_array["start_date"]);
@@ -107,7 +150,7 @@ class weight_log_controller extends Controller
 
         $weight_log_t = $weight_log_t->orderBy('measure_at', 'desc')->get();;
 
-        return view('user/screen/weight_log/index', compact('get_record' , 'weight_log_t' , 'search_array'));
+        return view('user/screen/weight_log/index', compact('get_records' , 'weight_log_t' , 'search_array'));
 
     }
 
@@ -412,6 +455,8 @@ class weight_log_controller extends Controller
         $ave_weight = 0;
         $step_size = 0;
         
+        $prevMonth = null;
+        $prevYear = null;
         foreach ($record as $index => $info) {
 
             $weight = $info->weight;          
@@ -428,11 +473,35 @@ class weight_log_controller extends Controller
                     break;
                 case 3:
                     
-                    $label = $info->formatted_start_date . "～" .$info->formatted_end_date;                    
+                    $start = Carbon::createFromFormat('Y/m/d', $info->formatted_start_date);
+                    $end = Carbon::createFromFormat('Y/m/d', $info->formatted_end_date);
+
+                    $startYear = $start->format('Y');
+                    $endYear = $end->format('Y');
+
+                    // 前回保存用（年単位）
+                    $currentYear = $startYear;
+
+                    // 年が変わる or 前回と年が異なる → yyyy/mm/dd～yyyy/mm/dd
+                    if ($startYear !== $endYear || $currentYear !== $prevYear) {
+                        $label = $start->format('Y/m/d') . "～" . $end->format('Y/m/d');
+                        $prevYear = $currentYear;
+                    } else {
+                        $label = $start->format('m/d') . "～" . $end->format('m/d');
+                    }
+
                     break;
                 case 4:
 
-                    $label = $info->formatted_yyyymmdd;                    
+                    $date = Carbon::createFromFormat('Y/m/d', $info->formatted_yyyymmdd);
+                    $currentMonth = $date->format('Y-m');
+                
+                    if ($currentMonth !== $prevMonth) {
+                        $label = $date->format('Y/m/d');
+                        $prevMonth = $currentMonth;
+                    } else {
+                        $label = $date->format('d');
+                    }
                     break;            
                 default:
             }
